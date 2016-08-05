@@ -1,0 +1,235 @@
+====== Exercise 8. Bash: more on redirection and filtering: head, tail, awk, grep, sed ======
+
+Now that you tasted Linux, I will introduce you to the Unix way. Behold.
+
+> This is the [[http://en.wikipedia.org/wiki/Unix_philosophy|Unix philosophy]]: Write programs that do one thing and do it well. Write programs to work together. Write programs to handle text streams, because that is a universal interface.
+
+What this means in practical terms is that to become proficient in Linux you need to know how to take an output from one program and feed it to the other, usually modifying it in the process. Normally you do this by gluing several programs together using [[http://en.wikipedia.org/wiki/Pipeline_%28Unix%29|pipes]] which allow you connect output of one program to another. Like this:
+
+{{:llthw:570px-pipeline.svg.png?300|}}
+
+What happens here is really simple. Almost every Linux program opens at lest these 3 files when started:
+  - stdin — the standard input. This is from where program reads something. 
+  - stdout — the standard output. This is where program writes something.  
+  - stderr — the standard error. This is where program whines about wrong things that do happen.
+
+This is how it reads:
+<code>
+Start Program 1
+    Start reading data from keyboard
+    Start writing errors to display
+    Start Program 2
+        Start reading input from Program 1
+        Start writing errors to Display
+        Start Program 3
+            Start reading input from Program 2
+            Start writing errors to Display
+            Start writing data to Display
+</code>
+
+There is another way to picture what happens if you like South Park type of humor, but beware: what was seen cannot be unseen! [[http://osxdaily.com/wp-content/uploads/2011/04/south-park-human-centipad.jpg|Warning! You will not be able to unsee this]].
+
+Let us consider the following pipeline which takes **ls -al** output and prints out only file names and file modification times: 
+<code>ls -al | tr -s ' ' | cut -d ' ' -f 8,9</code>
+
+Here is an outline of what happens:
+
+<code>
+Start ls -al
+    Get list of files in current directory
+    Write errors to Display
+    Write output to Pipe 
+    Start tr -s ' '
+        Read input from ls -al via Pipe
+        Leave only 1 space between fields
+        Write errors to Display
+        Write output to Pipe
+        Start cut -d ' ' -f 8,9
+            Read input from tr -s ' ' via Pipe'
+            Leave only fields 8 and 9, throw away anything else
+            Write errors to Display
+            Write output to Display
+</code>
+     
+To further elaborate, this is what happens on each step:
+
+Step 1: **ls -al**, we get a directory listing. Every column here is called a **field**.
+<code bash>    
+user1@vm1:~$ ls -al
+total 52
+drwxr-xr-x 2 user1 user1 4096 Jun 18 14:16 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1 4865 Jun 15 19:34 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .bashrc
+-rw-r--r-- 1 user1 user1   64 Jun 18 14:16 hello.txt
+-rw------- 1 user1 user1   89 Jun 18 16:26 .lesshst
+-rw-r--r-- 1 user1 user1  634 Jun 15 20:03 ls.out
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+-rw------- 1 user1 user1  666 Jun 18 14:16 .viminfo
+</code>
+
+Step 2: **ls -al | tr -s ' '**. We leave only one space between fields because cut does not understand multiple spaces as a way to tell several fields apart.
+<code bash>
+user1@vm1:~$ ls -al | tr -s ' '
+total 52
+drwxr-xr-x 2 user1 user1 4096 Jun 18 14:16 .
+drwxr-xr-x 3 root root 4096 Jun 6 21:49 ..
+-rw------- 1 user1 user1 4865 Jun 15 19:34 .bash_history
+-rw-r--r-- 1 user1 user1 220 Jun 6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .bashrc
+-rw-r--r-- 1 user1 user1 64 Jun 18 14:16 hello.txt
+-rw------- 1 user1 user1 89 Jun 18 16:26 .lesshst
+-rw-r--r-- 1 user1 user1 634 Jun 15 20:03 ls.out
+-rw-r--r-- 1 user1 user1 697 Jun 7 12:25 .profile
+-rw-r--r-- 1 user1 user1 741 Jun 7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1 741 Jun 7 13:12 .profile.bak1
+-rw------- 1 user1 user1 666 Jun 18 14:16 .viminfo
+</code>
+
+Step 3: **ls -al | tr -s ' ' | cut -d ' ' -f 8,9**. We leave only fields eight and nine, which are what we want.
+<code bash>
+user1@vm1:~$ ls -al | tr -s ' ' | cut -d ' ' -f 8,9
+
+14:16 .
+21:49 ..
+19:34 .bash_history
+21:48 .bash_logout
+12:24 .bashrc
+14:16 hello.txt
+16:26 .lesshst
+20:03 ls.out
+12:25 .profile
+12:19 .profile.bak
+13:12 .profile.bak1
+14:16 .viminfo
+</code>
+
+Now you will learn how to take output (text stream) from one program and pass it another, and how transform it.
+
+===== Do this =====
+
+<code bash 1>
+ls -al | head -n 5
+ls -al | tail -n 5
+ls -al | awk '{print $8, $9}' 
+ls -al | awk '{print $9, $8}'
+ls -al | awk '{printf "%-20.20s %s\n",$9, $8}'
+ls -al | grep bash
+ls -al > ls.out
+cat ls.out
+cat ls.out | sed  's/bash/I replace this!!!/g'
+</code>
+
+====== What you should see ======
+<code bash>
+user1@vm1:~$ ls -al | head -n 5
+total 52
+drwxr-xr-x 2 user1 user1 4096 Jun 18 14:16 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1 4865 Jun 15 19:34 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+user1@vm1:~$ ls -al | tail -n 5
+-rw-r--r-- 1 user1 user1  636 Jun 18 17:52 ls.out
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+-rw------- 1 user1 user1  666 Jun 18 14:16 .viminfo
+user1@vm1:~$ ls -al | awk '{print $8, $9}'
+
+14:16 .
+21:49 ..
+19:34 .bash_history
+21:48 .bash_logout
+12:24 .bashrc
+14:16 hello.txt
+16:26 .lesshst
+17:52 ls.out
+12:25 .profile
+12:19 .profile.bak
+13:12 .profile.bak1
+14:16 .viminfo
+user1@vm1:~$ ls -al | awk '{print $9, $8}'
+
+. 14:16
+.. 21:49
+.bash_history 19:34
+.bash_logout 21:48
+.bashrc 12:24
+hello.txt 14:16
+.lesshst 16:26
+ls.out 17:52
+.profile 12:25
+.profile.bak 12:19
+.profile.bak1 13:12
+.viminfo 14:16
+
+user1@vm1:~$ ls -al | awk '{printf "%-20.20s %s\n",$9, $8}'
+
+.                    14:16
+..                   21:49
+.bash_history        19:34
+.bash_logout         21:48
+.bashrc              12:24
+hello.txt            14:16
+.lesshst             16:26
+ls.out               17:52
+.profile             12:25
+.profile.bak         12:19
+.profile.bak1        13:12
+.viminfo             14:16
+user1@vm1:~$ ls -al | grep bash
+-rw------- 1 user1 user1 4865 Jun 15 19:34 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .bashrc
+user1@vm1:~$ ls -al > ls.out
+user1@vm1:~$ cat ls.out
+total 48
+drwxr-xr-x 2 user1 user1 4096 Jun 18 14:16 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1 4865 Jun 15 19:34 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .bashrc
+-rw-r--r-- 1 user1 user1   64 Jun 18 14:16 hello.txt
+-rw------- 1 user1 user1   89 Jun 18 16:26 .lesshst
+-rw-r--r-- 1 user1 user1    0 Jun 18 17:53 ls.out
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+-rw------- 1 user1 user1  666 Jun 18 14:16 .viminfo
+user1@vm1:~$ cat ls.out | sed  's/bash/I replace this!!!/g'
+total 48
+drwxr-xr-x 2 user1 user1 4096 Jun 18 14:16 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1 4865 Jun 15 19:34 .I replace this!!!_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .I replace this!!!_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .I replace this!!!rc
+-rw-r--r-- 1 user1 user1   64 Jun 18 14:16 hello.txt
+-rw------- 1 user1 user1   89 Jun 18 16:26 .lesshst
+-rw-r--r-- 1 user1 user1    0 Jun 18 17:53 ls.out
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+-rw------- 1 user1 user1  666 Jun 18 14:16 .viminfo
+</code>
+
+===== Explanation =====
+
+  - Prints out only 5 first entries in directory listing.
+  - Prints out only 5 last entries in directory listing.
+  - Prints out only modification time and file name. Notice how I used **awk**, which is smarter than **cut**. Difference here is that while **cut** understands only single symbol (space in our case) as a way to tell field apart (field separator), **awk** treats any number of spaces and tabs as filed separator, so there is no need to use **tr** which removes unnecessary spaces.
+  - Prints out file name and modification time in this order. This again is something cat is not able to do.
+  - Prints out file name and modification time nicely. Notice how output looks much clearer now. 
+  - Prints out only those lines from directory listing which contain the word "bash".
+  - Writes directory listing output to file **ls.out**.
+  - Prints out **ls.out**. **cat** is simplest program available that allows you to print out a file and nothing more. Despite being so simple it is very useful when constructing complicated pipelines.
+  - Prints out **ls.out** replacing all **bash** entries with **I replace this!!!** **sed** is one powerful stream editor, which is //very very very// useful.
+
+====== Extra credit =====
+
+  - Open man pages for **head**, **tail**, **awk**, **grep** and **sed**. Do not be intimidated, just remember that man pages are always there for you. With some practice you will be able actually understand them.
+  - Find **grep** options which allow to print out one line before and one line after the lines it finds.
+  - Google about **awk** **printf** command, try to understand how this works.
+  - Read [[http://partmaps.org/era/unix/award.html|Useless Use of Cat Award]]. Try some examples from there.

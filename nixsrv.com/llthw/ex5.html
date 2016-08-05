@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex5 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:51 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex5 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex5"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex5decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex5.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex5.txt"/>
+<link rel="canonical" href="ex5.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex5","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_5_bashenvironment_variables_env_set_export">Exercise 5. Bash: environment variables, env, set, export</h1>
+<div class="level1">
+<p>
+Consider the following: you want a program to print out your username. How will this program know it? For this in Linux there are <a href="http://en.wikipedia.org/wiki/Environment_variable#Unix" class="urlextern" title="http://en.wikipedia.org/wiki/Environment_variable#Unix" rel="nofollow">environment variables</a>. What this means is that there are many variables in your shell, many of which are set up automatically, and every time you run a program, some of them are passed to this program.
+</p>
+<p>
+To elaborate on this:
+</p>
+<ol>
+<li class="level1"><div class="li"> Some variables are set just for your current shell. They are called <em>local shell variables</em>. You can list them by typing <strong>set</strong>, a bash built-in command, which means that no other program is started then you execute it. This command is processed by bash itself.</div>
+</li>
+<li class="level1"><div class="li"> Other variables are passed to every program you launch from your current shell. They are called <em>environment variables</em> and can be listed by <strong>env</strong> program, which means that then typing <strong>env</strong> you will see what variables every program you start gets.</div>
+</li>
+</ol>
+<p>
+You may want do dig a bit deeper. To do this, grasp the concept of a <em><a href="http://en.wikipedia.org/wiki/Child_process" class="urlextern" title="http://en.wikipedia.org/wiki/Child_process" rel="nofollow">subshell</a></em> which is a child process that is created when you run a program and which <em>becomes</em> your program.
+</p>
+<p>
+Now you will learn how to create variables and how to use them.
+</p>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno">1:</span> <span class="re2">foo</span>=<span class="st_h">'Hello World!'</span>
+<span class="lno">2:</span> <span class="kw3">echo</span> <span class="re1">$foo</span>
+<span class="lno">3:</span> <span class="kw1">set</span> <span class="sy0">|</span> <span class="kw2">grep</span> foo
+<span class="lno">4:</span> <span class="kw2">env</span> <span class="sy0">|</span> <span class="kw2">grep</span> foo
+<span class="lno">5:</span> <span class="kw3">export</span> foo
+<span class="lno">6:</span> <span class="kw2">env</span> <span class="sy0">|</span> <span class="kw2">grep</span> foo
+<span class="lno">7:</span> <span class="re2">foo</span>=<span class="st_h">'ls -al'</span>
+<span class="lno">8:</span> <span class="re1">$foo</span>
+</pre>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">uset1@vm1:~$ </span><span class="re2">foo</span>=<span class="st_h">'Hello World!'</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="re1">$foo</span>
+Hello World<span class="sy0">!</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw1">set</span> <span class="sy0">|</span> <span class="kw2">grep</span> foo
+<span class="re2">foo</span>=<span class="st_h">'Hello World!'</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">env</span> <span class="sy0">|</span> <span class="kw2">grep</span> foo
+<span class="co4">user1@vm1:~$ </span><span class="kw3">export</span> foo
+<span class="co4">user1@vm1:~$ </span><span class="kw2">env</span> <span class="sy0">|</span> <span class="kw2">grep</span> foo
+<span class="re2">foo</span>=Hello World<span class="sy0">!</span>
+<span class="co4">user1@vm1:~$ </span><span class="re2">foo</span>=<span class="st_h">'ls -al'</span>
+<span class="co4">user1@vm1:~$ </span><span class="re1">$foo</span>
+total <span class="nu0">36</span>
+drwxr-xr-x <span class="nu0">2</span> user1 user1 <span class="nu0">4096</span> Jun <span class="nu0">14</span> <span class="nu0">12</span>:<span class="nu0">23</span> .
+drwxr-xr-x <span class="nu0">3</span> root  root  <span class="nu0">4096</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">49</span> ..
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1 <span class="nu0">4042</span> Jun <span class="nu0">15</span> <span class="nu0">18</span>:<span class="nu0">52</span> .bash_history
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">220</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">48</span> .bash_logout
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1 <span class="nu0">3184</span> Jun <span class="nu0">14</span> <span class="nu0">12</span>:<span class="nu0">24</span> .bashrc
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1   <span class="nu0">50</span> Jun <span class="nu0">15</span> <span class="nu0">18</span>:<span class="nu0">41</span> .lesshst
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">697</span> Jun  <span class="nu0">7</span> <span class="nu0">12</span>:<span class="nu0">25</span> .profile
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">741</span> Jun  <span class="nu0">7</span> <span class="nu0">12</span>:<span class="nu0">19</span> .profile.bak
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">741</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">12</span> .profile.bak1</pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Creates a variable <strong>foo</strong> and places the line “Hello World!” into it.</div>
+</li>
+<li class="level1"><div class="li"> Prints out variable <strong>foo</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out list of all your environment variables, which is passed to <strong>grep</strong>, which prints out only lines containing variable <strong>foo</strong>. Notice how variable <strong>foo</strong> is present.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all list of your environment variables which are passed to any program you execute. Notice how variable <strong>foo</strong> is absent.</div>
+</li>
+<li class="level1"><div class="li"> Makes variable <strong>foo</strong> available to all programs you execute from the current shell.</div>
+</li>
+<li class="level1"><div class="li"> Now you can see that your variable is indeed available to all programs you execute.</div>
+</li>
+<li class="level1"><div class="li"> Puts <strong>ls /</strong> into variable <strong>foo</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Executes a command which is contained in variable <strong>foo</strong>.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Type in and execute <strong>env</strong> and <strong>set</strong>. See how many different variable there are? No worries, usually you can quickly understand what a variable does by googling it. Try to do this.</div>
+</li>
+<li class="level1"><div class="li"> Try typing: <pre class="code">set | egrep &#039;^[[:alpha:]].*$&#039;</pre>
+<p>
+Now, try just <strong>set</strong>. See what I did here? Quick explanation is that
+</p>
+<pre class="code">egrep &#039;^[[:alpha:]].*$&#039;</pre>
+<p>
+prints out only those lines which start with alphanumeric character, that is every letter, and omits any other lines. Don&#039;t bother too much with this for now. Don not bother about <strong>|</strong> symbol either, I will explain it later on.
+</p>
+</div>
+</li>
+<li class="level1"><div class="li"> Read about difference between <strong>env</strong> and <strong>set</strong> here: <a href="http://stackoverflow.com/questions/3341372/differnce-between-the-shell-and-environment-variable-in-bash" class="urlextern" title="http://stackoverflow.com/questions/3341372/differnce-between-the-shell-and-environment-variable-in-bash" rel="nofollow">http://stackoverflow.com/questions/3341372/differnce-between-the-shell-and-environment-variable-in-bash</a> Remember, stackoverflow is your friend! I will repeat it many times.</div>
+</li>
+<li class="level1"><div class="li"> Try typing <strong>set FOO=helloworld bash -c &#039;echo $FOO&#039;</strong>. Explanation is here: <a href="http://stackoverflow.com/questions/10938483/bash-specifying-environment-variables-for-echo-on-command-line" class="urlextern" title="http://stackoverflow.com/questions/10938483/bash-specifying-environment-variables-for-echo-on-command-line" rel="nofollow">http://stackoverflow.com/questions/10938483/bash-specifying-environment-variables-for-echo-on-command-line</a>. Again, don not bother with this too much, it will come to you after lots of practice automatically, I promise. </div>
+</li>
+<li class="level1"><div class="li"> Try this: <pre class="code">PS1_BAK=$PS1
+PS1=&#039;Hello, world! $(pwd) &gt; &#039;
+PS1=$PS1_BAK</pre>
+<p>
+Notice how I used <strong>$(pwd)</strong> to access command output as a variable. Now, type <strong>man bash</strong>, <strong>/</strong> (yes, just a slash), <strong>PS1</strong>, press <strong>&lt;ENTER&gt;</strong>. You can now press <strong>n</strong> to go to the next result. Skim through <em>PROMPTING</em> and type <strong>q</strong> to exit man. Now, navigate to <a href="http://stackexchange.com/" class="urlextern" title="http://stackexchange.com/" rel="nofollow">http://stackexchange.com/</a> and search <strong>bash PS1</strong>. Understand how those two documentation sources differ.
+</p>
+</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex5.html';
+var disqus_title   = 'Exercise 5. Bash: environment variables, env, set, export';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex5.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex5.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex5.txt</bdi> · Last modified: 2012/07/27 09:15 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerda27.gif?id=llthw%3Aex5&amp;1428742711" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex5 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:53 GMT -->
+</html>

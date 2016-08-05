@@ -1,0 +1,100 @@
+====== Exercise 29. Kernel: kernel messages, dmesg ======
+
+Well, if you made it this far it is time to talk about [[http://en.wikipedia.org/wiki/Kernel_(computing)|kernel]]. We will start this talk with Wikipedia definition of an Operating System kernel:
+
+> In computing, the kernel (from German Kern, nucleus, core) is the main component of most computer operating systems; it is a bridge between applications and the actual data processing done at the hardware level. The kernel's responsibilities include managing the system's resources (the communication between hardware and software components). Usually as a basic component of an operating system, a kernel can provide the lowest-level abstraction layer for the resources (especially processors and I/O devices) that application software must control to perform its function. It typically makes these facilities available to application processes through inter-process communication mechanisms and system calls.
+
+And this is what Wikipedia tells us about [[http://en.wikipedia.org/wiki/Linux_kernel#Technical_features|Linux Kernel]] specifically:
+> The Linux kernel is the operating system kernel used by the Linux family of Unix-like operating systems. It is one of the most prominent examples of free and open source software. It supports true preemptive multitasking (both in user mode and kernel mode), virtual memory, shared libraries, demand loading, shared copy-on-write executables, memory management, the Internet protocol suite, and threading.
+
+Now is a good time to visit corresponding Wikipedia article and spend some time clicking feverishly on all those scary terms which describe technical features Linux Kernel has. After doing so, let us talk about much more mundane subject, which is a way kernel cat tell us something. This happens, for example, if USB-stick is attached to the computer, or network link becomes down, or filesystem mounting is performed. To be able to tell you all this things, kernel uses a mechanism known as //display message// or //driver message//, name of which is abbreviated to dmesg. 
+
+This mechanism is represented by the buffer of fixed size to which kernel writes its messages. On Debian Linux distribution information from this buffer are also copied to **/var/log/dmseg** after system log daemon is started. This is done to preserve this messages which would otherwise be overwritten by new ones.
+
+**dmesg** is also name of utility which allows you to view those messages which are currently in kernel buffer, and also change this buffer size.
+
+Let me summarize **dmesg**-related files and programs:
+  - **dmesg** — print or control the kernel ring buffer
+  - **/var/log/dmseg** — log file in Debian distribution which contains copy of dmesg messages during system boot only, without timestamps.
+  - **/var/log/kern.log**  — log file in Debian distribution which contains copy of all dmesg messages, including timestamps. Notice that this timestamps start ticking after **rsyslog** logging daemon is started, which means that all boot time messages before **rsyslog** is started will have the same timestamp. This file contains **/var/log/dmesg** in itself.
+  - **/var/log/messages** — log file in Debian distribution which logs all non-debug and non-critical messages. It contains **/var/log/dmesg** in itself.
+  - **/var/log/syslog** — log file in Debian distribution which logs everything, except auth related messages. It contains all messages which go to **/var/log/messages** and **/var/log/kern.log** in itself.
+
+
+===== Do this =====
+<code bash 1>
+date
+sudo umount /tmp ; sudo mount /tmp
+sudo tail -f /var/log/dmesg /var/log/messages /var/log/syslog /var/log/kern.log
+</code>
+====== What you should see =====
+<code bash>
+user1@vm1:~$ date
+Tue Jul 24 06:55:33 EDT 2012
+user1@vm1:~$ sudo umount /tmp ; sudo mount /tmp
+user1@vm1:~$ dmesg | tail
+[    7.166240] tun: Universal TUN/TAP device driver, 1.6
+[    7.166242] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    7.432019] ADDRCONF(NETDEV_UP): eth0: link is not ready
+[    7.435270] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+[    7.435927] ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   17.472049] tap0: no IPv6 routers present
+[   17.592044] eth0: no IPv6 routers present
+[  217.497357] kjournald starting.  Commit interval 5 seconds
+[  217.497561] EXT3 FS on sda8, internal journal
+[  217.497564] EXT3-fs: mounted filesystem with ordered data mode.
+user1@vm1:~$ sudo tail /var/log/dmesg /var/log/messages /var/log/syslog /var/log/kern.log
+==> /var/log/dmesg <==
+[    6.762569] EXT3 FS on sda5, internal journal
+[    6.762572] EXT3-fs: mounted filesystem with ordered data mode.
+[    6.767237] kjournald starting.  Commit interval 5 seconds
+[    6.767407] EXT3 FS on sda6, internal journal
+[    6.767410] EXT3-fs: mounted filesystem with ordered data mode.
+[    7.166240] tun: Universal TUN/TAP device driver, 1.6
+[    7.166242] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    7.432019] ADDRCONF(NETDEV_UP): eth0: link is not ready
+[    7.435270] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+[    7.435927] ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+
+==> /var/log/messages <==
+Jul 24 06:52:07 vm1 kernel: [    6.767407] EXT3 FS on sda6, internal journal
+Jul 24 06:52:07 vm1 kernel: [    6.767410] EXT3-fs: mounted filesystem with ordered data mode.
+Jul 24 06:52:07 vm1 kernel: [    7.166240] tun: Universal TUN/TAP device driver, 1.6
+Jul 24 06:52:07 vm1 kernel: [    7.166242] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+Jul 24 06:52:07 vm1 kernel: [    7.432019] ADDRCONF(NETDEV_UP): eth0: link is not ready
+Jul 24 06:52:07 vm1 kernel: [    7.435270] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+Jul 24 06:52:07 vm1 kernel: [    7.435927] ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+Jul 24 06:55:36 vm1 kernel: [  217.497357] kjournald starting.  Commit interval 5 seconds
+Jul 24 06:55:36 vm1 kernel: [  217.497561] EXT3 FS on sda8, internal journal
+Jul 24 06:55:36 vm1 kernel: [  217.497564] EXT3-fs: mounted filesystem with ordered data mode.
+
+==> /var/log/syslog <==
+Jul 24 06:52:08 vm1 acpid: 1 rule loaded
+Jul 24 06:52:08 vm1 acpid: waiting for events: event logging is off
+Jul 24 06:52:08 vm1 /usr/sbin/cron[882]: (CRON) INFO (pidfile fd = 3)
+Jul 24 06:52:08 vm1 /usr/sbin/cron[883]: (CRON) STARTUP (fork ok)
+Jul 24 06:52:08 vm1 /usr/sbin/cron[883]: (CRON) INFO (Running @reboot jobs)
+Jul 24 06:52:16 vm1 kernel: [   17.472049] tap0: no IPv6 routers present
+Jul 24 06:52:16 vm1 kernel: [   17.592044] eth0: no IPv6 routers present
+Jul 24 06:55:36 vm1 kernel: [  217.497357] kjournald starting.  Commit interval 5 seconds
+Jul 24 06:55:36 vm1 kernel: [  217.497561] EXT3 FS on sda8, internal journal
+Jul 24 06:55:36 vm1 kernel: [  217.497564] EXT3-fs: mounted filesystem with ordered data mode.
+
+==> /var/log/kern.log <==
+Jul 24 06:52:07 vm1 kernel: [    7.166240] tun: Universal TUN/TAP device driver, 1.6
+Jul 24 06:52:07 vm1 kernel: [    7.166242] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+Jul 24 06:52:07 vm1 kernel: [    7.432019] ADDRCONF(NETDEV_UP): eth0: link is not ready
+Jul 24 06:52:07 vm1 kernel: [    7.435270] e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+Jul 24 06:52:07 vm1 kernel: [    7.435927] ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+Jul 24 06:52:16 vm1 kernel: [   17.472049] tap0: no IPv6 routers present
+Jul 24 06:52:16 vm1 kernel: [   17.592044] eth0: no IPv6 routers present
+Jul 24 06:55:36 vm1 kernel: [  217.497357] kjournald starting.  Commit interval 5 seconds
+Jul 24 06:55:36 vm1 kernel: [  217.497561] EXT3 FS on sda8, internal journal
+Jul 24 06:55:36 vm1 kernel: [  217.497564] EXT3-fs: mounted filesystem with ordered data mode.
+</code>
+===== Explanation =====
+  - Prints out current date and time.
+  - Prints last 10 messages from kernel messages buffer.
+  - Prints last 10 messages from **/var/log/dmesg**, **/var/log/messages**, **/var/log/syslog** and  **/var/log/kern.log**.
+====== Extra credit ======
+  - That is it. No extra credit, whooosh!

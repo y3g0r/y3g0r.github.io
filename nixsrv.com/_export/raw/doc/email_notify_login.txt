@@ -1,0 +1,42 @@
+====== Email notification about all sucessful logins using rsyslog ======
+<code bash>
+
+#send all login attemps to email
+#set up postfix to send encrypted email
+    vim /etc/postfix/main.cf
+        #setup tls encryption
+        smtp_tls_security_level = encrypt
+        smtp_use_tls = yes
+        smtp_tls_policy_maps = hash:/etc/postfix/tls_policy
+    vim /etc/postfix/tls_policy
+        google.com encrypt
+        .google.com encrypt
+        gmail.com encrypt
+        .gmail.com encrypt
+    postmap tls_policy
+    service postfix restart
+vim /etc/rsyslog.conf
+    $ModLoad ommail
+    $template loginMailSubject,"%hostname% %msg%"
+    $template loginMailBody,"%msg%"
+    $ActionMailSubject loginMailSubject
+    $ActionMailTo test@gmail.com
+    $ActionMailFrom root
+    #if $programname == 'bonding' and ($msg contains 'root' or $msg contains 'CRITICAL') then :ommail:;bondingMailBody
+    if $syslogfacility-text=='authpriv'and $msg contains 'session opened' then :ommail:;loginMailBody
+    $ActionExecOnlyOnceEveryInterval 0
+#test 
+vim testmail.txt
+    EHLO vbox.site
+    MAIL FROM:<root@vbox.site>
+    RCPT TO:<test@gmail.com>
+    DATA
+    From: [root] <root@vbox.site>
+    To: <test@gmail.com>
+    Subject: Test Message
+    Hi there! This is supposed to be a real email...
+    Have a good day!
+    .
+    QUIT
+nc localhost 25 < testmail.txt
+</code>

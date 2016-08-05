@@ -1,0 +1,220 @@
+====== Exercise 16. Processes: working with proccesses, ps, kill ======
+
+A program in its simplest is a file on you hard disk which contain instructions for your central processor to execute. When you start it, it is copied to memory and control is passed to it. Executed program is called //a process//. In multitasking operating systems like Linux you may start many instances of a program, so may start many processes from one program which all will be running (executing) at the same time.
+
+This is an outline of what happens when you running **ls**:
+<code>
+YOU
+   Type in ls and its arguments into your terminal emulator and press <ENTER>
+   Control is now passed to Bash
+Bash
+   Locates ls on your hard disk
+   Forks itself to Bash clone, that is clones itself to the new location in memory
+   Becomes parent process to Bash clone
+   Control is now passed to the Bash clone
+Bash clone
+   Becomes child process to Bash
+   Preserves parent Bash process environment
+   Knows that it is it a clone and reacts accordingly
+       Overwrites itself with ls
+       Control is now passed to ls
+ls
+   Prints out a directory listing for you or returns an error
+   Returns exit code
+   Control is now passed to Bash
+Bash
+   Assigns ls exit code to ? variable
+   Waits for your input
+YOU
+   Are able to type something once again
+</code>
+
+Some process are not interactive like **ls**, but just work quietly in the background, like ssh. Processes have number of possible states and there is a number of operations which you may perform on them by means of the signal mechanism.
+
+Firstly let us talk about states. If you type **ps ax --forest** it will print out all processes and you will get something like this (some hardware-related processes skipped):
+<code bash>
+user1@vm1:/etc$ ps --forest ax
+  PID TTY      STAT   TIME COMMAND
+    1 ?        Ss     0:16 init [2]
+  297 ?        S<s    0:00 udevd --daemon
+  392 ?        S<     0:00  \_ udevd --daemon
+  399 ?        S<     0:00  \_ udevd --daemon
+  691 ?        Ss     0:00 /sbin/portmap
+  703 ?        Ss     0:00 /sbin/rpc.statd
+  862 ?        Sl     0:00 /usr/sbin/rsyslogd -c4
+  886 ?        Ss     0:00 /usr/sbin/atd
+  971 ?        Ss     0:00 /usr/sbin/acpid
+  978 ?        Ss     0:01 /usr/sbin/cron
+ 1177 ?        Ss     0:00 /usr/sbin/sshd
+ 6671 ?        Ss     0:00  \_ sshd: user1 [priv]
+ 6675 ?        S      0:00      \_ sshd: user1@pts/0
+ 6676 pts/0    Ss     0:00          \_ -bash
+ 7932 pts/0    R+     0:00              \_ ps --forest ax
+ 1191 ?        Ss     0:00 /usr/sbin/exim4 -bd -q30m
+ 1210 tty2     Ss+    0:00 /sbin/getty 38400 tty2
+ 1211 tty3     Ss+    0:00 /sbin/getty 38400 tty3
+ 1212 tty4     Ss+    0:00 /sbin/getty 38400 tty4
+ 1213 tty5     Ss+    0:00 /sbin/getty 38400 tty5
+ 1214 tty6     Ss+    0:00 /sbin/getty 38400 tty6
+ 6216 tty1     Ss+    0:00 /sbin/getty 38400 tty1
+</code>
+
+Let us go through this list column py column:
+  - **PID** — process ID. Each process has unique number associated with it, which serves for uniquely identifying it. This means no two processes can ever have the same PID.
+  - **TTY** — teletype emulator associated with the process, which allows a process to exchange information with you.
+  - **STAT** — current process status. This will be descussed in detail below.
+  - **TIME** — this is the amount of time in minutes and seconds this process is executed on CPU.
+  - **COMMAND** — this is program name with arguments. Notice how **/usr/sbin/sshd** is parent of **sshd: user1** which in turn is parent of **sshd: user1@pts/0** which in turn is parent of **bash** which in turn is parent of **ps --forest ax**. You need to go deeper!
+
+Now let us discuss possible process states, which I took from //PROCESS STATE CODES// of **man ps**:
+^  STATE ^ Description ^
+|  **D** | Uninterruptible sleep (usually IO). Process is busy or hung, and does not respond to signals, for example beacause hard disk had crashed and read operation can not be completed. |
+|  **R** | Running or runnable (on run queue). Process is being executed right now. |
+|  **S** | Interruptible sleep (waiting for an event to complete).  For example terminal processes and Bash are often in this state, waiting for you to type in something.  |
+|  **T** | Stopped, either by a job control signal or because it is being traced. |
+|  **W** | paging (not valid since the 2.6.xx kernel, so do not bother about this). |
+|  **X** | dead (should never be seen). |
+|  **Z** | Defunct ("zombie") process, terminated but not reaped by its parent. This happens with incorrectly terminated processes, or processes whos pared terminated erroneously. |
+|  **<** | high-priority (not nice to other users) |
+|  **N** | low-priority (nice to other users) |
+|  **L** | has pages locked into memory (for real-time and custom IO) |
+|  **s** | is a session leader. Related processes in Linux are treated as a unit, and have shared Session ID (SID). If Process ID (PID) = Session ID (SID), this process will be a Session Leader. |
+|  **l** | is multi-threaded (using CLONE_THREAD, like NPTL pthreads do) |
+|  **+** | is in the foreground process group. Such procceses are allowed to input and output to the teletype emulator, tty. |
+
+Now let us talk about a way to communicate with all those process. You can do it by sending them signals. Signal may be thought like a way to kick a process in the butt so process will hear you and make what you want it to. This is abbreviated list of possible signals which I took from //SIGNALS// section of **man kill**:
+^    Signal      ^ Num ^ Action  ^      Description                                ^
+|  **0**         | 0   |n/a      | Exit code indicates if a signal may be sent     |
+|  **HUP**       | 1   |exit     | Hangup on controlling terminal or parent process died |
+|  **INT**       | 2   |exit     | Interrupt from keyboard                         |
+|  **QUIT**      | 3   |core     | Quit from keyboard                              |
+|  **ILL**       | 4   |core     | Illegal instruction                             |
+|  **TRAP**      | 5   |core     | Trace/breakpoint trap                            |
+|  **ABRT**      | 6   |core     | Abort signal from abort(3)                      |
+|  **FPE**       | 8   |core     | Floating point exception                        |
+|  **KILL**      | 9   |exit     | Non-catchable, non-ignorable kill               |
+|  **SEGV**      | 11  |core     | Invalid memory reference                        |
+|  **PIPE**      | 13  |exit     | Broken pipe: write to pipe with no readers      |
+|  **ALRM**      | 14  |exit     | Timer signal from alarm(2)                      |
+|  **TERM**      | 15  |exit     | Terminate process                               |
+
+Again, do not be intimidated with not understanding, for now you just need to know about **HUP**, **TERM** and **KILL**. There is even a song about **KILL** signal, named [[http://www.monzy.com/intro/killdashnine_lyrics.html|Kill dash nine]]. Also, notice this **abort(3)** and **alarm(2)** entries? They mean that you may read corresponding man pages by typing **man 3 abort** and **man 2 alarm**.
+
+Now you will learn how to list running processes and send signals to them.
+
+===== Do this =====
+
+<code 1 bash>
+ps x
+ps a
+ps ax
+ps axue --forest
+dd if=/dev/zero of=~/test.img bs=1 count=$((1024*1024*1024)) &
+kill -s USR1 $!
+<ENTER>
+kill -s USR1 $!
+<ENTER>
+kill -s TERM $!
+<ENTER>
+</code>
+
+====== What you should see ======
+<code>
+user1@vm1:/etc$ ps x
+  PID TTY      STAT   TIME COMMAND
+ 6675 ?        S      0:00 sshd: user1@pts/0
+ 6676 pts/0    Ss     0:00 -bash
+ 8193 pts/0    R+     0:00 ps x
+user1@vm1:/etc$ ps a
+  PID TTY      STAT   TIME COMMAND
+ 1210 tty2     Ss+    0:00 /sbin/getty 38400 tty2
+ 1211 tty3     Ss+    0:00 /sbin/getty 38400 tty3
+ 1212 tty4     Ss+    0:00 /sbin/getty 38400 tty4
+ 1213 tty5     Ss+    0:00 /sbin/getty 38400 tty5
+ 1214 tty6     Ss+    0:00 /sbin/getty 38400 tty6
+ 6216 tty1     Ss+    0:00 /sbin/getty 38400 tty1
+ 6676 pts/0    Ss     0:00 -bash
+ 8194 pts/0    R+     0:00 ps a
+user1@vm1:/etc$ ps ax
+  PID TTY      STAT   TIME COMMAND
+    1 ?        Ss     0:16 init [2]
+--- skipped --- skipped --- skipped ---
+  691 ?        Ss     0:00 /sbin/portmap
+  703 ?        Ss     0:00 /sbin/rpc.statd
+  862 ?        Sl     0:00 /usr/sbin/rsyslogd -c4
+  886 ?        Ss     0:00 /usr/sbin/atd
+  971 ?        Ss     0:00 /usr/sbin/acpid
+  978 ?        Ss     0:01 /usr/sbin/cron
+ 1177 ?        Ss     0:00 /usr/sbin/sshd
+ 1191 ?        Ss     0:00 /usr/sbin/exim4 -bd -q30m
+ 1210 tty2     Ss+    0:00 /sbin/getty 38400 tty2
+ 1211 tty3     Ss+    0:00 /sbin/getty 38400 tty3
+ 1212 tty4     Ss+    0:00 /sbin/getty 38400 tty4
+ 1213 tty5     Ss+    0:00 /sbin/getty 38400 tty5
+ 1214 tty6     Ss+    0:00 /sbin/getty 38400 tty6
+ 6216 tty1     Ss+    0:00 /sbin/getty 38400 tty1
+ 6671 ?        Ss     0:00 sshd: user1 [priv]
+ 6675 ?        S      0:00 sshd: user1@pts/0
+ 6676 pts/0    Ss     0:00 -bash
+ 8198 pts/0    R+     0:00 ps ax
+user1@vm1:/etc$ ps axue --forest
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+--- skipped --- skipped --- skipped ---
+root         1  0.0  0.0   8356   820 ?        Ss   Jun06   0:16 init [2]
+root       297  0.0  0.0  16976  1000 ?        S<s  Jun06   0:00 udevd --daemon
+root       392  0.0  0.0  16872   840 ?        S<   Jun06   0:00  \_ udevd --daemon
+root       399  0.0  0.0  16872   836 ?        S<   Jun06   0:00  \_ udevd --daemon
+daemon     691  0.0  0.0   8096   532 ?        Ss   Jun06   0:00 /sbin/portmap
+statd      703  0.0  0.0  14384   868 ?        Ss   Jun06   0:00 /sbin/rpc.statd
+root       862  0.0  0.1  54296  1664 ?        Sl   Jun06   0:00 /usr/sbin/rsyslogd -c4
+daemon     886  0.0  0.0  18716   436 ?        Ss   Jun06   0:00 /usr/sbin/atd
+root       971  0.0  0.0   3920   644 ?        Ss   Jun06   0:00 /usr/sbin/acpid
+root       978  0.0  0.0  22400   880 ?        Ss   Jun06   0:01 /usr/sbin/cron
+root      1177  0.0  0.1  49176  1136 ?        Ss   Jun06   0:00 /usr/sbin/sshd
+root      6671  0.0  0.3  70496  3284 ?        Ss   Jun26   0:00  \_ sshd: user1 [priv]
+user1     6675  0.0  0.1  70496  1584 ?        S    Jun26   0:00      \_ sshd: user1@pts/0
+user1     6676  0.0  0.6  23644  6536 pts/0    Ss   Jun26   0:00          \_ -bash LANG=en_US.UTF-8 USER=user1 LOGNAME=user1 HOM
+user1     8199  0.0  0.1  16312  1088 pts/0    R+   17:07   0:00              \_ ps axue --forest TERM=screen-bce SHELL=/bin/bas
+101       1191  0.0  0.1  44148  1076 ?        Ss   Jun06   0:00 /usr/sbin/exim4 -bd -q30m
+root      1210  0.0  0.0   5932   616 tty2     Ss+  Jun06   0:00 /sbin/getty 38400 tty2
+root      1211  0.0  0.0   5932   612 tty3     Ss+  Jun06   0:00 /sbin/getty 38400 tty3
+root      1212  0.0  0.0   5932   612 tty4     Ss+  Jun06   0:00 /sbin/getty 38400 tty4
+root      1213  0.0  0.0   5932   612 tty5     Ss+  Jun06   0:00 /sbin/getty 38400 tty5
+root      1214  0.0  0.0   5932   616 tty6     Ss+  Jun06   0:00 /sbin/getty 38400 tty6
+root      6216  0.0  0.0   5932   612 tty1     Ss+  Jun14   0:00 /sbin/getty 38400 tty1
+user1@vm1:/etc$ dd if=/dev/zero of=~/test.img bs=1 count=$((1024*1024*1024)) &
+[1] 8200
+user1@vm1:/etc$ kill -s USR1 $!
+user1@vm1:/etc$ 1455424+0 records in
+1455424+0 records out
+1455424 bytes (1.5 MB) copied, 1.76646 s, 824 kB/s
+
+user1@vm1:/etc$ kill -s USR1 $!
+user1@vm1:/etc$ 3263060+0 records in
+3263060+0 records out
+3263060 bytes (3.3 MB) copied, 3.94237 s, 828 kB/s
+
+user1@vm1:/etc$ kill -s TERM $!
+user1@vm1:/etc$
+[1]+  Terminated              dd if=/dev/zero of=~/test.img bs=1 count=$((1024*1024*1024))
+user1@vm1:/etc$
+</code>
+
+===== Explanation =====
+
+  - Prints out those processes owned (started by) you.
+  - Prints out only processes associated with a terminal (tty) and those owned (started by) you.
+  - Prints out all processes currently running.
+  - Prints out all running processes in tree form and include additional information such as associated //username// and environment where available. Notice that this information is available only for processes owned (started by) you. To view environment information for all process type in **sudo ps axue --forest** instead.
+  - Starts creating a zero-filled file (filled with null characters, do not bother for now) and is sent to background by specifying **&** in the end.
+  - Queries **dd** for status.
+  - Because bash is only able to print out something in response for your input, you need to press **<ENTER>** (issue empty command).
+  - Queries **dd** for status again.
+  - Again you need to press **<ENTER>** to see the output.
+  - Sends **dd** termination signal, so **dd** quits.
+  - To see that this indeed had happened you need to press **<ENTER>** once again.
+
+====== Extra credit ======
+  - Read **man ps**, **man kill**.
+  - Read [[http://www.linux-tutorial.info/modules.php?name=MContent&pageid=84|The Life Cycle of Processes]] and study this picture [[http://www.linux-tutorial.info/Linux_Tutorial/The_Operating_System/The_Kernel/Processes/procflowa.gif|Process flow]].
+  - Print and fill in [[http://nixsrv.com/llthw/ex16/signals|Signal table]]. You may use [[http://www.kernel.org/doc/man-pages/online/pages/man7/signal.7.html#DESCRIPTION|Documentation from kernel.org]].

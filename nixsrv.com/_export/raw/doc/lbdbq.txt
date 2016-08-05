@@ -1,0 +1,5 @@
+====== lbdbq ======
+<code bash>
+/usr/lib/lbdb/m_ldap
+    $libdir/mutt_ldap_query --lbdb_output "$@" || : 
+</code>      

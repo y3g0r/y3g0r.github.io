@@ -1,0 +1,4 @@
+====== Awk ======
+<code bash>
+ps -C chrome -eo time,pid,comm | awk '{split($0,a,":");  t+=a[1]*3600+a[2]*60+a[3]; print $1 $2} END {print t}'
+</code>

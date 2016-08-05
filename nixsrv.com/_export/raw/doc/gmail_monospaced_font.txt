@@ -1,0 +1,27 @@
+<code css>
+    # install sylish
+    # css style:
+        .ii, textarea {
+        font-family: "Terminus (TTF)" !important;
+        font-size: 12px !important;
+        line-height: 1.1 !important;
+    }
+     
+    .editable {
+        font-family: "Terminus (TTF)" !important;
+        font-size: 12px !important;
+        line-height: 1.1 !important;
+    }
+
+    div
+        {
+            font-family: "Terminus (TTF)" !important;
+            font-size: 12px !important;
+        }
+
+        textarea.dV
+        {
+            font-family: "Terminus (TTF)" !important;
+            font-size: 12px !important;
+        }
+</code>

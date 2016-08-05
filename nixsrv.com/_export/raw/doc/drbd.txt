@@ -1,0 +1,50 @@
+====== DRDB cheat-sheet ======
+<code bash>
+# Create resource
+    drbdadm create-md r0
+# Attach resource
+    drbdadm attach r0
+# Connect resource
+    drbdadm connect r0
+# Set sync speed in MB
+    drbdsetup /dev/drbd1 syncer -r 5M
+# Initialize/re-synchronize
+    drbdadm -- --overwrite-data-of-peer primary r0
+# Bring resource up 
+    drbdadm up r0 
+# Bring resource down
+    drbdadm down r0
+# Get status
+    cat /proc/drbd
+</code>
+
+====== /etc/drbd.d/global_common.conf ====== 
+<code c>
+/etc/drbd.d/global_common.conf
+    global {
+      usage-count no;
+    }
+    common {
+      protocol C;
+    }
+</code>    
+====== /etc/drbd.d/r0.res ====== 
+<code c>
+resource r0 {
+    device    /dev/drbd1;
+    disk      /dev/vdb1;
+    meta-disk internal;
+    net {
+        allow-two-primaries;
+    }
+    startup {
+        become-primary-on both;
+    }
+    on vbox3 {
+        address   10.1.1.1:7789;
+    }
+    on vbox3clone {
+        address   10.1.1.2:7789;
+    }
+}
+</code>

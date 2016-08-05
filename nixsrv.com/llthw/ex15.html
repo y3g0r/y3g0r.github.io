@@ -1,0 +1,458 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex15 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:24 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex15 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex15"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex15decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex15.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex15.txt"/>
+<link rel="canonical" href="ex15.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex15","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_15_system_bootrunlevelsetcinitd_rcconf_update-rcd">Exercise 15. System boot: runlevels, /etc/init.d, rcconf, update-rc.d</h1>
+<div class="level1">
+<p>
+Firstly I will give an outline of typical system boot process:
+</p>
+<pre class="code">
+YOU
+    Press power switch (or start a virtual machine)
+    Now computer has the control
+    This control is passed to BIOS
+BIOS
+    Performs hardware-specific tasks
+    Makes POST, Power-On Self-Test, which tests your hardware
+    Detects installed hardware, such as hard disks, memory type and amount, ...
+    Initializes hardware by writing initial values into their memory
+    Finds a boot device, which is usually a hard disk
+    Read and executes MBR (Main Boot Record) located at the beginning of this disk
+    Control is now passed to MBR
+MBR
+    MBR finds and executes GRUB (Grand Unified Bootloader)
+    Control is now passed to GRUB
+GRUB
+    Finds available filesystems
+    Finds and reads its configuration file, to find out:
+        Where system is located
+        What system to boot
+        What other actions perform
+    Executes Linux Kernel, main part of Linux OS
+    Control is now passed to Linux Kernel
+Linux Kernel
+    Finds and loads initrd, which is initial ram disk
+        initrd contains necessary drivers which allow to access and mount real filesystems
+    Mounts the root file system, which is specified in GRUB config file
+    Executes /sbin/init, a special program which starts all the others
+    Control is now passed to init
+init
+    Looks at the /etc/inittab to determine desired runlevel
+    Loads all programs appropriate for this runlevel
+        All programs from /etc/rc.d/rc2.d/ are loaded, because 2 is default Debian runlevel
+        SSH and TTY are started so you are able to connect to your computer
+    Booting up is now finished
+YOU
+    Connect to your computer using SSH
+    SSH daemon executes bash shell for you
+    You can now type stuff
+    You are in control once again</pre>
+<p>
+For now we are interested only in “init” and “runlevel” stages, so I will give you a general overview of how the system starts up and automatically starts some programs. First, a little terminology:
+</p>
+<ol>
+<li class="level1"><div class="li"> Daemon — a program which runs in background all the time. This means that it does not care if you are logged into the system, and usually you do not need to start it manually, because daemond are started automatically when computer boots up.</div>
+</li>
+<li class="level1"><div class="li"> Runlevel — a mode of system operation. Basically, this is just numbers which are fed to <strong>init</strong> program, which knows which daemons are associated with each number, and startd and stops those daemons as needed.</div>
+</li>
+</ol>
+<p>
+In Debian there are the following runlevels:
+</p>
+<div class="table sectionedit2"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> ID </th><th class="col1 centeralign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign">S </td><td class="col1">This executed then system is powered on. </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign">0 </td><td class="col1">Halt, this defines which actions are executed when system is shutting down. </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign">1 </td><td class="col1">Single-User mode, this is a special mode for troubleshooting. In this mode most daemons are not automatically started. </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign">2-5 </td><td class="col1">Full Multi-User, configured daemon start in this mode. </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign">6 </td><td class="col1">Reboot. Like halt, but instead of powering down system reboots. </td>
+</tr>
+</table></div>
+<p>
+But how does init know? Well, where are special directories for this:
+</p>
+<pre class="bash code bash">user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">find</span> <span class="sy0">/</span>etc <span class="re5">-type</span> d <span class="re5">-name</span> <span class="st_h">'rc*'</span> <span class="nu0">2</span><span class="sy0">&gt;/</span>dev<span class="sy0">/</span>null <span class="sy0">|</span> <span class="kw2">sort</span>
+<span class="sy0">/</span>etc<span class="sy0">/</span>rc0.d
+<span class="sy0">/</span>etc<span class="sy0">/</span>rc1.d
+<span class="sy0">/</span>etc<span class="sy0">/</span>rc2.d
+<span class="sy0">/</span>etc<span class="sy0">/</span>rc3.d
+<span class="sy0">/</span>etc<span class="sy0">/</span>rc4.d
+<span class="sy0">/</span>etc<span class="sy0">/</span>rc5.d
+<span class="sy0">/</span>etc<span class="sy0">/</span>rc6.d
+<span class="sy0">/</span>etc<span class="sy0">/</span>rcS.d</pre>
+<p>
+As you might guess, each number and <strong>S</strong> corresponds to a run level from this table. Let us list one of those directories, which start all needed daemons on normal boot:
+</p>
+<pre class="bash code bash">user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">/</span>etc<span class="sy0">/</span>rc2.d <span class="sy0">|</span> <span class="kw2">awk</span> <span class="st_h">'{printf &quot;%-15.15s %-3.3s %s\n&quot;,$9,$10,$11}'</span>
+.
+..
+README
+S14portmap      -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>portmap
+S15nfs-common   -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>nfs-common
+S17rsyslog      -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rsyslog
+S17sudo         -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span><span class="kw2">sudo</span>
+S18acpid        -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>acpid
+S18atd          -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>atd
+S18cron         -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>cron
+S18exim4        -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>exim4
+S18ssh          -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span><span class="kw2">ssh</span>
+S20bootlogs     -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>bootlogs
+S21rc.local     -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rc.local
+S21rmnologin    -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rmnologin
+S21stop-bootlog -<span class="sy0">&gt;</span>  ..<span class="sy0">/</span>init.d<span class="sy0">/</span>stop-bootlogd</pre>
+<p>
+As you can see, files in this directory are just symbolic links to actual startup scripts. Let us look at one of this link more closely: <strong>S18ssh → ../init.d/ssh</strong>. Here is what we are able to say about this file:
+</p>
+<ol>
+<li class="level1"><div class="li"> It is a link to the file <strong>./init.d/ssh</strong></div>
+</li>
+<li class="level1"><div class="li"> It starts with <strong>S</strong> which means <em>start</em>. Each script used in Debian start-up system has at least 2 parameters, <em>start</em> and <em>stop</em>. Now we can say that when our system switches to runlevel 2 this script is executed with action <em>start</em>.</div>
+</li>
+<li class="level1"><div class="li"> It has a number <strong>18</strong>. Scripts in rc directories are executed in alphabetical order, so now we understand that before starting <strong>ssh</strong>, system starts <strong>portmap</strong>, <strong>nfs-common</strong>, <strong>rsyslog</strong>, and <strong>sudo</strong>. <strong>rsyslog</strong> is a system loggin daemon, and ssh in particular want to log who and when accessed the system, so it needs <strong>rsyslog</strong> to be running before starting up.</div>
+</li>
+</ol>
+<p>
+Now you will learn how to list enabled services (daemons), and enable and disable services (daemons).
+</p>
+</div>
+<h2 class="sectionedit3" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="code">
+<span class="lno"> 1:</span> sudo aptitude install rcconf
+<span class="lno"> 2:</span> ls -al /etc/rc2.d
+<span class="lno"> 3:</span> sudo rcconf --list
+<span class="lno"> 4:</span> sudo update-rc.d exim4 disable
+<span class="lno"> 5:</span> ls -al /etc/rc2.d
+<span class="lno"> 6:</span> sudo rcconf --list
+<span class="lno"> 7:</span> sudo update-rc.d exim4 enable
+<span class="lno"> 8:</span> ls -al /etc/rc2.d
+<span class="lno"> 9:</span> sudo rcconf --list
+</pre>
+</div>
+<h1 class="sectionedit4" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash">user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log$ <span class="kw2">sudo</span> <span class="kw2">aptitude</span> <span class="kw2">install</span> rcconf
+The following NEW packages will be installed:
+  rcconf
+<span class="nu0">0</span> packages upgraded, <span class="nu0">1</span> newly installed, <span class="nu0">0</span> to remove and <span class="nu0">0</span> not upgraded.
+Need to get <span class="nu0">0</span> B<span class="sy0">/</span><span class="nu0">23.9</span> kB of archives. After unpacking <span class="nu0">135</span> kB will be used.
+Selecting previously deselected package rcconf.
+<span class="br0">&#40;</span>Reading database ... <span class="nu0">24239</span> files and directories currently installed.<span class="br0">&#41;</span>
+Unpacking rcconf <span class="br0">&#40;</span>from ...<span class="sy0">/</span>archives<span class="sy0">/</span>rcconf_2.5_all.deb<span class="br0">&#41;</span> ...
+Processing triggers <span class="kw1">for</span> man-db ...
+Setting up rcconf <span class="br0">&#40;</span><span class="nu0">2.5</span><span class="br0">&#41;</span> ...
+&nbsp;
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">/</span>etc<span class="sy0">/</span>rc2.d
+total <span class="nu0">12</span>
+drwxr-xr-x  <span class="nu0">2</span> root root <span class="nu0">4096</span> Jun <span class="nu0">27</span> <span class="nu0">11</span>:<span class="nu0">42</span> .
+drwxr-xr-x <span class="nu0">68</span> root root <span class="nu0">4096</span> Jun <span class="nu0">25</span> <span class="nu0">18</span>:<span class="nu0">43</span> ..
+<span class="re5">-rw-r--r--</span>  <span class="nu0">1</span> root root  <span class="nu0">677</span> Mar <span class="nu0">27</span> 05:<span class="nu0">50</span> README
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">17</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S14portmap -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>portmap
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">20</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S15nfs-common -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>nfs-common
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">17</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S17rsyslog -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rsyslog
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">14</span> Jun <span class="nu0">15</span> <span class="nu0">19</span>:02 S17sudo -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span><span class="kw2">sudo</span>
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">15</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18acpid -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>acpid
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">13</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18atd -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>atd
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">14</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18cron -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>cron
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">15</span> Jun <span class="nu0">27</span> <span class="nu0">11</span>:<span class="nu0">42</span> S18exim4 -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>exim4
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">13</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18ssh -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span><span class="kw2">ssh</span>
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">18</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S20bootlogs -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>bootlogs
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">18</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21rc.local -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rc.local
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">19</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21rmnologin -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rmnologin
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">23</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21stop-bootlogd -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>stop-bootlogd
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">sudo</span> rcconf <span class="re5">--list</span>
+rsyslog on
+<span class="kw2">ssh</span> on
+bootlogs on
+portmap on
+<span class="kw2">sudo</span> on
+nfs-common on
+udev on
+console-setup on
+kbd on
+exim4 on
+keyboard-setup on
+acpid on
+cron on
+atd on
+procps on
+module-init-tools on
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">sudo</span> update-rc.d exim4 disable
+update-rc.d: using dependency based boot sequencing
+insserv: warning: current start runlevel<span class="br0">&#40;</span>s<span class="br0">&#41;</span> <span class="br0">&#40;</span>empty<span class="br0">&#41;</span> of script <span class="sy0">`</span>exim4<span class="st_h">' overwrites defaults (2 3 4 5).
+insserv: warning: current stop runlevel(s) (0 1 2 3 4 5 6) of script `exim4'</span> overwrites defaults <span class="br0">&#40;</span><span class="nu0">0</span> <span class="nu0">1</span> <span class="nu0">6</span><span class="br0">&#41;</span>.
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">/</span>etc<span class="sy0">/</span>rc2.d
+total <span class="nu0">12</span>
+drwxr-xr-x  <span class="nu0">2</span> root root <span class="nu0">4096</span> Jun <span class="nu0">27</span> <span class="nu0">11</span>:<span class="nu0">43</span> .
+drwxr-xr-x <span class="nu0">68</span> root root <span class="nu0">4096</span> Jun <span class="nu0">25</span> <span class="nu0">18</span>:<span class="nu0">43</span> ..
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">15</span> Jun <span class="nu0">27</span> <span class="nu0">11</span>:<span class="nu0">43</span> K01exim4 -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>exim4
+<span class="re5">-rw-r--r--</span>  <span class="nu0">1</span> root root  <span class="nu0">677</span> Mar <span class="nu0">27</span> 05:<span class="nu0">50</span> README
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">17</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S14portmap -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>portmap
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">20</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S15nfs-common -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>nfs-common
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">17</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S17rsyslog -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rsyslog
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">14</span> Jun <span class="nu0">15</span> <span class="nu0">19</span>:02 S17sudo -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span><span class="kw2">sudo</span>
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">15</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18acpid -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>acpid
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">13</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18atd -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>atd
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">14</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18cron -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>cron
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">13</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18ssh -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span><span class="kw2">ssh</span>
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">18</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S20bootlogs -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>bootlogs
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">18</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21rc.local -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rc.local
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">19</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21rmnologin -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rmnologin
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">23</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21stop-bootlogd -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>stop-bootlogd
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">sudo</span> rcconf <span class="re5">--list</span>
+rsyslog on
+<span class="kw2">ssh</span> on
+bootlogs on
+portmap on
+<span class="kw2">sudo</span> on
+nfs-common on
+udev on
+console-setup on
+kbd on
+keyboard-setup on
+acpid on
+cron on
+atd on
+procps on
+module-init-tools on
+exim4 off
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">sudo</span> update-rc.d exim4 <span class="kw3">enable</span>
+update-rc.d: using dependency based boot sequencing
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">/</span>etc<span class="sy0">/</span>rc2.d
+total <span class="nu0">12</span>
+drwxr-xr-x  <span class="nu0">2</span> root root <span class="nu0">4096</span> Jun <span class="nu0">27</span> <span class="nu0">11</span>:<span class="nu0">43</span> .
+drwxr-xr-x <span class="nu0">68</span> root root <span class="nu0">4096</span> Jun <span class="nu0">25</span> <span class="nu0">18</span>:<span class="nu0">43</span> ..
+<span class="re5">-rw-r--r--</span>  <span class="nu0">1</span> root root  <span class="nu0">677</span> Mar <span class="nu0">27</span> 05:<span class="nu0">50</span> README
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">17</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S14portmap -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>portmap
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">20</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S15nfs-common -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>nfs-common
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">17</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S17rsyslog -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rsyslog
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">14</span> Jun <span class="nu0">15</span> <span class="nu0">19</span>:02 S17sudo -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span><span class="kw2">sudo</span>
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">15</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18acpid -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>acpid
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">13</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18atd -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>atd
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">14</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18cron -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>cron
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">15</span> Jun <span class="nu0">27</span> <span class="nu0">11</span>:<span class="nu0">43</span> S18exim4 -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>exim4
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">13</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S18ssh -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span><span class="kw2">ssh</span>
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">18</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S20bootlogs -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>bootlogs
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">18</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21rc.local -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rc.local
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">19</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21rmnologin -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>rmnologin
+lrwxrwxrwx  <span class="nu0">1</span> root root   <span class="nu0">23</span> Jun  <span class="nu0">4</span> <span class="nu0">11</span>:<span class="nu0">53</span> S21stop-bootlogd -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>init.d<span class="sy0">/</span>stop-bootlogd
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">sudo</span> rcconf <span class="re5">--list</span>
+rsyslog on
+<span class="kw2">ssh</span> on
+bootlogs on
+portmap on
+<span class="kw2">sudo</span> on
+nfs-common on
+udev on
+console-setup on
+kbd on
+exim4 on
+keyboard-setup on
+acpid on
+cron on
+atd on
+procps on
+module-init-tools on
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$</pre>
+</div>
+<h2 class="sectionedit5" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Installs <strong>rcconf</strong> package which allows you to easily manage runlevels.</div>
+</li>
+<li class="level1"><div class="li"> Prints out directory containing startup scripts for runlevel 2. Mail server exim4 is enabled for now.</div>
+</li>
+<li class="level1"><div class="li"> Just prints out services for the same runlevel. Notice that there are several services which are not shown because they are considered system services. <strong>rcconf –list –expert</strong> will list them all and many more which reside on different runlevels.</div>
+</li>
+<li class="level1"><div class="li"> Disables automatic startup of exim4, the mail server.</div>
+</li>
+<li class="level1"><div class="li"> Prints out directory containing startup scripts for runlevel 2. exim4 startup script is now renamed from <strong>S18exim4</strong> to <strong>K01exim4</strong> which means that exim4 is stopped (killed) when entering this runlevel. If exim4 was not running to begin with, nothing happens.</div>
+</li>
+<li class="level1"><div class="li"> Prints out services for runlevel 2. Service exim4 is now <em>off</em>.</div>
+</li>
+<li class="level1"><div class="li"> Enables automatic startup of exim4.</div>
+</li>
+<li class="level1"><div class="li"> Prints out directory containing startup scripts for runlevel 2 once more, exim4 in enabled again.</div>
+</li>
+<li class="level1"><div class="li"> Prints out services for runlevel 2. Status of exim4 changed to <em>on</em> as expected.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit6" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Read about Debian boot process here: <a href="http://www.debian.org/doc/manuals/debian-reference/ch03.en.html" class="urlextern" title="http://www.debian.org/doc/manuals/debian-reference/ch03.en.html" rel="nofollow">http://www.debian.org/doc/manuals/debian-reference/ch03.en.html</a></div>
+</li>
+<li class="level1"><div class="li"> Try this: <strong>aptitude install sysv-rc-conf</strong>, <strong>sysv-rc-conf –list</strong>. Read <strong>man sysv-rc-conf</strong>.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex15.html';
+var disqus_title   = 'Exercise 15. System boot: runlevels, /etc/init.d, rcconf, update-rc.d';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex15.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex15.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex15.txt</bdi> · Last modified: 2014/12/29 16:51 by <bdi>orl</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer79ff.gif?id=llthw%3Aex15&amp;1428742719" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex15 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:28 GMT -->
+</html>

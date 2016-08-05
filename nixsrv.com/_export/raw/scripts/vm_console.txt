@@ -1,0 +1,13 @@
+====== Script for quickly connecting to VNC consoles of running DOMu's in XEN ======
+
+===== github ======
+
+https://github.com/sistemshik/vm_console
+
+===== How it looks like ======
+
+{{:scripts:vm_console.png?200|}}
+
+===== What it does =====
+
+It makes a page with the list of running DOMu's, when clicking on the DOMu it pops up a page with embedded java applet viewer which connects to corresponding DOMu.

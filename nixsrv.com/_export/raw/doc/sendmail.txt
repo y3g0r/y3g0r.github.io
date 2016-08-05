@@ -1,0 +1,11 @@
+====== Sendmail ======
+<code bash>
+# update sendmail aliases
+    vim /etc/aliases
+    less /var/log/maillog
+    cd /etc/mail
+    make -n
+    sendmail -bv root
+    make
+    sendmail -bv root
+</code>

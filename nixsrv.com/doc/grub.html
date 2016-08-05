@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/doc/grub by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:06:16 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>doc:grub - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="doc,grub"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="grubdecf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedafd0.php?mode=list&amp;ns=doc"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/doc/grub.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/doc/grub.txt"/>
+<link rel="canonical" href="grub.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='doc';var JSINFO = {"id":"doc:grub","namespace":"doc"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="grand_unified_bootloader">GRand Unified Bootloader</h1>
+<div class="level1">
+<p>
+Tips and config examples.
+</p>
+</div>
+<h2 class="sectionedit2" id="recue_shell">Recue shell</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="co0">#Inspect the current prefix (and other preset variables):</span>
+    <span class="kw1">set</span>
+<span class="co0"># Set to the correct value, which might be something like this:</span>
+    <span class="kw1">set</span> <span class="re2">prefix</span>=<span class="br0">&#40;</span>hd0,<span class="nu0">1</span><span class="br0">&#41;</span><span class="sy0">/</span>grub
+    <span class="kw1">set</span> <span class="re2">root</span>=<span class="br0">&#40;</span>hd0,<span class="nu0">1</span><span class="br0">&#41;</span>
+    insmod normal
+    normal</pre>
+</div>
+<h2 class="sectionedit3" id="config">Config</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="co0"># enable serial console</span>
+    <span class="re2">GRUB_CMDLINE_LINUX_DEFAULT</span>=<span class="st0">&quot;console=ttyS0,9600n8 console=tty0 quiet&quot;</span></pre>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'grub.html';
+var disqus_title   = 'GRand Unified Bootloader';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="grub.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="grub.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>doc/grub.txt</bdi> · Last modified: 2012/06/01 08:55 (external edit)<br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer14f5.gif?id=doc%3Agrub&amp;1428742752" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/doc/grub by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:06:18 GMT -->
+</html>

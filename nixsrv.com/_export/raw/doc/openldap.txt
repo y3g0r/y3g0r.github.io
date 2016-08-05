@@ -1,0 +1,11 @@
+====== OpenLDAP ======
+<code bash>
+ldapsearch -x -L -H ldaps://ldap.site:636/ uid=foo    # check if ldap works
+</code>
+
+===== /etc/ldap/ldap.conf =====
+<code bash>
+BASE            dc=site,dc=domain
+URI             ldap://ldap.site.domain
+TLS_REQCERT     allow
+</code>

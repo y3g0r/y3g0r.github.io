@@ -1,0 +1,54 @@
+======Exercise 10. Bash: program exit code (return status) ======
+
+Let us say that you want to copy a directory. You may do it by typing **cp -vR /old/dir/path /new/dir/path**. After issuing this command you may want to know how did it go. Was the directory copied? Or some error occurred due to the lack of space in destination directory or something else that did go wrong? 
+
+To understand how it works you must understand how two programs may communicate. Let us start with stating that **bash** is just another program, so generally when you issued aforementioned **cp** command, one program (bash, which is a parent process) called another (cp, which is child process). 
+
+In Linux there is a standard mechanism for getting information from child process to parent process, and this mechanism is called [[http://en.wikipedia.org/wiki/Exit_status|exit status, or return code]]. By using this mechanism a small number is passed from a child process (or callee, in our case this is **cp**) to a parent process (or caller, which is **bash** in our case) when child process finishes its work. When program encounters no errors during execution it returns zero, 0. If some errors did occur, this code is non-zero. That simple. In Bash this exit code is saved into **?** environment variable, which as you know now can be accessed as **$?**. 
+
+Let me reiterate what I said once more, now with outlines:
+<code>
+Bash waits for you input
+Bash parses your input
+Bash starts a program for you and waits for this program to exit
+    Program starts
+    Program does what you told it
+    Program generates the exit code
+    Program exits and returns this exit code to Bash
+Bash sets this exit code to the variable ?
+</code>
+
+Now you will learn how to print out program exit status.
+
+===== Do this =====
+
+<code 1 bash>
+ls
+echo $?
+ls /no/such/dir
+echo $?
+</code>
+
+====== What you should see ======
+
+<code bash>
+user1@vm1:~$ ls
+hello.txt  ls.out
+user1@vm1:~$ echo $?
+0
+user1@vm1:~$ ls /no/such/dir
+ls: cannot access /no/such/dir: No such file or directory
+user1@vm1:~$ echo $?
+2
+user1@vm1:~$
+</code>
+
+===== Explanation =====
+  - Prints out a directory, successfully.
+  - Prints out **ls** exit code, this is **0** which means that **ls** encountered no errors.
+  - Tries to print out nonexistent directory, failing in the process of course.
+  - Prints out **ls /no/such/dir** exit code, which is indeed non-zero.
+
+====== Extra credit ======
+
+  - Read //Exit status// section of **man ls**.

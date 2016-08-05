@@ -1,0 +1,15 @@
+HTTrack3.48-1+libhtsjava.so.2 launched on Sat, 11 Apr 2015 14:28:10 at https://nixsrv.com/llthw
+(httrack https://nixsrv.com/llthw )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+14:29:48	Warning: 	Link https://nixsrv.com/llthw?do=index not scanned (follow robots meta tag)
+14:35:40	Warning: 	Link https://nixsrv.com/start?do=index not scanned (follow robots meta tag)
+14:35:41	Warning: 	Moved Temporarily for nixsrv.com/robots.txt
+14:35:41	Warning: 	Redirected link is identical because of 'URL Hack' option: nixsrv.com/robots.txt and https://nixsrv.com/robots.txt
+14:35:41	Warning: 	Warning moved treated for nixsrv.com/robots.txt (real one is https://nixsrv.com/robots.txt)
+14:35:41	Warning: 	Link nixsrv.com/?do=recent&id=start&show_changes=pages not scanned (follow robots meta tag)
+14:38:50	Warning: 	Link https://nixsrv.com/llthw/ex0?do=index not scanned (follow robots meta tag)

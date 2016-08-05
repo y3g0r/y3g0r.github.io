@@ -1,0 +1,171 @@
+<code ruby>
+#check syntax
+    ruby -c my_cookbook_file.rb
+# This is a comment.
+#logic
+    !!true          # => true
+    !!false         # => false
+    !!nil           # => false (when pressed, nil is false)
+    !!0             # => true (zero is NOT false).
+#arrays
+    x = ["a", "b", "c"]   # => ["a", "b", "c"]
+    x[0]                  # => "a" (zero is the first index)
+    x.first               # => "a" (see?)
+    x.last                # => "c"
+    x + ["d"]             # => ["a", "b", "c", "d"]
+    x                     # => ["a", "b", "c"] ( x is unchanged)
+    x = x + ["d"]         # => ["a", "b", "c", "d"]
+    x                     # => ["a", "b", "c", "d"]
+#whitespace arrays
+    if %w{debian ubuntu}.include?(node["platform"])
+    # do debian/ubuntu things with the Ruby array %w{} shortcut
+#hashes
+    h = {
+        "first_name" => "Bob",
+        "last_name"  => "Jones"
+    }
+    h.keys              # => ["first_name", "last_name"]
+    h["first_name"]     # => "Bob"
+    h["last_name"]      # => "Jones"
+    h["age"] = 23
+    h.keys              # => ["first_name", "age", "last_name"]
+    h.values            # => ["Jones", "Bob", 23]
+#statements
+    if false  # this won't happen
+    elsif nil # this won't either
+    else      # code here will run though
+    end
+    x = "dog"
+    case x
+    when "fish"
+        # this won't happen
+    when "dog", "cat", "monkey"
+        # this will run
+    else
+        # the else is an optional catch-all
+    end
+#case
+    case node["platform"]
+    when "debian", "ubuntu"
+        # do debian/ubuntu things
+    when "redhat", "centos", "fedora"
+        # do redhat/centos/fedora things
+    end
+    #For example, using a case statement with the platform_family node attribute:
+        case node["platform_family"]
+        when "debian"
+            # do things on debian-ish platforms (debian, ubuntu, linuxmint)
+        when "rhel"
+            # do things on RHEL platforms (redhat, centos, scientific, etc)
+        end
+#Call a Method
+    #Call a method on something with .method_name():
+        x = "My String"
+        x.split(" ")            # => ["My", "String"]
+        x.split(" ").join(", ") # => "My, String"
+        Define a Method
+        Define a method (or a function, if you like):
+        #
+        def do_something_useless( first_argument, second_argument)
+          puts "You gave me #{first_argument} and #{second_argument}"
+        end
+        do_something_useless( "apple", "banana")
+        # => "You gave me apple and banana"
+        do_something_useless 1, 2
+        # => "You gave me 1 and 2"
+        # see how the parens are optional if there's no confusion about what to do
+#Ruby Class
+    #Use the Ruby File class in a recipe. Because Chef has the file resource, use ::File to use the Ruby File class. For example:
+        execute 'apt-get-update' do
+          command 'apt-get update'
+          ignore_failure true
+          only_if { apt_installed? }
+          not_if { ::File.exist?('/var/lib/apt/periodic/update-success-stamp') }
+        end
+#Include a Class
+    #Use :include to include another Ruby class. For example:
+        ::Chef::Recipe.send(:include, Opscode::OpenSSL::Password)
+        #In non-Chef Ruby, the syntax is include (without the : prefix), but without the : prefix the chef-client will try to find a provider named 
+        #include. Using the : prefix tells the chef-client to look for the specified class that follows.
+    #Include a Parameter
+        #The include? method can be used to ensure that a specific parameter is included before an action is taken. For example, 
+            #using the include? method to find a specific parameter:
+            if ["debian", "ubuntu"].include?(node["platform"])
+              # do debian/ubuntu things
+            end
+            #or:
+            if %w{rhel}.include?(node["platform_family"])
+              # do RHEL things
+            end
+    #Patterns
+        https://docs.chef.io/just_enough_ruby_for_chef.html
+    #Naming
+        #Name things uniformly for their system and component. For example:
+            attributes: node['foo']['bar']
+            recipe: foo::bar
+            role: foo-bar
+            directories: foo/bar (if specific to component), foo (if not). For example: /var/log/foo/bar.
+        #Name attributes after the recipe in which they are primarily used. e.g. 
+            node['postgresql']['server'].
+    #Default Recipe
+        Don’t use the default recipe (leave it blank). Instead, create recipes called server or client (or other).
+    #Log Entries
+        #Chef::Log extends Mixlib::Log and will print log entries to the default logger that is configured for the machine 
+            #on which the chef-client is running.
+        #Example
+            begin
+              aws = Chef::DataBagItem.load(:aws, :main)
+              Chef::Log.info("Loaded AWS information from DataBagItem aws[#{aws['id']}]")
+            rescue
+              Chef::Log.fatal("Could not find the 'main' item in the 'aws' data bag")
+              raise
+            end
+#Parameter Order
+    #Follow this order for information in each resource declaration:
+        #Source
+        #Cookbook
+        #Resource ownership
+        #Permissions
+        #Notifications
+        #Action
+    #For example:
+        template '/tmp/foobar.txt' do
+            source 'foobar.txt.erb'
+            owner  'someuser'
+            group  'somegroup'
+            mode   00644
+            variables(
+                :foo => 'bar'
+            )
+            notifies :reload, 'service[whatever]'
+            action :create
+        end
+#File Modes
+    #Always specify all five digits of the file mode, and not as a string.
+    #Right:
+        mode 00644
+    #Wrong:
+        mode "644"
+#Always Specify Action
+    #A resource declaration SHOULD specify the action to be taken.
+    #Right:
+        package 'monit' do
+            action :install
+        end
+    #Wrong:
+        #package 'monit'
+#Symbols_or_strings
+    #Right:
+        default['foo']['bar'] = 'baz'
+    #Wrong:
+        default[:foo][:bar] = 'baz'
+#Shelling out
+    #Always use mixlib-shellout to shell out. Never use backticks, Process.spawn, popen4, or anything else!
+        mixlib-shellout
+#Constructs to Avoid
+    node.set / normal_attributes
+    node.set_unless
+    if node.run_list.include?('foo')
+    node['foo']['bar']
+    node.set['foo']['bar']
+</code>

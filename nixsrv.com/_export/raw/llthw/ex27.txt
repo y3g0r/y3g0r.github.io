@@ -1,0 +1,447 @@
+
+====== Exercise 27. Networking: secure shell, ssh, sshd, scp ======
+
+You may already know that [[http://en.wikipedia.org/wiki/Secure_Shell|SSH]] is a network protocol which allows you to login into **vm1** over the network. Let us look into in in some detail.
+
+> Secure Shell (SSH) is a network protocol for secure data communication, remote shell services or command execution and other secure network services between two networked computers that it connects via a secure channel over an insecure network: a server and a client (running SSH server and SSH client programs, respectively). The protocol specification distinguishes two major versions that are referred to as SSH-1 and SSH-2.
+
+> The best-known application of the protocol is for access to shell accounts on Unix-like operating systems. It was designed as a replacement for Telnet and other insecure remote shell protocols such as the Berkeley rsh and rexec protocols, which send information, notably passwords, in plaintext, rendering them susceptible to interception and disclosure using packet analysis. The encryption used by SSH is intended to provide confidentiality and integrity of data over an unsecured network, such as the Internet.
+
+The important SSH programs, concepts and configuration files:
+  - **[[http://en.wikipedia.org/wiki/OpenSSH|OpenSSH]]** — open source ssh programs implementation.
+  - **ssh** — the client program which allows you to connect to ssh server. Putty is such client program for example.
+  - **sshd** — the server program which allows you to connect to it with **ssh**.
+  - **/etc/ssh/ssh_config** — default client program configuration file.
+  - **/etc/ssh/sshd_config** — default server program configuration file.
+  - **[[http://en.wikipedia.org/wiki/Public-key_cryptography|Public-key cryptography]]** — a cryptographic system requiring two separate keys, one of which is secret and one of which is public. Although different, the two parts of the key pair are mathematically linked. One key locks or encrypts the plaintext, and the other unlocks or decrypts the cyphertext. Neither key can perform both functions. One of these keys is published or public and the other is kept private.
+  - **[[http://en.wikipedia.org/wiki/Secure_Shell#Definition|SSH keys]]** — SSH uses public-key cryptography to authenticate the remote computer and allow it to authenticate the user, if necessary. Anyone can produce a matching pair of different key—s (public and private). The public key is placed on all computers that must allow access to the owner of the matching private key (the owner keeps the private key secret). While authentication is based on the private key, the key itself is never transferred through the network during authentication.
+  - **/etc/ssh/moduli** — prime numbers and generators for use by sshd(8) in the Diffie-Hellman Group Exchange key exchange method.
+  - **/etc/ssh/ssh_host_dsa_key, /etc/ssh/ssh_host_rsa_key** — private host RSA and DSA keys.
+  - **/etc/ssh/ssh_host_dsa_key.pub, /etc/ssh/ssh_host_rsa_key.pub**  — public host RSA and DSA keys.
+
+SSH protocol is so important, so widely used and has so many capabilities, that some understanding of its workings is mandatory. This is some of its uses:
+  - **scp** — file transfer over ssh.
+  - **sftp** — ftp-like protocol for managing remote files.
+  - **sshfs** — remote filesystem mounting over ssh.
+  - **ssh tunnelling** — a method to transfer almost any data over secure connection. This is so important because it can be used as a foundation for construction of protected systems, among many its other uses.
+
+To get some understanding of this protocol let us see what happens during ssh session. To this we will start with examining the annotated output of connecting from **vm1** to **vm1** (yes, it can be done, and it is perfectly valid to do). The outline:
+<code>
+YOU
+    Type ssh vm1
+    Control is now passed to SSH client
+SSH client 
+    Enters plaintext phase
+        Reads configuration
+        Negotiats protocol with SSH server
+    Enters SSH-transport phase
+        Negotiates with SSH server
+            Data encryption chiphers
+            Data integrity algorithms
+            Data compression algorithms
+            Start key exchange using Diffie-Hellman algorithm
+            Resulting shared key is used to establish secured connection
+    Enters SSH-userauth phase
+    Asks you to enter password
+    Control is now passed to you
+YOU
+    Enter you password
+    Control is now passed to SSH client
+SSH client
+    Authenticates you on SSH server
+    Enters SSH-connection phase
+    Allocates pseudo teminal for YOU
+    Starts a shell for YOU
+    Control is now passed to YOU
+YOU
+    Do something u(n)useful on vm1
+    Close shell
+    Control is now passed to ssh client
+SSH client
+    Closes pseudo terminal
+    Closes connection
+</code>
+
+Now read this:
+  - [[http://www.linuxjournal.com/article/9566|The OpenSSH Protocol under the Hood]].
+  - [[http://www.cs.ust.hk/faculty/cding/COMP581/SLIDES/slide24.pdf SSH - Secure SHell presentation]]. 
+
+And examine the real output of ssh session:
+<code bash>
+user1@vm1:~$ ssh -vv vm1
+
+Protocol version selection, plaintext
+-------------------------------------
+
+OpenSSH_5.5p1 Debian-6+squeeze2, OpenSSL 0.9.8o 01 Jun 2010
+# Speaks for itself, I will mark such entries with -- below
+debug1: Reading configuration data /etc/ssh/ssh_config
+# Applying default options for all hosts. Additional options for each host may be 
+# specified in the configuration file
+debug1: Applying options for *
+debug2: ssh_connect: needpriv 0
+debug1: Connecting to vm1 [127.0.1.1] port 22.
+debug1: Connection established.
+debug1: identity file /home/user1/.ssh/id_rsa type -1      # no such files
+debug1: identity file /home/user1/.ssh/id_rsa-cert type -1
+debug1: identity file /home/user1/.ssh/id_dsa type -1
+debug1: identity file /home/user1/.ssh/id_dsa-cert type -1
+debug1: Remote protocol version 2.0, remote software version OpenSSH_5.5p1 Debian-6+squeeze2
+debug1: match: OpenSSH_5.5p1 Debian-6+squeeze2 pat OpenSSH*
+debug1: Enabling compatibility mode for protocol 2.0
+debug1: Local version string SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2
+debug2: fd 3 setting O_NONBLOCK
+
+SSH-transport, binary packet protocol
+-------------------------------------
+
+debug1: SSH2_MSG_KEXINIT sent
+debug1: SSH2_MSG_KEXINIT received
+# Key exchange algorithms
+debug2: kex_parse_kexinit: diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
+# SSH host key types
+debug2: kex_parse_kexinit: ssh-rsa-cert-v00@openssh.com,ssh-dss-cert-v00@openssh.com,ssh-rsa,ssh-dss
+# Data encryption ciphers
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc@lysator.liu.se
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc@lysator.liu.se
+# Data integrity algorithms
+debug2: kex_parse_kexinit: hmac-md5,hmac-sha1,umac-64@openssh.com,hmac-ripemd160,hmac-ripemd160@openssh.com,hmac-sha1-96,hmac-md5-96
+debug2: kex_parse_kexinit: hmac-md5,hmac-sha1,umac-64@openssh.com,hmac-ripemd160,hmac-ripemd160@openssh.com,hmac-sha1-96,hmac-md5-96
+# Data compression algorithms
+debug2: kex_parse_kexinit: none,zlib@openssh.com,zlib
+debug2: kex_parse_kexinit: none,zlib@openssh.com,zlib
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit: first_kex_follows 
+debug2: kex_parse_kexinit: reserved 0
+# Messages back from server
+debug2: kex_parse_kexinit: diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
+debug2: kex_parse_kexinit: ssh-rsa,ssh-dss
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc@lysator.liu.se
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc@lysator.liu.se
+debug2: kex_parse_kexinit: hmac-md5,hmac-sha1,umac-64@openssh.com,hmac-ripemd160,hmac-ripemd160@openssh.com,hmac-sha1-96,hmac-md5-96
+debug2: kex_parse_kexinit: hmac-md5,hmac-sha1,umac-64@openssh.com,hmac-ripemd160,hmac-ripemd160@openssh.com,hmac-sha1-96,hmac-md5-96
+debug2: kex_parse_kexinit: none,zlib@openssh.com
+debug2: kex_parse_kexinit: none,zlib@openssh.com
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit: first_kex_follows 0
+debug2: kex_parse_kexinit: reserved 0
+# Message authentication code setup
+debug2: mac_setup: found hmac-md5
+debug1: kex: server->client aes128-ctr hmac-md5 none
+debug2: mac_setup: found hmac-md5
+debug1: kex: client->server aes128-ctr hmac-md5 none
+# Key exchange
+debug1: SSH2_MSG_KEX_DH_GEX_REQUEST(1024<1024<8192) sent
+debug1: SSH2_MSG_KEX_DH_GEX_REQUEST(1024<1024<8192) sent
+debug1: expecting SSH2_MSG_KEX_DH_GEX_GROUP
+debug2: dh_gen_key: priv key bits set: 135/256
+debug2: bits set: 498/1024
+debug1: SSH2_MSG_KEX_DH_GEX_INIT sent
+debug1: expecting SSH2_MSG_KEX_DH_GEX_REPLY
+# Server authentication. vm1 host key is not known because it is our first connection
+debug2: no key of type 0 for host vm1
+debug2: no key of type 2 for host vm1
+# Confirmation of host key acceptance
+The authenticity of host 'vm1 '(127.0.1.1)' can't be established.
+RSA key fingerprint is b6:06:92:5e:04:49:d9:e8:57:90:61:1b:16:87:bb:09.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'vm1' (RSA) to the list of known hosts.
+# Key is added to /home/user1/.ssh/known_hosts and checked
+debug2: bits set: 499/1024
+debug1: ssh_rsa_verify: signature correct
+# Based on shared master key, data encryption key and data integrity key are derived
+debug2: kex_derive_keys
+debug2: set_newkeys: mode 1
+# Information about this is sent to server
+debug1: SSH2_MSG_NEWKEYS sent
+debug1: expecting SSH2_MSG_NEWKEYS
+debug2: set_newkeys: mode 0
+debug1: SSH2_MSG_NEWKEYS received
+# IP roaming not enabled? Not sure about this. 
+debug1: Roaming not allowed by server
+
+SSH-userauth
+------------
+
+debug1: SSH2_MSG_SERVICE_REQUEST sent
+debug2: service_accept: ssh-userauth
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug2: key: /home/user1/.ssh/id_rsa ((nil))
+debug2: key: /home/user1/.ssh/id_dsa ((nil))
+debug1: Authentications that can continue: publickey,password
+debug1: Next authentication method: publickey
+debug1: Trying private key: /home/user1/.ssh/id_rsa
+debug1: Trying private key: /home/user1/.ssh/id_dsa
+debug2: we did not send a packet, disable method
+debug1: Next authentication method: password
+user1@vm1''s password:
+debug2: we sent a password packet, wait for reply
+debug1: Authentication succeeded (password).
+
+SSH-connection
+--------------
+
+debug1: channel 0: new [client-session]
+debug2: channel 0: send open
+# Disable SSH mutiplexing. 
+# More info: http://www.linuxjournal.com/content/speed-multiple-ssh-connections-same-server
+debug1: Requesting no-more-sessions@openssh.com
+debug1: Entering interactive session.
+debug2: callback start
+debug2: client_session2_setup: id 0
+debug2: channel 0: request pty-req confirm 1
+# Sending environment variables
+debug1: Sending environment.
+debug1: Sending env LANG = en_US.UTF-8
+debug2: channel 0: request env confirm 0
+debug2: channel 0: request shell confirm 1
+# Set TCP_NODELAY flag: http://en.wikipedia.org/wiki/Nagle%27s_algorithm
+debug2: fd 3 setting TCP_NODELAY
+debug2: callback done
+# Connection opened
+debug2: channel 0: open confirm rwindow 0 rmax 32768
+debug2: channel_input_status_confirm: type 99 id 0
+# Pseudo terminal allocation
+debug2: PTY allocation request accepted on channel 0
+debug2: channel 0: rcvd adjust 2097152
+debug2: channel_input_status_confirm: type 99 id 0
+# Shell is started
+debug2: shell request accepted on channel 0
+# Loggin in is completed
+Linux vm1 2.6.32-5-amd64 #1 SMP Sun May 6 04:00:17 UTC 2012 x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+You have mail.
+Last login: Thu Jul 19 05:14:40 2012 from 10.0.2.2
+user1@vm1:~$ debug2: client_check_window_change: changed
+debug2: channel 0: request window-change confirm 0
+user1@vm1:~$ debug2: client_check_window_change: changed
+debug2: channel 0: request window-change confirm 0
+user1@vm1:~$ logout
+
+Ending ssh connection
+---------------------
+
+debug2: channel 0: rcvd eof   # end of file
+debug2: channel 0: output open -> drain
+debug2: channel 0: obuf empty
+debug2: channel 0: close_write
+debug2: channel 0: output drain -> closed
+debug1: client_input_channel_req: channel 0 rtype exit-status reply 0
+# signalling that channels are half-closed for writing, through a channel protocol extension
+# notification "eow@openssh.com" http://www.openssh.com/txt/release-5.1
+debug1: client_input_channel_req: channel 0 rtype eow@openssh.com reply 0
+debug2: channel 0: rcvd eow
+# Ending connection
+debug2: channel 0: close_read
+debug2: channel 0: input open -> closed
+debug2: channel 0: rcvd close
+debug2: channel 0: almost dead
+debug2: channel 0: gc: notify user
+debug2: channel 0: gc: user detached
+debug2: channel 0: send close
+debug2: channel 0: is dead
+debug2: channel 0: garbage collecting
+debug1: channel 0: free: client-session, nchannels 1
+Connection to vm1 closed.
+Transferred: sent 1928, received 2632 bytes, in 93.2 seconds
+Bytes per second: sent 20.7, received 28.2
+debug1: Exit status 0
+user1@vm1:~$
+</code>
+
+Now you will learn how to start **sshd** in debug mode, set up public key authentication and copy files using **scp**.
+===== Do this =====
+<code bash 1>
+mkdir -v ssh_test
+cd ssh_test
+cp -v /etc/ssh/sshd_config .
+sed -i'.bak' 's/^Port 22$/Port 1024/' sshd_config
+sed -i 's/^HostKey \/etc\/ssh\/ssh_host_rsa_key$/Hostkey \/home\/user1\/ssh_test\/ssh_host_rsa_key/' sshd_config
+sed -i 's/^HostKey \/etc\/ssh\/ssh_host_dsa_key$/Hostkey \/home\/user1\/ssh_test\/ssh_host_dsa_key/' sshd_config
+diff sshd_config.bak sshd_config
+ssh-keygen -b 4096 -t rsa -N '' -v -h -f ssh_host_rsa_key
+ssh-keygen -b 1024 -t dsa -N '' -v -h -f ssh_host_dsa_key
+ssh-keygen -b 4096 -t rsa -N '' -v  -f ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
+/usr/sbin/sshd -Ddf sshd_config > sshd.out 2>&1 &
+ssh-keyscan -H vm1 127.0.0.1 >> ~/.ssh/known_hosts
+/usr/sbin/sshd -Ddf sshd_config >> sshd.out 2>&1 &
+ssh vm1 -v -p 1024 2>ssh.out
+ps au --forest
+logout
+/usr/sbin/sshd -Ddf sshd_config >> sshd.out 2>&1 &
+scp -v -P 1024 vm1:.bashrc . 2>scp.out
+</code>
+
+====== What you should see ======
+<code bash>
+user1@vm1:~$ mkdir -v ssh_test
+mkdir: created directory 'ssh_test'
+user1@vm1:~$ cd ssh_test
+user1@vm1:~/ssh_test$ cp -v /etc/ssh/sshd_config .
+'/etc/ssh/sshd_config' -> './sshd_config'
+user1@vm1:~/ssh_test$ sed -i'.bak' 's/^Port 22$/Port 1024/' sshd_config
+user1@vm1:~/ssh_test$ sed -i 's/^HostKey \/etc\/ssh\/ssh_host_rsa_key$/Hostkey \/home\/user1\/ssh_test\/ssh_host_rsa_key/' sshd_config
+user1@vm1:~/ssh_test$ sed -i 's/^HostKey \/etc\/ssh\/ssh_host_dsa_key$/Hostkey \/home\/user1\/ssh_test\/ssh_host_dsa_key/' sshd_config
+user1@vm1:~/ssh_test$ diff sshd_config.bak sshd_config
+5c5
+< Port 22
+---
+> Port 1024
+11,12c11,12
+< HostKey /etc/ssh/ssh_host_rsa_key
+< HostKey /etc/ssh/ssh_host_dsa_key
+---
+> Hostkey /home/user1/ssh_test/ssh_host_rsa_key
+> Hostkey /home/user1/ssh_test/ssh_host_dsa_key
+user1@vm1:~/ssh_test$ ssh-keygen -b 4096 -t rsa -N '' -v -h -f ssh_host_rsa_key
+Generating public/private rsa key pair.
+Your identification has been saved in ssh_host_rsa_key.
+Your public key has been saved in ssh_host_rsa_key.pub.
+The key fingerprint is:
+8c:0a:8d:ae:c7:34:e6:29:9c:c2:14:29:b8:d9:1d:34 user1@vm1
+'The key's randomart image is:
++--[ RSA 4096]----+
+|                 |
+|    E            |
+|. .. .           |
+|oo o.  o         |
+|.++.... S        |
+|oo=...           |
+|+=oo.            |
+|o==              |
+|oo               |
++-----------------+
+user1@vm1:~/ssh_test$ ssh-keygen -b 1024 -t dsa -N '' -v -h -f ssh_host_dsa_key
+Generating public/private dsa key pair.
+Your identification has been saved in ssh_host_dsa_key.
+Your public key has been saved in ssh_host_dsa_key.pub.
+The key fingerprint is:
+cd:6b:2a:a2:ba:80:65:71:85:ef:2e:6a:c0:a7:d9:aa user1@vm1
+'The key's randomart image is:
++--[ DSA 1024]----+
+|     ..          |
+|    ..           |
+|  . ..           |
+|   o  .  o       |
+|. o  .  S o      |
+|o+ .  .    .     |
+|o.=  .    o      |
+|.o..o o  o       |
+|E=+o o ..        |
++-----------------+
+user1@vm1:~/ssh_test$ ssh-keygen -b 4096  -t rsa -N '' -v  -f ~/.ssh/id_rsa
+Generating public/private rsa key pair.
+Your identification has been saved in /home/user1/.ssh/id_rsa.
+Your public key has been saved in /home/user1/.ssh/id_rsa.pub.
+The key fingerprint is:
+50:65:18:61:3f:41:36:07:4f:40:36:a7:4b:6d:64:28 user1@vm1
+'The key's randomart image is:
++--[ RSA 4096]----+
+|        =B&+*    |
+|       oE=.&     |
+|      .  .= +    |
+|       . . +     |
+|        S .      |
+|                 |
+|                 |
+|                 |
+|                 |
++-----------------+
+user1@vm1:~/ssh_test$ cat ~/.ssh/id_rsa.pub > ~/.ssh/authorized_keys
+user1@vm1:~/ssh_test$ /usr/sbin/sshd -Ddf sshd_config > sshd.out 2>&1 &
+[2] 26896
+user1@vm1:~/ssh_test$ ssh-keyscan -H vm1 127.0.0.1 >> ~/.ssh/known_hosts
+# 127.0.0.1 SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2
+# vm1 SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2
+[2]+  Exit 255                /usr/sbin/sshd -Ddf sshd_config > sshd.out 2>&1
+user1@vm1:~/ssh_test$ /usr/sbin/sshd -Ddf sshd_config >> sshd.out 2>&1 &
+[1] 26957
+user1@vm1:~/ssh_test$ ssh vm1 -v -p 1024 2>ssh.out
+Linux vm1 2.6.32-5-amd64 #1 SMP Sun May 6 04:00:17 UTC 2012 x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+You have mail.
+Last login: Fri Jul 20 09:10:30 2012 from vm1.site
+Environment:
+  LANG=en_US.UTF-8
+  USER=user1
+  LOGNAME=user1
+  HOME=/home/user1
+  PATH=/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/games
+  MAIL=/var/mail/user1
+  SHELL=/bin/bash
+  SSH_CLIENT=127.0.1.1 47456 1024
+  SSH_CONNECTION=127.0.1.1 47456 127.0.1.1 1024
+  SSH_TTY=/dev/pts/0
+  TERM=xterm
+user1@vm1:~$ ps au --forest
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+user1    26224  0.0  1.2  23660  6576 pts/2    Ss   09:09   0:01 -bash
+user1    27020  1.0  0.6  68392  3236 pts/2    S    09:50   0:00  \_ sshd: user1 [priv]
+user1    27025  0.0  0.2  68392  1412 pts/2    S    09:50   0:00  |   \_ sshd: user1@pts/0
+user1    27026  9.0  1.2  23564  6404 pts/0    Ss   09:50   0:00  |       \_ -bash
+user1    27051  0.0  0.2  16308  1060 pts/0    R+   09:50   0:00  |           \_ ps au --forest
+user1    27021  1.1  0.5  38504  2880 pts/2    S+   09:50   0:00  \_ ssh vm1 -v -p 1024
+root      1107  0.0  0.1   5932   620 tty6     Ss+  Jul18   0:00 /sbin/getty 38400 tty6
+root      1106  0.0  0.1   5932   616 tty5     Ss+  Jul18   0:00 /sbin/getty 38400 tty5
+root      1105  0.0  0.1   5932   620 tty4     Ss+  Jul18   0:00 /sbin/getty 38400 tty4
+root      1104  0.0  0.1   5932   620 tty3     Ss+  Jul18   0:00 /sbin/getty 38400 tty3
+root      1103  0.0  0.1   5932   616 tty2     Ss+  Jul18   0:00 /sbin/getty 38400 tty2
+root      1102  0.0  0.1   5932   616 tty1     Ss+  Jul18   0:00 /sbin/getty 38400 tty1
+user1@vm1:~$ logout
+user1@vm1:~/ssh_test$
+[1]+  Exit 255                /usr/sbin/sshd -Ddf sshd_config > sshd.out 2>&1
+user1@vm1:~/ssh_test$ /usr/sbin/sshd -Ddf sshd_config >> sshd.out 2>&1 &
+[1] 27067
+user1@vm1:~/ssh_test$ scp -v -P 1024 vm1:.bashrc . 2>scp.out
+Environment:
+  LANG=en_US.UTF-8
+  USER=user1
+  LOGNAME=user1
+  HOME=/home/user1
+  PATH=/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/games
+  MAIL=/var/mail/user1
+  SHELL=/bin/bash
+  SSH_CLIENT=127.0.1.1 47459 1024
+  SSH_CONNECTION=127.0.1.1 47459 127.0.1.1 1024
+.bashrc                                                                                                                     100% 3184     3.1KB/s   00:00
+[1]+  Exit 255                /usr/sbin/sshd -Ddf sshd_config >> sshd.out 2>&1
+</code>
+===== Explanation ======
+  - Creates **/home/user1/ssh_test** directory. 
+  - Make it current working directory. 
+  - Copies **sshd_config** to this directory. 
+  - Changes sshd listen port from 22 to 1024, making copy named **sshd_config.bak** in the process. 
+  - Replaces RSA host key localtion. 
+  - Replaces DSA host key localtion. 
+  - Shows difference between old and new versions of **sshd_config**. 
+  - Generates new 4096-bit RSA host key pair with empty pass-phrase, saving it to **/home/user1/ssh_test/ssh_host_rsa_key** and **/home/user1/ssh_test/ssh_host_rsa_key.pub**. 
+  - The same, but for DSA key. 
+  - Generates new authentication key pair, saving it to **/home/user1/.ssh/id_rsa** and **/home/user1/.ssh/id_rsa.pub**. 
+  - Copies **id_rsa.pub** to **/home/user1/.ssh/authorized_keys** to allow passwordless authentication. 
+  - Starts new SSH server on port 1024 in debug mode, saving all output to **sshd.log**. 
+  - Extracts host authentication key for SSH client and puts it to **/home/user1/.ssh/known_hosts**. 
+  - Starts new SSH server on port 1024 in debug mode, appending all output to **sshd.log**. This is because in debug mode SSH server servers only only one connection. 
+  - Connects to this server using ssh client. 
+  - Prints out current running processes in tree format. You are able to see that you are working in shell **bash** started by **sshd** serving your connection which in turn is started by sshd you started yourself several lines before. 
+  - Logs out from ssh session. 
+  - Starts SSH server once more. 
+  - Copies file **.bashrc** from your home directory to your current directory.
+====== Extra credit ======
+  - Watch this videos explaining how encryption works: http://www.youtube.com/watch?v=3QnD2c4Xovk
+  - Read this: http://docstore.mik.ua/orelly/networking_2ndEd/ssh/ch03_04.htm
+  - Read debug output found in files **ssh.out**, **scp.out** and **sshd.out**. Explain to yourself what is going on.

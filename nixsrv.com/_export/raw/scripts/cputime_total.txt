@@ -1,0 +1,41 @@
+====== Simple script to sum CPUTIME of group of processes ======
+
+Not that it can't be done in 1 line of awk...
+
+
+<code perl>
+#!/usr/bin/perl
+
+@output = `top -b -n 1`;
+#print $output;
+#print <STDIN>;
+
+print "CPUTIME total for proccesess: ";
+foreach $argnum (0 .. $#ARGV) {
+    print "$ARGV[$argnum] ";
+}
+print "\nPROCESS      TOTAL, sec\n";
+
+sub total() {
+    $time_sum = 0;
+    foreach (@grep_proc)
+    {
+        $line = $_;
+        $line =~ s!^\s+!!;
+        @field = split /\s+/, $line; 
+        @time_field = split /[:]/, $field[10];
+        $time_secs = $time_field[0]*60+$time_field[1];
+        $time_sum += $time_secs;
+        #print @field[11] . " " . @field[10] . " " . $time_secs . "\n";
+    }
+    printf ("%-12.10s %d \n", @field[11], $time_sum);
+}
+
+foreach $argnum (0 .. $#ARGV) {
+    #print $_ . "\n"; 
+    $proc = $ARGV[$argnum];
+    @grep_proc = grep { /$proc/ } @output;
+    #print @grep_proc; 
+    total();
+}
+</code>

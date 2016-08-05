@@ -1,0 +1,477 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex16 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:28 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex16 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex16"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex16decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex16.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex16.txt"/>
+<link rel="canonical" href="ex16.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex16","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_16_processesworking_with_proccesses_ps_kill">Exercise 16. Processes: working with proccesses, ps, kill</h1>
+<div class="level1">
+<p>
+A program in its simplest is a file on you hard disk which contain instructions for your central processor to execute. When you start it, it is copied to memory and control is passed to it. Executed program is called <em>a process</em>. In multitasking operating systems like Linux you may start many instances of a program, so may start many processes from one program which all will be running (executing) at the same time.
+</p>
+<p>
+This is an outline of what happens when you running <strong>ls</strong>:
+</p>
+<pre class="code">
+YOU
+   Type in ls and its arguments into your terminal emulator and press &#60;ENTER&#62;
+   Control is now passed to Bash
+Bash
+   Locates ls on your hard disk
+   Forks itself to Bash clone, that is clones itself to the new location in memory
+   Becomes parent process to Bash clone
+   Control is now passed to the Bash clone
+Bash clone
+   Becomes child process to Bash
+   Preserves parent Bash process environment
+   Knows that it is it a clone and reacts accordingly
+       Overwrites itself with ls
+       Control is now passed to ls
+ls
+   Prints out a directory listing for you or returns an error
+   Returns exit code
+   Control is now passed to Bash
+Bash
+   Assigns ls exit code to ? variable
+   Waits for your input
+YOU
+   Are able to type something once again</pre>
+<p>
+Some process are not interactive like <strong>ls</strong>, but just work quietly in the background, like ssh. Processes have number of possible states and there is a number of operations which you may perform on them by means of the signal mechanism.
+</p>
+<p>
+Firstly let us talk about states. If you type <strong>ps ax –forest</strong> it will print out all processes and you will get something like this (some hardware-related processes skipped):
+</p>
+<pre class="bash code bash">user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>etc$ <span class="kw2">ps</span> <span class="re5">--forest</span> ax
+  PID TTY      STAT   TIME COMMAND
+    <span class="nu0">1</span> ?        Ss     <span class="nu0">0</span>:<span class="nu0">16</span> init <span class="br0">&#91;</span><span class="nu0">2</span><span class="br0">&#93;</span>
+  <span class="nu0">297</span> ?        S<span class="sy0">&lt;</span>s    <span class="nu0">0</span>:00 udevd <span class="re5">--daemon</span>
+  <span class="nu0">392</span> ?        S<span class="sy0">&lt;</span>     <span class="nu0">0</span>:00  \_ udevd <span class="re5">--daemon</span>
+  <span class="nu0">399</span> ?        S<span class="sy0">&lt;</span>     <span class="nu0">0</span>:00  \_ udevd <span class="re5">--daemon</span>
+  <span class="nu0">691</span> ?        Ss     <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>portmap
+  <span class="nu0">703</span> ?        Ss     <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>rpc.statd
+  <span class="nu0">862</span> ?        Sl     <span class="nu0">0</span>:00 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>rsyslogd <span class="re5">-c4</span>
+  <span class="nu0">886</span> ?        Ss     <span class="nu0">0</span>:00 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>atd
+  <span class="nu0">971</span> ?        Ss     <span class="nu0">0</span>:00 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>acpid
+  <span class="nu0">978</span> ?        Ss     <span class="nu0">0</span>:01 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>cron
+ <span class="nu0">1177</span> ?        Ss     <span class="nu0">0</span>:00 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd
+ <span class="nu0">6671</span> ?        Ss     <span class="nu0">0</span>:00  \_ sshd: user1 <span class="br0">&#91;</span>priv<span class="br0">&#93;</span>
+ <span class="nu0">6675</span> ?        S      <span class="nu0">0</span>:00      \_ sshd: user1<span class="sy0">@</span>pts<span class="sy0">/</span><span class="nu0">0</span>
+ <span class="nu0">6676</span> pts<span class="sy0">/</span><span class="nu0">0</span>    Ss     <span class="nu0">0</span>:00          \_ <span class="re5">-bash</span>
+ <span class="nu0">7932</span> pts<span class="sy0">/</span><span class="nu0">0</span>    R+     <span class="nu0">0</span>:00              \_ <span class="kw2">ps</span> <span class="re5">--forest</span> ax
+ <span class="nu0">1191</span> ?        Ss     <span class="nu0">0</span>:00 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>exim4 <span class="re5">-bd</span> <span class="re5">-q30m</span>
+ <span class="nu0">1210</span> tty2     Ss+    <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty2
+ <span class="nu0">1211</span> tty3     Ss+    <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty3
+ <span class="nu0">1212</span> tty4     Ss+    <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty4
+ <span class="nu0">1213</span> tty5     Ss+    <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty5
+ <span class="nu0">1214</span> tty6     Ss+    <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty6
+ <span class="nu0">6216</span> tty1     Ss+    <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty1</pre>
+<p>
+Let us go through this list column py column:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>PID</strong> — process ID. Each process has unique number associated with it, which serves for uniquely identifying it. This means no two processes can ever have the same PID.</div>
+</li>
+<li class="level1"><div class="li"> <strong>TTY</strong> — teletype emulator associated with the process, which allows a process to exchange information with you.</div>
+</li>
+<li class="level1"><div class="li"> <strong>STAT</strong> — current process status. This will be descussed in detail below.</div>
+</li>
+<li class="level1"><div class="li"> <strong>TIME</strong> — this is the amount of time in minutes and seconds this process is executed on CPU.</div>
+</li>
+<li class="level1"><div class="li"> <strong>COMMAND</strong> — this is program name with arguments. Notice how <strong>/usr/sbin/sshd</strong> is parent of <strong>sshd: user1</strong> which in turn is parent of <strong>sshd: user1@pts/0</strong> which in turn is parent of <strong>bash</strong> which in turn is parent of <strong>ps –forest ax</strong>. You need to go deeper!</div>
+</li>
+</ol>
+<p>
+Now let us discuss possible process states, which I took from <em>PROCESS STATE CODES</em> of <strong>man ps</strong>:
+</p>
+<div class="table sectionedit2"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 rightalign"> STATE </th><th class="col1"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 rightalign"> <strong>D</strong> </td><td class="col1"> Uninterruptible sleep (usually IO). Process is busy or hung, and does not respond to signals, for example beacause hard disk had crashed and read operation can not be completed. </td>
+</tr>
+<tr class="row2">
+<td class="col0 rightalign"> <strong>R</strong> </td><td class="col1"> Running or runnable (on run queue). Process is being executed right now. </td>
+</tr>
+<tr class="row3">
+<td class="col0 rightalign"> <strong>S</strong> </td><td class="col1 leftalign"> Interruptible sleep (waiting for an event to complete). For example terminal processes and Bash are often in this state, waiting for you to type in something. </td>
+</tr>
+<tr class="row4">
+<td class="col0 rightalign"> <strong>T</strong> </td><td class="col1"> Stopped, either by a job control signal or because it is being traced. </td>
+</tr>
+<tr class="row5">
+<td class="col0 rightalign"> <strong>W</strong> </td><td class="col1"> paging (not valid since the 2.6.xx kernel, so do not bother about this). </td>
+</tr>
+<tr class="row6">
+<td class="col0 rightalign"> <strong>X</strong> </td><td class="col1"> dead (should never be seen). </td>
+</tr>
+<tr class="row7">
+<td class="col0 rightalign"> <strong>Z</strong> </td><td class="col1"> Defunct (“zombie”) process, terminated but not reaped by its parent. This happens with incorrectly terminated processes, or processes whos pared terminated erroneously. </td>
+</tr>
+<tr class="row8">
+<td class="col0 rightalign"> <strong>&lt;</strong> </td><td class="col1"> high-priority (not nice to other users) </td>
+</tr>
+<tr class="row9">
+<td class="col0 rightalign"> <strong>N</strong> </td><td class="col1"> low-priority (nice to other users) </td>
+</tr>
+<tr class="row10">
+<td class="col0 rightalign"> <strong>L</strong> </td><td class="col1"> has pages locked into memory (for real-time and custom IO) </td>
+</tr>
+<tr class="row11">
+<td class="col0 rightalign"> <strong>s</strong> </td><td class="col1"> is a session leader. Related processes in Linux are treated as a unit, and have shared Session ID (SID). If Process ID (PID) = Session ID (SID), this process will be a Session Leader. </td>
+</tr>
+<tr class="row12">
+<td class="col0 rightalign"> <strong>l</strong> </td><td class="col1"> is multi-threaded (using CLONE_THREAD, like NPTL pthreads do) </td>
+</tr>
+<tr class="row13">
+<td class="col0 rightalign"> <strong>+</strong> </td><td class="col1"> is in the foreground process group. Such procceses are allowed to input and output to the teletype emulator, tty. </td>
+</tr>
+</table></div>
+<p>
+Now let us talk about a way to communicate with all those process. You can do it by sending them signals. Signal may be thought like a way to kick a process in the butt so process will hear you and make what you want it to. This is abbreviated list of possible signals which I took from <em>SIGNALS</em> section of <strong>man kill</strong>:
+</p>
+<div class="table sectionedit3"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 centeralign"> Signal </th><th class="col1"> Num </th><th class="col2 leftalign"> Action </th><th class="col3 centeralign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 centeralign"> <strong>0</strong> </td><td class="col1 leftalign"> 0 </td><td class="col2 leftalign">n/a </td><td class="col3 leftalign"> Exit code indicates if a signal may be sent </td>
+</tr>
+<tr class="row2">
+<td class="col0 centeralign"> <strong>HUP</strong> </td><td class="col1 leftalign"> 1 </td><td class="col2 leftalign">exit </td><td class="col3"> Hangup on controlling terminal or parent process died </td>
+</tr>
+<tr class="row3">
+<td class="col0 centeralign"> <strong>INT</strong> </td><td class="col1 leftalign"> 2 </td><td class="col2 leftalign">exit </td><td class="col3 leftalign"> Interrupt from keyboard </td>
+</tr>
+<tr class="row4">
+<td class="col0 centeralign"> <strong>QUIT</strong> </td><td class="col1 leftalign"> 3 </td><td class="col2 leftalign">core </td><td class="col3 leftalign"> Quit from keyboard </td>
+</tr>
+<tr class="row5">
+<td class="col0 centeralign"> <strong>ILL</strong> </td><td class="col1 leftalign"> 4 </td><td class="col2 leftalign">core </td><td class="col3 leftalign"> Illegal instruction </td>
+</tr>
+<tr class="row6">
+<td class="col0 centeralign"> <strong>TRAP</strong> </td><td class="col1 leftalign"> 5 </td><td class="col2 leftalign">core </td><td class="col3 leftalign"> Trace/breakpoint trap </td>
+</tr>
+<tr class="row7">
+<td class="col0 centeralign"> <strong>ABRT</strong> </td><td class="col1 leftalign"> 6 </td><td class="col2 leftalign">core </td><td class="col3 leftalign"> Abort signal from abort(3) </td>
+</tr>
+<tr class="row8">
+<td class="col0 centeralign"> <strong>FPE</strong> </td><td class="col1 leftalign"> 8 </td><td class="col2 leftalign">core </td><td class="col3 leftalign"> Floating point exception </td>
+</tr>
+<tr class="row9">
+<td class="col0 centeralign"> <strong>KILL</strong> </td><td class="col1 leftalign"> 9 </td><td class="col2 leftalign">exit </td><td class="col3 leftalign"> Non-catchable, non-ignorable kill </td>
+</tr>
+<tr class="row10">
+<td class="col0 centeralign"> <strong>SEGV</strong> </td><td class="col1 leftalign"> 11 </td><td class="col2 leftalign">core </td><td class="col3 leftalign"> Invalid memory reference </td>
+</tr>
+<tr class="row11">
+<td class="col0 centeralign"> <strong>PIPE</strong> </td><td class="col1 leftalign"> 13 </td><td class="col2 leftalign">exit </td><td class="col3 leftalign"> Broken pipe: write to pipe with no readers </td>
+</tr>
+<tr class="row12">
+<td class="col0 centeralign"> <strong>ALRM</strong> </td><td class="col1 leftalign"> 14 </td><td class="col2 leftalign">exit </td><td class="col3 leftalign"> Timer signal from alarm(2) </td>
+</tr>
+<tr class="row13">
+<td class="col0 centeralign"> <strong>TERM</strong> </td><td class="col1 leftalign"> 15 </td><td class="col2 leftalign">exit </td><td class="col3 leftalign"> Terminate process </td>
+</tr>
+</table></div>
+<p>
+Again, do not be intimidated with not understanding, for now you just need to know about <strong>HUP</strong>, <strong>TERM</strong> and <strong>KILL</strong>. There is even a song about <strong>KILL</strong> signal, named <a href="http://www.monzy.com/intro/killdashnine_lyrics.html" class="urlextern" title="http://www.monzy.com/intro/killdashnine_lyrics.html" rel="nofollow">Kill dash nine</a>. Also, notice this <strong>abort(3)</strong> and <strong>alarm(2)</strong> entries? They mean that you may read corresponding man pages by typing <strong>man 3 abort</strong> and <strong>man 2 alarm</strong>.
+</p>
+<p>
+Now you will learn how to list running processes and send signals to them.
+</p>
+</div>
+<h2 class="sectionedit4" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="code">
+<span class="lno"> 1:</span> ps x
+<span class="lno"> 2:</span> ps a
+<span class="lno"> 3:</span> ps ax
+<span class="lno"> 4:</span> ps axue --forest
+<span class="lno"> 5:</span> dd if=/dev/zero of=~/test.img bs=1 count=$((1024*1024*1024)) &#38;
+<span class="lno"> 6:</span> kill -s USR1 $!
+<span class="lno"> 7:</span> &#60;ENTER&#62;
+<span class="lno"> 8:</span> kill -s USR1 $!
+<span class="lno"> 9:</span> &#60;ENTER&#62;
+<span class="lno">10:</span> kill -s TERM $!
+<span class="lno">11:</span> &#60;ENTER&#62;
+</pre>
+</div>
+<h1 class="sectionedit5" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="code">
+user1@vm1:/etc$ ps x
+  PID TTY      STAT   TIME COMMAND
+ 6675 ?        S      0:00 sshd: user1@pts/0
+ 6676 pts/0    Ss     0:00 -bash
+ 8193 pts/0    R+     0:00 ps x
+user1@vm1:/etc$ ps a
+  PID TTY      STAT   TIME COMMAND
+ 1210 tty2     Ss+    0:00 /sbin/getty 38400 tty2
+ 1211 tty3     Ss+    0:00 /sbin/getty 38400 tty3
+ 1212 tty4     Ss+    0:00 /sbin/getty 38400 tty4
+ 1213 tty5     Ss+    0:00 /sbin/getty 38400 tty5
+ 1214 tty6     Ss+    0:00 /sbin/getty 38400 tty6
+ 6216 tty1     Ss+    0:00 /sbin/getty 38400 tty1
+ 6676 pts/0    Ss     0:00 -bash
+ 8194 pts/0    R+     0:00 ps a
+user1@vm1:/etc$ ps ax
+  PID TTY      STAT   TIME COMMAND
+    1 ?        Ss     0:16 init [2]
+--- skipped --- skipped --- skipped ---
+  691 ?        Ss     0:00 /sbin/portmap
+  703 ?        Ss     0:00 /sbin/rpc.statd
+  862 ?        Sl     0:00 /usr/sbin/rsyslogd -c4
+  886 ?        Ss     0:00 /usr/sbin/atd
+  971 ?        Ss     0:00 /usr/sbin/acpid
+  978 ?        Ss     0:01 /usr/sbin/cron
+ 1177 ?        Ss     0:00 /usr/sbin/sshd
+ 1191 ?        Ss     0:00 /usr/sbin/exim4 -bd -q30m
+ 1210 tty2     Ss+    0:00 /sbin/getty 38400 tty2
+ 1211 tty3     Ss+    0:00 /sbin/getty 38400 tty3
+ 1212 tty4     Ss+    0:00 /sbin/getty 38400 tty4
+ 1213 tty5     Ss+    0:00 /sbin/getty 38400 tty5
+ 1214 tty6     Ss+    0:00 /sbin/getty 38400 tty6
+ 6216 tty1     Ss+    0:00 /sbin/getty 38400 tty1
+ 6671 ?        Ss     0:00 sshd: user1 [priv]
+ 6675 ?        S      0:00 sshd: user1@pts/0
+ 6676 pts/0    Ss     0:00 -bash
+ 8198 pts/0    R+     0:00 ps ax
+user1@vm1:/etc$ ps axue --forest
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+--- skipped --- skipped --- skipped ---
+root         1  0.0  0.0   8356   820 ?        Ss   Jun06   0:16 init [2]
+root       297  0.0  0.0  16976  1000 ?        S&#60;s  Jun06   0:00 udevd --daemon
+root       392  0.0  0.0  16872   840 ?        S&#60;   Jun06   0:00  \_ udevd --daemon
+root       399  0.0  0.0  16872   836 ?        S&#60;   Jun06   0:00  \_ udevd --daemon
+daemon     691  0.0  0.0   8096   532 ?        Ss   Jun06   0:00 /sbin/portmap
+statd      703  0.0  0.0  14384   868 ?        Ss   Jun06   0:00 /sbin/rpc.statd
+root       862  0.0  0.1  54296  1664 ?        Sl   Jun06   0:00 /usr/sbin/rsyslogd -c4
+daemon     886  0.0  0.0  18716   436 ?        Ss   Jun06   0:00 /usr/sbin/atd
+root       971  0.0  0.0   3920   644 ?        Ss   Jun06   0:00 /usr/sbin/acpid
+root       978  0.0  0.0  22400   880 ?        Ss   Jun06   0:01 /usr/sbin/cron
+root      1177  0.0  0.1  49176  1136 ?        Ss   Jun06   0:00 /usr/sbin/sshd
+root      6671  0.0  0.3  70496  3284 ?        Ss   Jun26   0:00  \_ sshd: user1 [priv]
+user1     6675  0.0  0.1  70496  1584 ?        S    Jun26   0:00      \_ sshd: user1@pts/0
+user1     6676  0.0  0.6  23644  6536 pts/0    Ss   Jun26   0:00          \_ -bash LANG=en_US.UTF-8 USER=user1 LOGNAME=user1 HOM
+user1     8199  0.0  0.1  16312  1088 pts/0    R+   17:07   0:00              \_ ps axue --forest TERM=screen-bce SHELL=/bin/bas
+101       1191  0.0  0.1  44148  1076 ?        Ss   Jun06   0:00 /usr/sbin/exim4 -bd -q30m
+root      1210  0.0  0.0   5932   616 tty2     Ss+  Jun06   0:00 /sbin/getty 38400 tty2
+root      1211  0.0  0.0   5932   612 tty3     Ss+  Jun06   0:00 /sbin/getty 38400 tty3
+root      1212  0.0  0.0   5932   612 tty4     Ss+  Jun06   0:00 /sbin/getty 38400 tty4
+root      1213  0.0  0.0   5932   612 tty5     Ss+  Jun06   0:00 /sbin/getty 38400 tty5
+root      1214  0.0  0.0   5932   616 tty6     Ss+  Jun06   0:00 /sbin/getty 38400 tty6
+root      6216  0.0  0.0   5932   612 tty1     Ss+  Jun14   0:00 /sbin/getty 38400 tty1
+user1@vm1:/etc$ dd if=/dev/zero of=~/test.img bs=1 count=$((1024*1024*1024)) &#38;
+[1] 8200
+user1@vm1:/etc$ kill -s USR1 $!
+user1@vm1:/etc$ 1455424+0 records in
+1455424+0 records out
+1455424 bytes (1.5 MB) copied, 1.76646 s, 824 kB/s
+
+user1@vm1:/etc$ kill -s USR1 $!
+user1@vm1:/etc$ 3263060+0 records in
+3263060+0 records out
+3263060 bytes (3.3 MB) copied, 3.94237 s, 828 kB/s
+
+user1@vm1:/etc$ kill -s TERM $!
+user1@vm1:/etc$
+[1]+  Terminated              dd if=/dev/zero of=~/test.img bs=1 count=$((1024*1024*1024))
+user1@vm1:/etc$</pre>
+</div>
+<h2 class="sectionedit6" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Prints out those processes owned (started by) you.</div>
+</li>
+<li class="level1"><div class="li"> Prints out only processes associated with a terminal (tty) and those owned (started by) you.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all processes currently running.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all running processes in tree form and include additional information such as associated <em>username</em> and environment where available. Notice that this information is available only for processes owned (started by) you. To view environment information for all process type in <strong>sudo ps axue –forest</strong> instead.</div>
+</li>
+<li class="level1"><div class="li"> Starts creating a zero-filled file (filled with null characters, do not bother for now) and is sent to background by specifying <strong>&amp;</strong> in the end.</div>
+</li>
+<li class="level1"><div class="li"> Queries <strong>dd</strong> for status.</div>
+</li>
+<li class="level1"><div class="li"> Because bash is only able to print out something in response for your input, you need to press <strong>&lt;ENTER&gt;</strong> (issue empty command).</div>
+</li>
+<li class="level1"><div class="li"> Queries <strong>dd</strong> for status again.</div>
+</li>
+<li class="level1"><div class="li"> Again you need to press <strong>&lt;ENTER&gt;</strong> to see the output.</div>
+</li>
+<li class="level1"><div class="li"> Sends <strong>dd</strong> termination signal, so <strong>dd</strong> quits.</div>
+</li>
+<li class="level1"><div class="li"> To see that this indeed had happened you need to press <strong>&lt;ENTER&gt;</strong> once again.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit7" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Read <strong>man ps</strong>, <strong>man kill</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Read <a href="http://www.linux-tutorial.info/modules.php?name=MContent&amp;pageid=84" class="urlextern" title="http://www.linux-tutorial.info/modules.php?name=MContent&amp;pageid=84" rel="nofollow">The Life Cycle of Processes</a> and study this picture <a href="http://www.linux-tutorial.info/Linux_Tutorial/The_Operating_System/The_Kernel/Processes/procflowa.gif" class="urlextern" title="http://www.linux-tutorial.info/Linux_Tutorial/The_Operating_System/The_Kernel/Processes/procflowa.gif" rel="nofollow">Process flow</a>.</div>
+</li>
+<li class="level1"><div class="li"> Print and fill in <a href="ex16/signals.html" class="urlextern" title="http://nixsrv.com/llthw/ex16/signals" rel="nofollow">Signal table</a>. You may use <a href="http://www.kernel.org/doc/man-pages/online/pages/man7/signal.7.html#DESCRIPTION" class="urlextern" title="http://www.kernel.org/doc/man-pages/online/pages/man7/signal.7.html#DESCRIPTION" rel="nofollow">Documentation from kernel.org</a>.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex16.html';
+var disqus_title   = 'Exercise 16. Processes: working with proccesses, ps, kill';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex16.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex16.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex16.txt</bdi> · Last modified: 2013/01/17 16:01 (external edit)<br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerd29d.gif?id=llthw%3Aex16&amp;1428742720" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex16 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:35 GMT -->
+</html>

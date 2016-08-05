@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex29 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:17 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex29 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex29"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex29decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex29.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex29.txt"/>
+<link rel="canonical" href="ex29.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex29","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_29_kernelkernel_messages_dmesg">Exercise 29. Kernel: kernel messages, dmesg</h1>
+<div class="level1">
+<p>
+Well, if you made it this far it is time to talk about <a href="http://en.wikipedia.org/wiki/Kernel_(computing)" class="urlextern" title="http://en.wikipedia.org/wiki/Kernel_(computing)" rel="nofollow">kernel</a>. We will start this talk with Wikipedia definition of an Operating System kernel:
+</p>
+<blockquote><div class="no">
+In computing, the kernel (from German Kern, nucleus, core) is the main component of most computer operating systems; it is a bridge between applications and the actual data processing done at the hardware level. The kernel&#039;s responsibilities include managing the system&#039;s resources (the communication between hardware and software components). Usually as a basic component of an operating system, a kernel can provide the lowest-level abstraction layer for the resources (especially processors and I/O devices) that application software must control to perform its function. It typically makes these facilities available to application processes through inter-process communication mechanisms and system calls.</div></blockquote>
+<p>
+And this is what Wikipedia tells us about <a href="http://en.wikipedia.org/wiki/Linux_kernel#Technical_features" class="urlextern" title="http://en.wikipedia.org/wiki/Linux_kernel#Technical_features" rel="nofollow">Linux Kernel</a> specifically:
+</p>
+<blockquote><div class="no">
+The Linux kernel is the operating system kernel used by the Linux family of Unix-like operating systems. It is one of the most prominent examples of free and open source software. It supports true preemptive multitasking (both in user mode and kernel mode), virtual memory, shared libraries, demand loading, shared copy-on-write executables, memory management, the Internet protocol suite, and threading.</div></blockquote>
+<p>
+Now is a good time to visit corresponding Wikipedia article and spend some time clicking feverishly on all those scary terms which describe technical features Linux Kernel has. After doing so, let us talk about much more mundane subject, which is a way kernel cat tell us something. This happens, for example, if USB-stick is attached to the computer, or network link becomes down, or filesystem mounting is performed. To be able to tell you all this things, kernel uses a mechanism known as <em>display message</em> or <em>driver message</em>, name of which is abbreviated to dmesg.
+</p>
+<p>
+This mechanism is represented by the buffer of fixed size to which kernel writes its messages. On Debian Linux distribution information from this buffer are also copied to <strong>/var/log/dmseg</strong> after system log daemon is started. This is done to preserve this messages which would otherwise be overwritten by new ones.
+</p>
+<p>
+<strong>dmesg</strong> is also name of utility which allows you to view those messages which are currently in kernel buffer, and also change this buffer size.
+</p>
+<p>
+Let me summarize <strong>dmesg</strong>-related files and programs:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>dmesg</strong> — print or control the kernel ring buffer</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var/log/dmseg</strong> — log file in Debian distribution which contains copy of dmesg messages during system boot only, without timestamps.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var/log/kern.log</strong> — log file in Debian distribution which contains copy of all dmesg messages, including timestamps. Notice that this timestamps start ticking after <strong>rsyslog</strong> logging daemon is started, which means that all boot time messages before <strong>rsyslog</strong> is started will have the same timestamp. This file contains <strong>/var/log/dmesg</strong> in itself.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var/log/messages</strong> — log file in Debian distribution which logs all non-debug and non-critical messages. It contains <strong>/var/log/dmesg</strong> in itself.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var/log/syslog</strong> — log file in Debian distribution which logs everything, except auth related messages. It contains all messages which go to <strong>/var/log/messages</strong> and <strong>/var/log/kern.log</strong> in itself.</div>
+</li>
+</ol>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno">1:</span> <span class="kw2">date</span>
+<span class="lno">2:</span> <span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="sy0">/</span>tmp ; <span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="sy0">/</span>tmp
+<span class="lno">3:</span> <span class="kw2">sudo</span> <span class="kw2">tail</span> <span class="re5">-f</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span><span class="kw2">dmesg</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>messages <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>syslog <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>kern.log
+</pre>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">date</span>
+Tue Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">33</span> EDT <span class="nu0">2012</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="sy0">/</span>tmp ; <span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="sy0">/</span>tmp
+<span class="co4">user1@vm1:~$ </span><span class="kw2">dmesg</span> <span class="sy0">|</span> <span class="kw2">tail</span>
+<span class="br0">&#91;</span>    <span class="nu0">7.166240</span><span class="br0">&#93;</span> tun: Universal TUN<span class="sy0">/</span>TAP device driver, <span class="nu0">1.6</span>
+<span class="br0">&#91;</span>    <span class="nu0">7.166242</span><span class="br0">&#93;</span> tun: <span class="br0">&#40;</span>C<span class="br0">&#41;</span> <span class="nu0">1999</span>-<span class="nu0">2004</span> Max Krasnyansky <span class="sy0">&lt;</span>maxk<span class="sy0">@</span>qualcomm.com<span class="sy0">&gt;</span>
+<span class="br0">&#91;</span>    <span class="nu0">7.432019</span><span class="br0">&#93;</span> ADDRCONF<span class="br0">&#40;</span>NETDEV_UP<span class="br0">&#41;</span>: eth0: <span class="kw2">link</span> is not ready
+<span class="br0">&#91;</span>    <span class="nu0">7.435270</span><span class="br0">&#93;</span> e1000: eth0 NIC Link is Up <span class="nu0">1000</span> Mbps Full Duplex, Flow Control: RX
+<span class="br0">&#91;</span>    <span class="nu0">7.435927</span><span class="br0">&#93;</span> ADDRCONF<span class="br0">&#40;</span>NETDEV_CHANGE<span class="br0">&#41;</span>: eth0: <span class="kw2">link</span> becomes ready
+<span class="br0">&#91;</span>   <span class="nu0">17.472049</span><span class="br0">&#93;</span> tap0: no IPv6 routers present
+<span class="br0">&#91;</span>   <span class="nu0">17.592044</span><span class="br0">&#93;</span> eth0: no IPv6 routers present
+<span class="br0">&#91;</span>  <span class="nu0">217.497357</span><span class="br0">&#93;</span> kjournald starting.  Commit interval <span class="nu0">5</span> seconds
+<span class="br0">&#91;</span>  <span class="nu0">217.497561</span><span class="br0">&#93;</span> EXT3 FS on sda8, internal journal
+<span class="br0">&#91;</span>  <span class="nu0">217.497564</span><span class="br0">&#93;</span> EXT3-fs: mounted filesystem with ordered data mode.
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">tail</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span><span class="kw2">dmesg</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>messages <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>syslog <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>kern.log
+==<span class="sy0">&gt;</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span><span class="kw2">dmesg</span> <span class="sy0">&lt;</span>==
+<span class="br0">&#91;</span>    <span class="nu0">6.762569</span><span class="br0">&#93;</span> EXT3 FS on sda5, internal journal
+<span class="br0">&#91;</span>    <span class="nu0">6.762572</span><span class="br0">&#93;</span> EXT3-fs: mounted filesystem with ordered data mode.
+<span class="br0">&#91;</span>    <span class="nu0">6.767237</span><span class="br0">&#93;</span> kjournald starting.  Commit interval <span class="nu0">5</span> seconds
+<span class="br0">&#91;</span>    <span class="nu0">6.767407</span><span class="br0">&#93;</span> EXT3 FS on sda6, internal journal
+<span class="br0">&#91;</span>    <span class="nu0">6.767410</span><span class="br0">&#93;</span> EXT3-fs: mounted filesystem with ordered data mode.
+<span class="br0">&#91;</span>    <span class="nu0">7.166240</span><span class="br0">&#93;</span> tun: Universal TUN<span class="sy0">/</span>TAP device driver, <span class="nu0">1.6</span>
+<span class="br0">&#91;</span>    <span class="nu0">7.166242</span><span class="br0">&#93;</span> tun: <span class="br0">&#40;</span>C<span class="br0">&#41;</span> <span class="nu0">1999</span>-<span class="nu0">2004</span> Max Krasnyansky <span class="sy0">&lt;</span>maxk<span class="sy0">@</span>qualcomm.com<span class="sy0">&gt;</span>
+<span class="br0">&#91;</span>    <span class="nu0">7.432019</span><span class="br0">&#93;</span> ADDRCONF<span class="br0">&#40;</span>NETDEV_UP<span class="br0">&#41;</span>: eth0: <span class="kw2">link</span> is not ready
+<span class="br0">&#91;</span>    <span class="nu0">7.435270</span><span class="br0">&#93;</span> e1000: eth0 NIC Link is Up <span class="nu0">1000</span> Mbps Full Duplex, Flow Control: RX
+<span class="br0">&#91;</span>    <span class="nu0">7.435927</span><span class="br0">&#93;</span> ADDRCONF<span class="br0">&#40;</span>NETDEV_CHANGE<span class="br0">&#41;</span>: eth0: <span class="kw2">link</span> becomes ready
+&nbsp;
+==<span class="sy0">&gt;</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>messages <span class="sy0">&lt;</span>==
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">6.767407</span><span class="br0">&#93;</span> EXT3 FS on sda6, internal journal
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">6.767410</span><span class="br0">&#93;</span> EXT3-fs: mounted filesystem with ordered data mode.
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.166240</span><span class="br0">&#93;</span> tun: Universal TUN<span class="sy0">/</span>TAP device driver, <span class="nu0">1.6</span>
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.166242</span><span class="br0">&#93;</span> tun: <span class="br0">&#40;</span>C<span class="br0">&#41;</span> <span class="nu0">1999</span>-<span class="nu0">2004</span> Max Krasnyansky <span class="sy0">&lt;</span>maxk<span class="sy0">@</span>qualcomm.com<span class="sy0">&gt;</span>
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.432019</span><span class="br0">&#93;</span> ADDRCONF<span class="br0">&#40;</span>NETDEV_UP<span class="br0">&#41;</span>: eth0: <span class="kw2">link</span> is not ready
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.435270</span><span class="br0">&#93;</span> e1000: eth0 NIC Link is Up <span class="nu0">1000</span> Mbps Full Duplex, Flow Control: RX
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.435927</span><span class="br0">&#93;</span> ADDRCONF<span class="br0">&#40;</span>NETDEV_CHANGE<span class="br0">&#41;</span>: eth0: <span class="kw2">link</span> becomes ready
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497357</span><span class="br0">&#93;</span> kjournald starting.  Commit interval <span class="nu0">5</span> seconds
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497561</span><span class="br0">&#93;</span> EXT3 FS on sda8, internal journal
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497564</span><span class="br0">&#93;</span> EXT3-fs: mounted filesystem with ordered data mode.
+&nbsp;
+==<span class="sy0">&gt;</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>syslog <span class="sy0">&lt;</span>==
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:08 vm1 acpid: <span class="nu0">1</span> rule loaded
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:08 vm1 acpid: waiting <span class="kw1">for</span> events: event logging is off
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:08 vm1 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>cron<span class="br0">&#91;</span><span class="nu0">882</span><span class="br0">&#93;</span>: <span class="br0">&#40;</span>CRON<span class="br0">&#41;</span> INFO <span class="br0">&#40;</span>pidfile fd = <span class="nu0">3</span><span class="br0">&#41;</span>
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:08 vm1 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>cron<span class="br0">&#91;</span><span class="nu0">883</span><span class="br0">&#93;</span>: <span class="br0">&#40;</span>CRON<span class="br0">&#41;</span> STARTUP <span class="br0">&#40;</span>fork ok<span class="br0">&#41;</span>
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:08 vm1 <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>cron<span class="br0">&#91;</span><span class="nu0">883</span><span class="br0">&#93;</span>: <span class="br0">&#40;</span>CRON<span class="br0">&#41;</span> INFO <span class="br0">&#40;</span>Running <span class="sy0">@</span>reboot <span class="kw3">jobs</span><span class="br0">&#41;</span>
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:<span class="nu0">16</span> vm1 kernel: <span class="br0">&#91;</span>   <span class="nu0">17.472049</span><span class="br0">&#93;</span> tap0: no IPv6 routers present
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:<span class="nu0">16</span> vm1 kernel: <span class="br0">&#91;</span>   <span class="nu0">17.592044</span><span class="br0">&#93;</span> eth0: no IPv6 routers present
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497357</span><span class="br0">&#93;</span> kjournald starting.  Commit interval <span class="nu0">5</span> seconds
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497561</span><span class="br0">&#93;</span> EXT3 FS on sda8, internal journal
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497564</span><span class="br0">&#93;</span> EXT3-fs: mounted filesystem with ordered data mode.
+&nbsp;
+==<span class="sy0">&gt;</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>kern.log <span class="sy0">&lt;</span>==
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.166240</span><span class="br0">&#93;</span> tun: Universal TUN<span class="sy0">/</span>TAP device driver, <span class="nu0">1.6</span>
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.166242</span><span class="br0">&#93;</span> tun: <span class="br0">&#40;</span>C<span class="br0">&#41;</span> <span class="nu0">1999</span>-<span class="nu0">2004</span> Max Krasnyansky <span class="sy0">&lt;</span>maxk<span class="sy0">@</span>qualcomm.com<span class="sy0">&gt;</span>
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.432019</span><span class="br0">&#93;</span> ADDRCONF<span class="br0">&#40;</span>NETDEV_UP<span class="br0">&#41;</span>: eth0: <span class="kw2">link</span> is not ready
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.435270</span><span class="br0">&#93;</span> e1000: eth0 NIC Link is Up <span class="nu0">1000</span> Mbps Full Duplex, Flow Control: RX
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:07 vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">7.435927</span><span class="br0">&#93;</span> ADDRCONF<span class="br0">&#40;</span>NETDEV_CHANGE<span class="br0">&#41;</span>: eth0: <span class="kw2">link</span> becomes ready
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:<span class="nu0">16</span> vm1 kernel: <span class="br0">&#91;</span>   <span class="nu0">17.472049</span><span class="br0">&#93;</span> tap0: no IPv6 routers present
+Jul <span class="nu0">24</span> 06:<span class="nu0">52</span>:<span class="nu0">16</span> vm1 kernel: <span class="br0">&#91;</span>   <span class="nu0">17.592044</span><span class="br0">&#93;</span> eth0: no IPv6 routers present
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497357</span><span class="br0">&#93;</span> kjournald starting.  Commit interval <span class="nu0">5</span> seconds
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497561</span><span class="br0">&#93;</span> EXT3 FS on sda8, internal journal
+Jul <span class="nu0">24</span> 06:<span class="nu0">55</span>:<span class="nu0">36</span> vm1 kernel: <span class="br0">&#91;</span>  <span class="nu0">217.497564</span><span class="br0">&#93;</span> EXT3-fs: mounted filesystem with ordered data mode.</pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Prints out current date and time.</div>
+</li>
+<li class="level1"><div class="li"> Prints last 10 messages from kernel messages buffer.</div>
+</li>
+<li class="level1"><div class="li"> Prints last 10 messages from <strong>/var/log/dmesg</strong>, <strong>/var/log/messages</strong>, <strong>/var/log/syslog</strong> and <strong>/var/log/kern.log</strong>.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> That is it. No extra credit, whooosh!</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex29.html';
+var disqus_title   = 'Exercise 29. Kernel: kernel messages, dmesg';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex29.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex29.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex29.txt</bdi> · Last modified: 2012/07/24 11:00 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerefc1.gif?id=llthw%3Aex29&amp;1428742733" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex29 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:21 GMT -->
+</html>

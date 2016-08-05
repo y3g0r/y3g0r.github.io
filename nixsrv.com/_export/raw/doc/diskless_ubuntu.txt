@@ -1,0 +1,133 @@
+====== Diskless worstations on Ubuntu 14.04 howto ======
+<code bash>
+@test_setup
+    network: 10.1.1.0/24
+    server 
+        ip a s | grep inet
+            inet 10.1.1.2/24 brd 10.1.1.255 scope global eth1
+        cat /etc/lsb-release  | grep DESC
+            DISTRIB_DESCRIPTION="Ubuntu 12.04.5 LTS"
+    client  
+        cat /etc/lsb-release | grep DESC
+            DISTRIB_DESCRIPTION="Ubuntu 14.04.1 LTS"
+        ip a s | grep inet
+            inet 10.1.1.2/24 brd 10.1.1.255 scope global eth1
+@server
+    @required_packages
+        apt-get install dhcp3-server tftpd-hpa syslinux 
+        apt-get install nfs-kernel-server initramfs-tools
+        apt-get install tcpdump tftp
+    @dhcpd
+        vim /etc/dhcp/dhcpd.conf
+            subnet 10.1.1.0 netmask 255.255.255.0 {
+              range 10.1.1.10 10.1.1.20;
+              option broadcast-address 10.1.1.255;
+              option routers 10.1.1.1;
+              option domain-name-servers 8.8.8.8;
+
+              filename "/pxelinux.0";
+            }
+
+            #host pxe_client {
+            #  hardware ethernet xx:xx:xx:xx:xx:xx;
+            #  fixed-address 10.1.1.33;
+            #}
+       service isc-dhcp-server start 
+       #check
+           netstat -nlptu | grep dhcp
+               udp  0  0  0.0.0.0:67  0.0.0.0:*  5016/dhcpd
+    @tftp
+        mkdir /tftpboot
+        #for testing
+            echo foo > /tfpboot/bar.txt
+        chmod 777 -vR /tfpboot/
+        /etc/default/tftpd-hpa
+            TFTP_USERNAME="tftp"
+            TFTP_DIRECTORY="/tftpboot"
+            TFTP_ADDRESS="10.1.1.1:69"
+            TFTP_OPTIONS="--secure"
+        service tftpd-hpa restart
+        #check
+            netstat -nlptu | grep tftp
+                udp  0  0  0.0.0.0:69  0.0.0.0:*  6374/in.tftpd
+            echo 'get /bar.txt bar.txt' | tftp localhost
+                tftp> Received 5 bytes in 0.0 seconds
+        #syslinux
+            cp -v /usr/lib/syslinux/pxelinux.0 /tftpboot
+            cp -v /usr/lib/syslinux/menu.c32 /tftpboot
+            mkdir -v /tftpboot/pxelinux.cfg
+            vim /tftpboot/pxelinux.cfg/default
+                DEFAULT menu.c32
+                prompt 0 
+                timeout 100
+                menu title Welcome to the DAMN NETBOOT!
+
+                label ubuntu-diskless
+                    menu label ubuntu-diskless
+                    kernel /vmlinuz-3.13.0-33-generic 
+                    append root=/dev/nfs initrd=initrd.img-3.13.0-33-generic nfsroot=10.1.1.1:/nfsroot,rw ip=dhcp
+    @nfs
+        mkdir /nfsroot
+        /etc/exports
+            /nfsroot 10.1.1.0/24(rw,no_root_squash,async,insecure,no_subtree_check)
+        exportfs -rv  
+            exporting 10.1.1.0/24:/nfsroot
+        #check 
+            mount -t nfs -onolock 10.1.1.1:/nfsroot /mnt
+            mount | grep mnt
+                10.1.1.1:/nfsroot on /mnt type nfs 
+                    (rw,nolock,vers=4,addr=10.1.1.1,clientaddr=10.1.1.1)
+@client
+    @required_packages
+        apt-get install nfs-common
+    @copy_files
+        mount -t nfs -onolock 10.1.1.1:/nfsroot /mnt
+        mount | grep nfs
+            10.1.1.1:/nfsroot on /mnt type nfs
+                (rw,nolock,vers=4,addr=10.1.1.1,clientaddr=10.1.1.2)
+        cd mnt
+        #copy files
+            cp -prxv / /mnt
+        #copy kernel
+            mkdir /mnt/kernel
+            cp -v /boot/vmlinuz-`uname -r` /mnt/kernel/
+        #copy /dev special files
+            #cp -ax /dev/. /mnt/dev/.
+    @make_netboot_kernel
+        vim /etc/initramfs-tools/initramfs.conf
+            #MODULES=most
+            MODULES=netboot
+            #BOOT=local
+            BOOT=nfs
+    #create initramfs image with changed options
+        mkinitramfs -o /mnt/kernel/initrd.img-`uname -r`
+    #change initramfs options back 
+        #to NOT fuck up installed system
+    #check (perl is here to format output, is NOT needed to check)
+        ls -al /mnt/kernel/ | perl -lane 'print $F[4]." ".$F[8]. ""'
+               4096 .
+               4096 ..
+            3344874 initrd.img-3.13.0-32-generic
+            5798112 vmlinuz-3.13.0-32-generic
+@server
+    cp -v /mnt/kernel/* /tftpboot/
+    vim /nfsroot/etc/network/interfaces
+        auto eth1
+        iface eth1 inet static
+                address 10.1.1.2
+                netmask 255.255.255.0
+    vim /nfsroot/etc/fstab
+        # <file system> <mount point>   <type>  <options>       <dump>  <pass>
+        proc            /proc           proc    defaults        0       0
+        /dev/nfs        /               nfs     defaults        1       1
+        none            /tmp            tmpfs   defaults        0       0
+        none            /var/run        tmpfs   defaults        0       0
+        none            /var/lock       tmpfs   defaults        0       0
+        none            /var/tmp        tmpfs   defaults        0       0
+        none            /dev            tmpfs   defaults        0       0
+        none            /var/lib/dhcp   tmpfs   defaults        0       0
+    vim /nfsroot/etc/init/failsafe.conf
+        #sleep 20
+        #sleep 40
+        #sleep 59
+</code>

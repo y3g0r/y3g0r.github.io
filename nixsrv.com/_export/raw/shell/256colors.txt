@@ -1,0 +1,20 @@
+====== Setting 256 colors in screen and vim ======
+
+===== ~/.screenrc =====
+
+<code bash>
+# terminfo and termcap for nice 256 color terminal
+# allow bold colors - necessary for some reason
+attrcolor b ".I"
+# tell screen how to set colors. AB = background, AF=foreground
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+</code>
+
+===== ~/.vimrc ======
+<code bash>
+set t_Co=256
+</code>
+
+===== Nice vim color schemes =====
+
+[[http://www.vim.org/scripts/script.php?script_id=1348|Gardener]]

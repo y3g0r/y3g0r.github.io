@@ -1,0 +1,36 @@
+=======*NIX SPELLBOOK ======
+
+===== Description =====
+
+Welcome to the spellbook. Its goal is to provide reference to reference and useful code snippets for *nix server administration tasks. Most entries will provide several lines of code which allow to accomplish desired task at once. If accomplishing task can be achieved without editing any configurations files, only from command line, it will be described in such a way.
+
+In here I don't have goal to make documentation per se, because there is a saying which states that "Those who don't understand UNIX documentation are condemned to repeat it. Poorly." So there won't be any in-depth explanations. Just a sequence of commands which allow to accomplish a task. If there is any misunderstanding of what the particular command does, referencing to the man page for it is implied.
+
+You may view [[http://nixsrv.com/?do=recent&id=start&show_changes=pages|Recently changed pages]].
+
+====== Table of contents ======
+
+===== Learn Linux The Hard Way (β version) =====
+
+[[http://nixsrv.com/llthw|Go learn it, do not just sit here!]]
+
+===== System administrator leveling matrix =====
+
+After discovering [[http://www.indiangeek.net/wp-content/uploads/Programmer%20competency%20matrix.htm|programmer competency matrix]] I searched for similar matrix for system administrator I found a matrix written by Mark Verber in 2005, [[http://webcache.googleusercontent.com/search?q=cache:umLUawx4v6IJ:www.verber.com/mark/sysadm/ops-8level-matrix.xls+verber+ops+level&cd=1&hl=en&ct=clnk|direct link to Google cache]] or the [[http://www.google.com/url?sa=t&rct=j&q=verber%20ops%20level&source=web&cd=1&ved=0CE8QFjAA&url=http%3A%2F%2Fwww.verber.com%2Fmark%2Fsysadm%2Fops-8level-matrix.xls&ei=xA4RUI_JCcKF4gS50oGYCA&usg=AFQjCNEZdr3woxZ0FAuENl_D3MpYbFSCpQ|original]].
+===== Documentation =====
+<nspages doc>
+
+===== Shell =====
+<nspages shell>
+
+===== Python ======
+<nspages py>
+
+===== Scripts =====
+<nspages scripts>
+
+===== Snippets =====
+<nspages snippets>
+
+===== Playground =====
+<nspages playground>

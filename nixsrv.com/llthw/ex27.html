@@ -1,0 +1,664 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex27 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:09 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex27 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex27"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex27decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex27.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex27.txt"/>
+<link rel="canonical" href="ex27.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex27","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_27_networkingsecure_shell_ssh_sshd_scp">Exercise 27. Networking: secure shell, ssh, sshd, scp</h1>
+<div class="level1">
+<p>
+You may already know that <a href="http://en.wikipedia.org/wiki/Secure_Shell" class="urlextern" title="http://en.wikipedia.org/wiki/Secure_Shell" rel="nofollow">SSH</a> is a network protocol which allows you to login into <strong>vm1</strong> over the network. Let us look into in in some detail.
+</p>
+<blockquote><div class="no">
+Secure Shell (<abbr title="Secure Shell">SSH</abbr>) is a network protocol for secure data communication, remote shell services or command execution and other secure network services between two networked computers that it connects via a secure channel over an insecure network: a server and a client (running <abbr title="Secure Shell">SSH</abbr> server and <abbr title="Secure Shell">SSH</abbr> client programs, respectively). The protocol specification distinguishes two major versions that are referred to as <abbr title="Secure Shell">SSH</abbr>-1 and <abbr title="Secure Shell">SSH</abbr>-2.</div></blockquote>
+<blockquote><div class="no">
+The best-known application of the protocol is for access to shell accounts on Unix-like operating systems. It was designed as a replacement for Telnet and other insecure remote shell protocols such as the Berkeley rsh and rexec protocols, which send information, notably passwords, in plaintext, rendering them susceptible to interception and disclosure using packet analysis. The encryption used by <abbr title="Secure Shell">SSH</abbr> is intended to provide confidentiality and integrity of data over an unsecured network, such as the Internet.</div></blockquote>
+<p>
+The important <abbr title="Secure Shell">SSH</abbr> programs, concepts and configuration files:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/OpenSSH" class="urlextern" title="http://en.wikipedia.org/wiki/OpenSSH" rel="nofollow">OpenSSH</a></strong> — open source ssh programs implementation.</div>
+</li>
+<li class="level1"><div class="li"> <strong>ssh</strong> — the client program which allows you to connect to ssh server. Putty is such client program for example.</div>
+</li>
+<li class="level1"><div class="li"> <strong>sshd</strong> — the server program which allows you to connect to it with <strong>ssh</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/etc/ssh/ssh_config</strong> — default client program configuration file.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/etc/ssh/sshd_config</strong> — default server program configuration file.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Public-key_cryptography" class="urlextern" title="http://en.wikipedia.org/wiki/Public-key_cryptography" rel="nofollow">Public-key cryptography</a></strong> — a cryptographic system requiring two separate keys, one of which is secret and one of which is public. Although different, the two parts of the key pair are mathematically linked. One key locks or encrypts the plaintext, and the other unlocks or decrypts the cyphertext. Neither key can perform both functions. One of these keys is published or public and the other is kept private.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Secure_Shell#Definition" class="urlextern" title="http://en.wikipedia.org/wiki/Secure_Shell#Definition" rel="nofollow">SSH keys</a></strong> — <abbr title="Secure Shell">SSH</abbr> uses public-key cryptography to authenticate the remote computer and allow it to authenticate the user, if necessary. Anyone can produce a matching pair of different key—s (public and private). The public key is placed on all computers that must allow access to the owner of the matching private key (the owner keeps the private key secret). While authentication is based on the private key, the key itself is never transferred through the network during authentication.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/etc/ssh/moduli</strong> — prime numbers and generators for use by sshd(8) in the Diffie-Hellman Group Exchange key exchange method.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/etc/ssh/ssh_host_dsa_key, /etc/ssh/ssh_host_rsa_key</strong> — private host RSA and DSA keys.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/etc/ssh/ssh_host_dsa_key.pub, /etc/ssh/ssh_host_rsa_key.pub</strong> — public host RSA and DSA keys.</div>
+</li>
+</ol>
+<p>
+<abbr title="Secure Shell">SSH</abbr> protocol is so important, so widely used and has so many capabilities, that some understanding of its workings is mandatory. This is some of its uses:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>scp</strong> — file transfer over ssh.</div>
+</li>
+<li class="level1"><div class="li"> <strong>sftp</strong> — ftp-like protocol for managing remote files.</div>
+</li>
+<li class="level1"><div class="li"> <strong>sshfs</strong> — remote filesystem mounting over ssh.</div>
+</li>
+<li class="level1"><div class="li"> <strong>ssh tunnelling</strong> — a method to transfer almost any data over secure connection. This is so important because it can be used as a foundation for construction of protected systems, among many its other uses.</div>
+</li>
+</ol>
+<p>
+To get some understanding of this protocol let us see what happens during ssh session. To this we will start with examining the annotated output of connecting from <strong>vm1</strong> to <strong>vm1</strong> (yes, it can be done, and it is perfectly valid to do). The outline:
+</p>
+<pre class="code">
+YOU
+    Type ssh vm1
+    Control is now passed to SSH client
+SSH client
+    Enters plaintext phase
+        Reads configuration
+        Negotiats protocol with SSH server
+    Enters SSH-transport phase
+        Negotiates with SSH server
+            Data encryption chiphers
+            Data integrity algorithms
+            Data compression algorithms
+            Start key exchange using Diffie-Hellman algorithm
+            Resulting shared key is used to establish secured connection
+    Enters SSH-userauth phase
+    Asks you to enter password
+    Control is now passed to you
+YOU
+    Enter you password
+    Control is now passed to SSH client
+SSH client
+    Authenticates you on SSH server
+    Enters SSH-connection phase
+    Allocates pseudo teminal for YOU
+    Starts a shell for YOU
+    Control is now passed to YOU
+YOU
+    Do something u(n)useful on vm1
+    Close shell
+    Control is now passed to ssh client
+SSH client
+    Closes pseudo terminal
+    Closes connection</pre>
+<p>
+Now read this:
+</p>
+<ol>
+<li class="level1"><div class="li"> <a href="http://www.linuxjournal.com/article/9566" class="urlextern" title="http://www.linuxjournal.com/article/9566" rel="nofollow">The OpenSSH Protocol under the Hood</a>.</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cs.ust.hk/faculty/cding/COMP581/SLIDES/slide24.pdf SSH - Secure SHell presentation" class="urlextern" title="http://www.cs.ust.hk/faculty/cding/COMP581/SLIDES/slide24.pdf SSH - Secure SHell presentation" rel="nofollow">http://www.cs.ust.hk/faculty/cding/COMP581/SLIDES/slide24.pdf SSH - Secure SHell presentation</a>. </div>
+</li>
+</ol>
+<p>
+And examine the real output of ssh session:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">ssh</span> <span class="re5">-vv</span> vm1
+&nbsp;
+Protocol version selection, plaintext
+<span class="re5">-------------------------------------</span>
+&nbsp;
+OpenSSH_5.5p1 Debian-<span class="nu0">6</span>+squeeze2, OpenSSL 0.9.8o 01 Jun <span class="nu0">2010</span>
+<span class="co0"># Speaks for itself, I will mark such entries with -- below</span>
+debug1: Reading configuration data <span class="sy0">/</span>etc<span class="sy0">/</span>ssh<span class="sy0">/</span>ssh_config
+<span class="co0"># Applying default options for all hosts. Additional options for each host may be</span>
+<span class="co0"># specified in the configuration file</span>
+debug1: Applying options <span class="kw1">for</span> <span class="sy0">*</span>
+debug2: ssh_connect: needpriv <span class="nu0">0</span>
+debug1: Connecting to vm1 <span class="br0">&#91;</span>127.0.1.1<span class="br0">&#93;</span> port <span class="nu0">22</span>.
+debug1: Connection established.
+debug1: identity <span class="kw2">file</span> <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa <span class="kw3">type</span> <span class="re5">-1</span>      <span class="co0"># no such files</span>
+debug1: identity <span class="kw2">file</span> <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa-cert <span class="kw3">type</span> <span class="re5">-1</span>
+debug1: identity <span class="kw2">file</span> <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_dsa <span class="kw3">type</span> <span class="re5">-1</span>
+debug1: identity <span class="kw2">file</span> <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_dsa-cert <span class="kw3">type</span> <span class="re5">-1</span>
+debug1: Remote protocol version <span class="nu0">2.0</span>, remote software version OpenSSH_5.5p1 Debian-<span class="nu0">6</span>+squeeze2
+debug1: match: OpenSSH_5.5p1 Debian-<span class="nu0">6</span>+squeeze2 pat OpenSSH<span class="sy0">*</span>
+debug1: Enabling compatibility mode <span class="kw1">for</span> protocol <span class="nu0">2.0</span>
+debug1: Local version string SSH-<span class="nu0">2.0</span>-OpenSSH_5.5p1 Debian-<span class="nu0">6</span>+squeeze2
+debug2: fd <span class="nu0">3</span> setting O_NONBLOCK
+&nbsp;
+SSH-transport, binary packet protocol
+<span class="re5">-------------------------------------</span>
+&nbsp;
+debug1: SSH2_MSG_KEXINIT sent
+debug1: SSH2_MSG_KEXINIT received
+<span class="co0"># Key exchange algorithms</span>
+debug2: kex_parse_kexinit: diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
+<span class="co0"># SSH host key types</span>
+debug2: kex_parse_kexinit: ssh-rsa-cert-v00<span class="sy0">@</span>openssh.com,ssh-dss-cert-v00<span class="sy0">@</span>openssh.com,ssh-rsa,ssh-dss
+<span class="co0"># Data encryption ciphers</span>
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc<span class="sy0">@</span>lysator.liu.se
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc<span class="sy0">@</span>lysator.liu.se
+<span class="co0"># Data integrity algorithms</span>
+debug2: kex_parse_kexinit: hmac-md5,hmac-sha1,umac-<span class="nu0">64</span><span class="sy0">@</span>openssh.com,hmac-ripemd160,hmac-ripemd160<span class="sy0">@</span>openssh.com,hmac-sha1-<span class="nu0">96</span>,hmac-md5-<span class="nu0">96</span>
+debug2: kex_parse_kexinit: hmac-md5,hmac-sha1,umac-<span class="nu0">64</span><span class="sy0">@</span>openssh.com,hmac-ripemd160,hmac-ripemd160<span class="sy0">@</span>openssh.com,hmac-sha1-<span class="nu0">96</span>,hmac-md5-<span class="nu0">96</span>
+<span class="co0"># Data compression algorithms</span>
+debug2: kex_parse_kexinit: none,zlib<span class="sy0">@</span>openssh.com,zlib
+debug2: kex_parse_kexinit: none,zlib<span class="sy0">@</span>openssh.com,zlib
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit: first_kex_follows
+debug2: kex_parse_kexinit: reserved <span class="nu0">0</span>
+<span class="co0"># Messages back from server</span>
+debug2: kex_parse_kexinit: diffie-hellman-group-exchange-sha256,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1
+debug2: kex_parse_kexinit: ssh-rsa,ssh-dss
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc<span class="sy0">@</span>lysator.liu.se
+debug2: kex_parse_kexinit: aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour,rijndael-cbc<span class="sy0">@</span>lysator.liu.se
+debug2: kex_parse_kexinit: hmac-md5,hmac-sha1,umac-<span class="nu0">64</span><span class="sy0">@</span>openssh.com,hmac-ripemd160,hmac-ripemd160<span class="sy0">@</span>openssh.com,hmac-sha1-<span class="nu0">96</span>,hmac-md5-<span class="nu0">96</span>
+debug2: kex_parse_kexinit: hmac-md5,hmac-sha1,umac-<span class="nu0">64</span><span class="sy0">@</span>openssh.com,hmac-ripemd160,hmac-ripemd160<span class="sy0">@</span>openssh.com,hmac-sha1-<span class="nu0">96</span>,hmac-md5-<span class="nu0">96</span>
+debug2: kex_parse_kexinit: none,zlib<span class="sy0">@</span>openssh.com
+debug2: kex_parse_kexinit: none,zlib<span class="sy0">@</span>openssh.com
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit:
+debug2: kex_parse_kexinit: first_kex_follows <span class="nu0">0</span>
+debug2: kex_parse_kexinit: reserved <span class="nu0">0</span>
+<span class="co0"># Message authentication code setup</span>
+debug2: mac_setup: found hmac-md5
+debug1: kex: server-<span class="sy0">&gt;</span>client aes128-ctr hmac-md5 none
+debug2: mac_setup: found hmac-md5
+debug1: kex: client-<span class="sy0">&gt;</span>server aes128-ctr hmac-md5 none
+<span class="co0"># Key exchange</span>
+debug1: SSH2_MSG_KEX_DH_GEX_REQUEST<span class="br0">&#40;</span><span class="nu0">1024</span><span class="sy0">&lt;</span><span class="nu0">1024</span><span class="sy0">&lt;</span><span class="nu0">8192</span><span class="br0">&#41;</span> sent
+debug1: SSH2_MSG_KEX_DH_GEX_REQUEST<span class="br0">&#40;</span><span class="nu0">1024</span><span class="sy0">&lt;</span><span class="nu0">1024</span><span class="sy0">&lt;</span><span class="nu0">8192</span><span class="br0">&#41;</span> sent
+debug1: expecting SSH2_MSG_KEX_DH_GEX_GROUP
+debug2: dh_gen_key: priv key bits set: <span class="nu0">135</span><span class="sy0">/</span><span class="nu0">256</span>
+debug2: bits set: <span class="nu0">498</span><span class="sy0">/</span><span class="nu0">1024</span>
+debug1: SSH2_MSG_KEX_DH_GEX_INIT sent
+debug1: expecting SSH2_MSG_KEX_DH_GEX_REPLY
+<span class="co0"># Server authentication. vm1 host key is not known because it is our first connection</span>
+debug2: no key of <span class="kw3">type</span> <span class="nu0">0</span> <span class="kw1">for</span> host vm1
+debug2: no key of <span class="kw3">type</span> <span class="nu0">2</span> <span class="kw1">for</span> host vm1
+<span class="co0"># Confirmation of host key acceptance</span>
+The authenticity of host <span class="st_h">'vm1 '</span><span class="br0">&#40;</span>127.0.1.1<span class="br0">&#41;</span><span class="st_h">' can'</span>t be established.
+RSA key fingerprint is b6:06:<span class="nu0">92</span>:5e:04:<span class="nu0">49</span>:d9:e8:<span class="nu0">57</span>:<span class="nu0">90</span>:<span class="nu0">61</span>:1b:<span class="nu0">16</span>:<span class="nu0">87</span>:bb:09.
+Are you sure you want to <span class="kw3">continue</span> connecting <span class="br0">&#40;</span>yes<span class="sy0">/</span>no<span class="br0">&#41;</span>? <span class="kw2">yes</span>
+Warning: Permanently added <span class="st_h">'vm1'</span> <span class="br0">&#40;</span>RSA<span class="br0">&#41;</span> to the list of known hosts.
+<span class="co0"># Key is added to /home/user1/.ssh/known_hosts and checked</span>
+debug2: bits set: <span class="nu0">499</span><span class="sy0">/</span><span class="nu0">1024</span>
+debug1: ssh_rsa_verify: signature correct
+<span class="co0"># Based on shared master key, data encryption key and data integrity key are derived</span>
+debug2: kex_derive_keys
+debug2: set_newkeys: mode <span class="nu0">1</span>
+<span class="co0"># Information about this is sent to server</span>
+debug1: SSH2_MSG_NEWKEYS sent
+debug1: expecting SSH2_MSG_NEWKEYS
+debug2: set_newkeys: mode <span class="nu0">0</span>
+debug1: SSH2_MSG_NEWKEYS received
+<span class="co0"># IP roaming not enabled? Not sure about this.</span>
+debug1: Roaming not allowed by server
+&nbsp;
+SSH-userauth
+<span class="re5">------------</span>
+&nbsp;
+debug1: SSH2_MSG_SERVICE_REQUEST sent
+debug2: service_accept: ssh-userauth
+debug1: SSH2_MSG_SERVICE_ACCEPT received
+debug2: key: <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa <span class="br0">&#40;</span><span class="br0">&#40;</span>nil<span class="br0">&#41;</span><span class="br0">&#41;</span>
+debug2: key: <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_dsa <span class="br0">&#40;</span><span class="br0">&#40;</span>nil<span class="br0">&#41;</span><span class="br0">&#41;</span>
+debug1: Authentications that can continue: publickey,password
+debug1: Next authentication method: publickey
+debug1: Trying private key: <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa
+debug1: Trying private key: <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_dsa
+debug2: we did not send a packet, disable method
+debug1: Next authentication method: password
+user1<span class="sy0">@</span>vm1<span class="st_h">''</span>s password:
+debug2: we sent a password packet, <span class="kw3">wait</span> <span class="kw1">for</span> reply
+debug1: Authentication succeeded <span class="br0">&#40;</span>password<span class="br0">&#41;</span>.
+&nbsp;
+SSH-connection
+<span class="re5">--------------</span>
+&nbsp;
+debug1: channel <span class="nu0">0</span>: new <span class="br0">&#91;</span>client-session<span class="br0">&#93;</span>
+debug2: channel <span class="nu0">0</span>: send open
+<span class="co0"># Disable SSH mutiplexing.</span>
+<span class="co0"># More info: http://www.linuxjournal.com/content/speed-multiple-ssh-connections-same-server</span>
+debug1: Requesting no-more-sessions<span class="sy0">@</span>openssh.com
+debug1: Entering interactive session.
+debug2: callback start
+debug2: client_session2_setup: <span class="kw2">id</span> <span class="nu0">0</span>
+debug2: channel <span class="nu0">0</span>: request pty-req confirm <span class="nu0">1</span>
+<span class="co0"># Sending environment variables</span>
+debug1: Sending environment.
+debug1: Sending <span class="kw2">env</span> LANG = en_US.UTF-<span class="nu0">8</span>
+debug2: channel <span class="nu0">0</span>: request <span class="kw2">env</span> confirm <span class="nu0">0</span>
+debug2: channel <span class="nu0">0</span>: request shell confirm <span class="nu0">1</span>
+<span class="co0"># Set TCP_NODELAY flag: http://en.wikipedia.org/wiki/Nagle%27s_algorithm</span>
+debug2: fd <span class="nu0">3</span> setting TCP_NODELAY
+debug2: callback <span class="kw1">done</span>
+<span class="co0"># Connection opened</span>
+debug2: channel <span class="nu0">0</span>: open confirm rwindow <span class="nu0">0</span> rmax <span class="nu0">32768</span>
+debug2: channel_input_status_confirm: <span class="kw3">type</span> <span class="nu0">99</span> <span class="kw2">id</span> <span class="nu0">0</span>
+<span class="co0"># Pseudo terminal allocation</span>
+debug2: PTY allocation request accepted on channel <span class="nu0">0</span>
+debug2: channel <span class="nu0">0</span>: rcvd adjust <span class="nu0">2097152</span>
+debug2: channel_input_status_confirm: <span class="kw3">type</span> <span class="nu0">99</span> <span class="kw2">id</span> <span class="nu0">0</span>
+<span class="co0"># Shell is started</span>
+debug2: shell request accepted on channel <span class="nu0">0</span>
+<span class="co0"># Loggin in is completed</span>
+Linux vm1 2.6.32-<span class="nu0">5</span>-amd64 <span class="co0">#1 SMP Sun May 6 04:00:17 UTC 2012 x86_64</span>
+&nbsp;
+The programs included with the Debian GNU<span class="sy0">/</span>Linux system are <span class="kw2">free</span> software;
+the exact distribution terms <span class="kw1">for</span> each program are described <span class="kw1">in</span> the
+individual files <span class="kw1">in</span> <span class="sy0">/</span>usr<span class="sy0">/</span>share<span class="sy0">/</span>doc<span class="sy0">/*/</span>copyright.
+&nbsp;
+Debian GNU<span class="sy0">/</span>Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+You have mail.
+Last login: Thu Jul <span class="nu0">19</span> 05:<span class="nu0">14</span>:<span class="nu0">40</span> <span class="nu0">2012</span> from 10.0.2.2
+<span class="co4">user1@vm1:~$ </span>debug2: client_check_window_change: changed
+debug2: channel <span class="nu0">0</span>: request window-change confirm <span class="nu0">0</span>
+<span class="co4">user1@vm1:~$ </span>debug2: client_check_window_change: changed
+debug2: channel <span class="nu0">0</span>: request window-change confirm <span class="nu0">0</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">logout</span>
+&nbsp;
+Ending <span class="kw2">ssh</span> connection
+<span class="re5">---------------------</span>
+&nbsp;
+debug2: channel <span class="nu0">0</span>: rcvd eof   <span class="co0"># end of file</span>
+debug2: channel <span class="nu0">0</span>: output open -<span class="sy0">&gt;</span> drain
+debug2: channel <span class="nu0">0</span>: obuf empty
+debug2: channel <span class="nu0">0</span>: close_write
+debug2: channel <span class="nu0">0</span>: output drain -<span class="sy0">&gt;</span> closed
+debug1: client_input_channel_req: channel <span class="nu0">0</span> rtype exit-status reply <span class="nu0">0</span>
+<span class="co0"># signalling that channels are half-closed for writing, through a channel protocol extension</span>
+<span class="co0"># notification &quot;<a class="__cf_email__" href="../cdn-cgi/l/email-protection.html" data-cfemail="9ffaf0e8dff0effaf1ececf7b1fcf0f2">[email&#160;protected]</a><script cf-hash='f9e31' type="text/javascript">
+/* <![CDATA[ */!function(){try{var t="currentScript"in document?document.currentScript:function(){for(var t=document.getElementsByTagName("script"),e=t.length;e--;)if(t[e].getAttribute("cf-hash"))return t[e]}();if(t&&t.previousSibling){var e,r,n,i,c=t.previousSibling,a=c.getAttribute("data-cfemail");if(a){for(e="",r=parseInt(a.substr(0,2),16),n=2;a.length-n;n+=2)i=parseInt(a.substr(n,2),16)^r,e+=String.fromCharCode(i);e=document.createTextNode(e),c.parentNode.replaceChild(e,c)}}}catch(u){}}();/* ]]> */</script>&quot; http://www.openssh.com/txt/release-5.1</span>
+debug1: client_input_channel_req: channel <span class="nu0">0</span> rtype eow<span class="sy0">@</span>openssh.com reply <span class="nu0">0</span>
+debug2: channel <span class="nu0">0</span>: rcvd eow
+<span class="co0"># Ending connection</span>
+debug2: channel <span class="nu0">0</span>: close_read
+debug2: channel <span class="nu0">0</span>: input open -<span class="sy0">&gt;</span> closed
+debug2: channel <span class="nu0">0</span>: rcvd close
+debug2: channel <span class="nu0">0</span>: almost dead
+debug2: channel <span class="nu0">0</span>: gc: notify user
+debug2: channel <span class="nu0">0</span>: gc: user detached
+debug2: channel <span class="nu0">0</span>: send close
+debug2: channel <span class="nu0">0</span>: is dead
+debug2: channel <span class="nu0">0</span>: garbage collecting
+debug1: channel <span class="nu0">0</span>: free: client-session, nchannels <span class="nu0">1</span>
+Connection to vm1 closed.
+Transferred: sent <span class="nu0">1928</span>, received <span class="nu0">2632</span> bytes, <span class="kw1">in</span> <span class="nu0">93.2</span> seconds
+Bytes per second: sent <span class="nu0">20.7</span>, received <span class="nu0">28.2</span>
+debug1: Exit status <span class="nu0">0</span>
+<span class="co4">user1@vm1:~$</span></pre>
+<p>
+Now you will learn how to start <strong>sshd</strong> in debug mode, set up public key authentication and copy files using <strong>scp</strong>.
+</p>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno"> 1:</span> <span class="kw2">mkdir</span> <span class="re5">-v</span> ssh_test
+<span class="lno"> 2:</span> <span class="kw3">cd</span> ssh_test
+<span class="lno"> 3:</span> <span class="kw2">cp</span> <span class="re5">-v</span> <span class="sy0">/</span>etc<span class="sy0">/</span>ssh<span class="sy0">/</span>sshd_config .
+<span class="lno"> 4:</span> <span class="kw2">sed</span> <span class="re5">-i</span><span class="st_h">'.bak'</span> <span class="st_h">'s/^Port 22$/Port 1024/'</span> sshd_config
+<span class="lno"> 5:</span> <span class="kw2">sed</span> <span class="re5">-i</span> <span class="st_h">'s/^HostKey \/etc\/ssh\/ssh_host_rsa_key$/Hostkey \/home\/user1\/ssh_test\/ssh_host_rsa_key/'</span> sshd_config
+<span class="lno"> 6:</span> <span class="kw2">sed</span> <span class="re5">-i</span> <span class="st_h">'s/^HostKey \/etc\/ssh\/ssh_host_dsa_key$/Hostkey \/home\/user1\/ssh_test\/ssh_host_dsa_key/'</span> sshd_config
+<span class="lno"> 7:</span> <span class="kw2">diff</span> sshd_config.bak sshd_config
+<span class="lno"> 8:</span> <span class="kw2">ssh-keygen</span> <span class="re5">-b</span> <span class="nu0">4096</span> <span class="re5">-t</span> rsa <span class="re5">-N</span> <span class="st_h">''</span> <span class="re5">-v</span> <span class="re5">-h</span> <span class="re5">-f</span> ssh_host_rsa_key
+<span class="lno"> 9:</span> <span class="kw2">ssh-keygen</span> <span class="re5">-b</span> <span class="nu0">1024</span> <span class="re5">-t</span> dsa <span class="re5">-N</span> <span class="st_h">''</span> <span class="re5">-v</span> <span class="re5">-h</span> <span class="re5">-f</span> ssh_host_dsa_key
+<span class="lno">10:</span> <span class="kw2">ssh-keygen</span> <span class="re5">-b</span> <span class="nu0">4096</span> <span class="re5">-t</span> rsa <span class="re5">-N</span> <span class="st_h">''</span> <span class="re5">-v</span>  <span class="re5">-f</span> ~<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa
+<span class="lno">11:</span> <span class="kw2">cat</span> ~<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa.pub <span class="sy0">&gt;</span> ~<span class="sy0">/</span>.ssh<span class="sy0">/</span>authorized_keys
+<span class="lno">12:</span> <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">&amp;</span>
+<span class="lno">13:</span> <span class="kw2">ssh-keyscan</span> <span class="re5">-H</span> vm1 127.0.0.1 <span class="sy0">&gt;&gt;</span> ~<span class="sy0">/</span>.ssh<span class="sy0">/</span>known_hosts
+<span class="lno">14:</span> <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">&amp;</span>
+<span class="lno">15:</span> <span class="kw2">ssh</span> vm1 <span class="re5">-v</span> <span class="re5">-p</span> <span class="nu0">1024</span> <span class="nu0">2</span><span class="sy0">&gt;</span>ssh.out
+<span class="lno">16:</span> <span class="kw2">ps</span> au <span class="re5">--forest</span>
+<span class="lno">17:</span> <span class="kw3">logout</span>
+<span class="lno">18:</span> <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">&amp;</span>
+<span class="lno">19:</span> <span class="kw2">scp</span> <span class="re5">-v</span> <span class="re5">-P</span> <span class="nu0">1024</span> vm1:.bashrc . <span class="nu0">2</span><span class="sy0">&gt;</span>scp.out
+</pre>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">mkdir</span> <span class="re5">-v</span> ssh_test
+mkdir: created directory <span class="st_h">'ssh_test'</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">cd</span> ssh_test
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">cp</span> <span class="re5">-v</span> <span class="sy0">/</span>etc<span class="sy0">/</span>ssh<span class="sy0">/</span>sshd_config .
+<span class="st_h">'/etc/ssh/sshd_config'</span> -<span class="sy0">&gt;</span> <span class="st_h">'./sshd_config'</span>
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">sed</span> <span class="re5">-i</span><span class="st_h">'.bak'</span> <span class="st_h">'s/^Port 22$/Port 1024/'</span> sshd_config
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">sed</span> <span class="re5">-i</span> <span class="st_h">'s/^HostKey \/etc\/ssh\/ssh_host_rsa_key$/Hostkey \/home\/user1\/ssh_test\/ssh_host_rsa_key/'</span> sshd_config
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">sed</span> <span class="re5">-i</span> <span class="st_h">'s/^HostKey \/etc\/ssh\/ssh_host_dsa_key$/Hostkey \/home\/user1\/ssh_test\/ssh_host_dsa_key/'</span> sshd_config
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">diff</span> sshd_config.bak sshd_config
+5c5
+<span class="sy0">&lt;</span> Port <span class="nu0">22</span>
+<span class="re5">---</span>
+<span class="sy0">&gt;</span> Port <span class="nu0">1024</span>
+<span class="nu0">11</span>,12c11,<span class="nu0">12</span>
+<span class="sy0">&lt;</span> HostKey <span class="sy0">/</span>etc<span class="sy0">/</span>ssh<span class="sy0">/</span>ssh_host_rsa_key
+<span class="sy0">&lt;</span> HostKey <span class="sy0">/</span>etc<span class="sy0">/</span>ssh<span class="sy0">/</span>ssh_host_dsa_key
+<span class="re5">---</span>
+<span class="sy0">&gt;</span> Hostkey <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>ssh_test<span class="sy0">/</span>ssh_host_rsa_key
+<span class="sy0">&gt;</span> Hostkey <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>ssh_test<span class="sy0">/</span>ssh_host_dsa_key
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">ssh-keygen</span> <span class="re5">-b</span> <span class="nu0">4096</span> <span class="re5">-t</span> rsa <span class="re5">-N</span> <span class="st_h">''</span> <span class="re5">-v</span> <span class="re5">-h</span> <span class="re5">-f</span> ssh_host_rsa_key
+Generating public<span class="sy0">/</span>private rsa key pair.
+Your identification has been saved <span class="kw1">in</span> ssh_host_rsa_key.
+Your public key has been saved <span class="kw1">in</span> ssh_host_rsa_key.pub.
+The key fingerprint is:
+8c:0a:8d:ae:c7:<span class="nu0">34</span>:e6:<span class="nu0">29</span>:9c:c2:<span class="nu0">14</span>:<span class="nu0">29</span>:b8:d9:1d:<span class="nu0">34</span> user1<span class="sy0">@</span>vm1
+<span class="st_h">'The key'</span>s randomart image is:
++--<span class="br0">&#91;</span> RSA <span class="nu0">4096</span><span class="br0">&#93;</span>----+
+<span class="sy0">|</span>                 <span class="sy0">|</span>
+<span class="sy0">|</span>    E            <span class="sy0">|</span>
+<span class="sy0">|</span>. .. .           <span class="sy0">|</span>
+<span class="sy0">|</span>oo o.  o         <span class="sy0">|</span>
+<span class="sy0">|</span>.++.... S        <span class="sy0">|</span>
+<span class="sy0">|</span><span class="re2">oo</span>=...           <span class="sy0">|</span>
+<span class="sy0">|</span>+=oo.            <span class="sy0">|</span>
+<span class="sy0">|</span><span class="re2">o</span>==              <span class="sy0">|</span>
+<span class="sy0">|</span>oo               <span class="sy0">|</span>
++-----------------+
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">ssh-keygen</span> <span class="re5">-b</span> <span class="nu0">1024</span> <span class="re5">-t</span> dsa <span class="re5">-N</span> <span class="st_h">''</span> <span class="re5">-v</span> <span class="re5">-h</span> <span class="re5">-f</span> ssh_host_dsa_key
+Generating public<span class="sy0">/</span>private dsa key pair.
+Your identification has been saved <span class="kw1">in</span> ssh_host_dsa_key.
+Your public key has been saved <span class="kw1">in</span> ssh_host_dsa_key.pub.
+The key fingerprint is:
+cd:6b:2a:a2:ba:<span class="nu0">80</span>:<span class="nu0">65</span>:<span class="nu0">71</span>:<span class="nu0">85</span>:ef:2e:6a:c0:a7:d9:aa user1<span class="sy0">@</span>vm1
+<span class="st_h">'The key'</span>s randomart image is:
++--<span class="br0">&#91;</span> DSA <span class="nu0">1024</span><span class="br0">&#93;</span>----+
+<span class="sy0">|</span>     ..          <span class="sy0">|</span>
+<span class="sy0">|</span>    ..           <span class="sy0">|</span>
+<span class="sy0">|</span>  . ..           <span class="sy0">|</span>
+<span class="sy0">|</span>   o  .  o       <span class="sy0">|</span>
+<span class="sy0">|</span>. o  .  S o      <span class="sy0">|</span>
+<span class="sy0">|</span>o+ .  .    .     <span class="sy0">|</span>
+<span class="sy0">|</span>o.=  .    o      <span class="sy0">|</span>
+<span class="sy0">|</span>.o..o o  o       <span class="sy0">|</span>
+<span class="sy0">|</span><span class="re2">E</span>=+o o ..        <span class="sy0">|</span>
++-----------------+
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">ssh-keygen</span> <span class="re5">-b</span> <span class="nu0">4096</span>  <span class="re5">-t</span> rsa <span class="re5">-N</span> <span class="st_h">''</span> <span class="re5">-v</span>  <span class="re5">-f</span> ~<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa
+Generating public<span class="sy0">/</span>private rsa key pair.
+Your identification has been saved <span class="kw1">in</span> <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa.
+Your public key has been saved <span class="kw1">in</span> <span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa.pub.
+The key fingerprint is:
+<span class="nu0">50</span>:<span class="nu0">65</span>:<span class="nu0">18</span>:<span class="nu0">61</span>:3f:<span class="nu0">41</span>:<span class="nu0">36</span>:07:4f:<span class="nu0">40</span>:<span class="nu0">36</span>:a7:4b:6d:<span class="nu0">64</span>:<span class="nu0">28</span> user1<span class="sy0">@</span>vm1
+<span class="st_h">'The key'</span>s randomart image is:
++--<span class="br0">&#91;</span> RSA <span class="nu0">4096</span><span class="br0">&#93;</span>----+
+<span class="sy0">|</span>        =B<span class="sy0">&amp;</span>+<span class="sy0">*</span>    <span class="sy0">|</span>
+<span class="sy0">|</span>       <span class="re2">oE</span>=.<span class="sy0">&amp;</span>     <span class="sy0">|</span>
+<span class="sy0">|</span>      .  .= +    <span class="sy0">|</span>
+<span class="sy0">|</span>       . . +     <span class="sy0">|</span>
+<span class="sy0">|</span>        S .      <span class="sy0">|</span>
+<span class="sy0">|</span>                 <span class="sy0">|</span>
+<span class="sy0">|</span>                 <span class="sy0">|</span>
+<span class="sy0">|</span>                 <span class="sy0">|</span>
+<span class="sy0">|</span>                 <span class="sy0">|</span>
++-----------------+
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">cat</span> ~<span class="sy0">/</span>.ssh<span class="sy0">/</span>id_rsa.pub <span class="sy0">&gt;</span> ~<span class="sy0">/</span>.ssh<span class="sy0">/</span>authorized_keys
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">&amp;</span>
+<span class="br0">&#91;</span><span class="nu0">2</span><span class="br0">&#93;</span> <span class="nu0">26896</span>
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">ssh-keyscan</span> <span class="re5">-H</span> vm1 127.0.0.1 <span class="sy0">&gt;&gt;</span> ~<span class="sy0">/</span>.ssh<span class="sy0">/</span>known_hosts
+<span class="co0"># 127.0.0.1 SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2</span>
+<span class="co0"># vm1 SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2</span>
+<span class="br0">&#91;</span><span class="nu0">2</span><span class="br0">&#93;</span>+  Exit <span class="nu0">255</span>                <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span>
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">&amp;</span>
+<span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span> <span class="nu0">26957</span>
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">ssh</span> vm1 <span class="re5">-v</span> <span class="re5">-p</span> <span class="nu0">1024</span> <span class="nu0">2</span><span class="sy0">&gt;</span>ssh.out
+Linux vm1 2.6.32-<span class="nu0">5</span>-amd64 <span class="co0">#1 SMP Sun May 6 04:00:17 UTC 2012 x86_64</span>
+&nbsp;
+The programs included with the Debian GNU<span class="sy0">/</span>Linux system are <span class="kw2">free</span> software;
+the exact distribution terms <span class="kw1">for</span> each program are described <span class="kw1">in</span> the
+individual files <span class="kw1">in</span> <span class="sy0">/</span>usr<span class="sy0">/</span>share<span class="sy0">/</span>doc<span class="sy0">/*/</span>copyright.
+&nbsp;
+Debian GNU<span class="sy0">/</span>Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+You have mail.
+Last login: Fri Jul <span class="nu0">20</span> 09:<span class="nu0">10</span>:<span class="nu0">30</span> <span class="nu0">2012</span> from vm1.site
+Environment:
+  <span class="re2">LANG</span>=en_US.UTF-<span class="nu0">8</span>
+  <span class="re2">USER</span>=user1
+  <span class="re2">LOGNAME</span>=user1
+  <span class="re2">HOME</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1
+  <span class="re2">PATH</span>=<span class="sy0">/</span>usr<span class="sy0">/</span>local<span class="sy0">/</span>bin:<span class="sy0">/</span>usr<span class="sy0">/</span>bin:<span class="sy0">/</span>bin:<span class="sy0">/</span>usr<span class="sy0">/</span>bin<span class="sy0">/</span>X11:<span class="sy0">/</span>usr<span class="sy0">/</span>games
+  <span class="re2">MAIL</span>=<span class="sy0">/</span>var<span class="sy0">/</span>mail<span class="sy0">/</span>user1
+  <span class="re2">SHELL</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+  <span class="re2">SSH_CLIENT</span>=127.0.1.1 <span class="nu0">47456</span> <span class="nu0">1024</span>
+  <span class="re2">SSH_CONNECTION</span>=127.0.1.1 <span class="nu0">47456</span> 127.0.1.1 <span class="nu0">1024</span>
+  <span class="re2">SSH_TTY</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>pts<span class="sy0">/</span><span class="nu0">0</span>
+  <span class="re2">TERM</span>=xterm
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ps</span> au <span class="re5">--forest</span>
+USER       PID <span class="sy0">%</span>CPU <span class="sy0">%</span>MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+user1    <span class="nu0">26224</span>  <span class="nu0">0.0</span>  <span class="nu0">1.2</span>  <span class="nu0">23660</span>  <span class="nu0">6576</span> pts<span class="sy0">/</span><span class="nu0">2</span>    Ss   09:09   <span class="nu0">0</span>:01 <span class="re5">-bash</span>
+user1    <span class="nu0">27020</span>  <span class="nu0">1.0</span>  <span class="nu0">0.6</span>  <span class="nu0">68392</span>  <span class="nu0">3236</span> pts<span class="sy0">/</span><span class="nu0">2</span>    S    09:<span class="nu0">50</span>   <span class="nu0">0</span>:00  \_ sshd: user1 <span class="br0">&#91;</span>priv<span class="br0">&#93;</span>
+user1    <span class="nu0">27025</span>  <span class="nu0">0.0</span>  <span class="nu0">0.2</span>  <span class="nu0">68392</span>  <span class="nu0">1412</span> pts<span class="sy0">/</span><span class="nu0">2</span>    S    09:<span class="nu0">50</span>   <span class="nu0">0</span>:00  <span class="sy0">|</span>   \_ sshd: user1<span class="sy0">@</span>pts<span class="sy0">/</span><span class="nu0">0</span>
+user1    <span class="nu0">27026</span>  <span class="nu0">9.0</span>  <span class="nu0">1.2</span>  <span class="nu0">23564</span>  <span class="nu0">6404</span> pts<span class="sy0">/</span><span class="nu0">0</span>    Ss   09:<span class="nu0">50</span>   <span class="nu0">0</span>:00  <span class="sy0">|</span>       \_ <span class="re5">-bash</span>
+user1    <span class="nu0">27051</span>  <span class="nu0">0.0</span>  <span class="nu0">0.2</span>  <span class="nu0">16308</span>  <span class="nu0">1060</span> pts<span class="sy0">/</span><span class="nu0">0</span>    R+   09:<span class="nu0">50</span>   <span class="nu0">0</span>:00  <span class="sy0">|</span>           \_ <span class="kw2">ps</span> au <span class="re5">--forest</span>
+user1    <span class="nu0">27021</span>  <span class="nu0">1.1</span>  <span class="nu0">0.5</span>  <span class="nu0">38504</span>  <span class="nu0">2880</span> pts<span class="sy0">/</span><span class="nu0">2</span>    S+   09:<span class="nu0">50</span>   <span class="nu0">0</span>:00  \_ <span class="kw2">ssh</span> vm1 <span class="re5">-v</span> <span class="re5">-p</span> <span class="nu0">1024</span>
+root      <span class="nu0">1107</span>  <span class="nu0">0.0</span>  <span class="nu0">0.1</span>   <span class="nu0">5932</span>   <span class="nu0">620</span> tty6     Ss+  Jul18   <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty6
+root      <span class="nu0">1106</span>  <span class="nu0">0.0</span>  <span class="nu0">0.1</span>   <span class="nu0">5932</span>   <span class="nu0">616</span> tty5     Ss+  Jul18   <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty5
+root      <span class="nu0">1105</span>  <span class="nu0">0.0</span>  <span class="nu0">0.1</span>   <span class="nu0">5932</span>   <span class="nu0">620</span> tty4     Ss+  Jul18   <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty4
+root      <span class="nu0">1104</span>  <span class="nu0">0.0</span>  <span class="nu0">0.1</span>   <span class="nu0">5932</span>   <span class="nu0">620</span> tty3     Ss+  Jul18   <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty3
+root      <span class="nu0">1103</span>  <span class="nu0">0.0</span>  <span class="nu0">0.1</span>   <span class="nu0">5932</span>   <span class="nu0">616</span> tty2     Ss+  Jul18   <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty2
+root      <span class="nu0">1102</span>  <span class="nu0">0.0</span>  <span class="nu0">0.1</span>   <span class="nu0">5932</span>   <span class="nu0">616</span> tty1     Ss+  Jul18   <span class="nu0">0</span>:00 <span class="sy0">/</span>sbin<span class="sy0">/</span>getty <span class="nu0">38400</span> tty1
+<span class="co4">user1@vm1:~$ </span><span class="kw3">logout</span>
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$
+<span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span>+  Exit <span class="nu0">255</span>                <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span>
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">&amp;</span>
+<span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span> <span class="nu0">27067</span>
+user1<span class="sy0">@</span>vm1:~<span class="sy0">/</span>ssh_test$ <span class="kw2">scp</span> <span class="re5">-v</span> <span class="re5">-P</span> <span class="nu0">1024</span> vm1:.bashrc . <span class="nu0">2</span><span class="sy0">&gt;</span>scp.out
+Environment:
+  <span class="re2">LANG</span>=en_US.UTF-<span class="nu0">8</span>
+  <span class="re2">USER</span>=user1
+  <span class="re2">LOGNAME</span>=user1
+  <span class="re2">HOME</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1
+  <span class="re2">PATH</span>=<span class="sy0">/</span>usr<span class="sy0">/</span>local<span class="sy0">/</span>bin:<span class="sy0">/</span>usr<span class="sy0">/</span>bin:<span class="sy0">/</span>bin:<span class="sy0">/</span>usr<span class="sy0">/</span>bin<span class="sy0">/</span>X11:<span class="sy0">/</span>usr<span class="sy0">/</span>games
+  <span class="re2">MAIL</span>=<span class="sy0">/</span>var<span class="sy0">/</span>mail<span class="sy0">/</span>user1
+  <span class="re2">SHELL</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+  <span class="re2">SSH_CLIENT</span>=127.0.1.1 <span class="nu0">47459</span> <span class="nu0">1024</span>
+  <span class="re2">SSH_CONNECTION</span>=127.0.1.1 <span class="nu0">47459</span> 127.0.1.1 <span class="nu0">1024</span>
+.bashrc                                                                                                                     <span class="nu0">100</span><span class="sy0">%</span> <span class="nu0">3184</span>     3.1KB<span class="sy0">/</span>s   00:00
+<span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span>+  Exit <span class="nu0">255</span>                <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>sshd <span class="re5">-Ddf</span> sshd_config <span class="sy0">&gt;&gt;</span> sshd.out <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span></pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Creates <strong>/home/user1/ssh_test</strong> directory. </div>
+</li>
+<li class="level1"><div class="li"> Make it current working directory. </div>
+</li>
+<li class="level1"><div class="li"> Copies <strong>sshd_config</strong> to this directory. </div>
+</li>
+<li class="level1"><div class="li"> Changes sshd listen port from 22 to 1024, making copy named <strong>sshd_config.bak</strong> in the process. </div>
+</li>
+<li class="level1"><div class="li"> Replaces RSA host key localtion. </div>
+</li>
+<li class="level1"><div class="li"> Replaces DSA host key localtion. </div>
+</li>
+<li class="level1"><div class="li"> Shows difference between old and new versions of <strong>sshd_config</strong>. </div>
+</li>
+<li class="level1"><div class="li"> Generates new 4096-bit RSA host key pair with empty pass-phrase, saving it to <strong>/home/user1/ssh_test/ssh_host_rsa_key</strong> and <strong>/home/user1/ssh_test/ssh_host_rsa_key.pub</strong>. </div>
+</li>
+<li class="level1"><div class="li"> The same, but for DSA key. </div>
+</li>
+<li class="level1"><div class="li"> Generates new authentication key pair, saving it to <strong>/home/user1/.ssh/id_rsa</strong> and <strong>/home/user1/.ssh/id_rsa.pub</strong>. </div>
+</li>
+<li class="level1"><div class="li"> Copies <strong>id_rsa.pub</strong> to <strong>/home/user1/.ssh/authorized_keys</strong> to allow passwordless authentication. </div>
+</li>
+<li class="level1"><div class="li"> Starts new <abbr title="Secure Shell">SSH</abbr> server on port 1024 in debug mode, saving all output to <strong>sshd.log</strong>. </div>
+</li>
+<li class="level1"><div class="li"> Extracts host authentication key for <abbr title="Secure Shell">SSH</abbr> client and puts it to <strong>/home/user1/.ssh/known_hosts</strong>. </div>
+</li>
+<li class="level1"><div class="li"> Starts new <abbr title="Secure Shell">SSH</abbr> server on port 1024 in debug mode, appending all output to <strong>sshd.log</strong>. This is because in debug mode <abbr title="Secure Shell">SSH</abbr> server servers only only one connection. </div>
+</li>
+<li class="level1"><div class="li"> Connects to this server using ssh client. </div>
+</li>
+<li class="level1"><div class="li"> Prints out current running processes in tree format. You are able to see that you are working in shell <strong>bash</strong> started by <strong>sshd</strong> serving your connection which in turn is started by sshd you started yourself several lines before. </div>
+</li>
+<li class="level1"><div class="li"> Logs out from ssh session. </div>
+</li>
+<li class="level1"><div class="li"> Starts <abbr title="Secure Shell">SSH</abbr> server once more. </div>
+</li>
+<li class="level1"><div class="li"> Copies file <strong>.bashrc</strong> from your home directory to your current directory.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Watch this videos explaining how encryption works: <a href="http://www.youtube.com/watch?v=3QnD2c4Xovk" class="urlextern" title="http://www.youtube.com/watch?v=3QnD2c4Xovk" rel="nofollow">http://www.youtube.com/watch?v=3QnD2c4Xovk</a></div>
+</li>
+<li class="level1"><div class="li"> Read this: <a href="http://docstore.mik.ua/orelly/networking_2ndEd/ssh/ch03_04.htm" class="urlextern" title="http://docstore.mik.ua/orelly/networking_2ndEd/ssh/ch03_04.htm" rel="nofollow">http://docstore.mik.ua/orelly/networking_2ndEd/ssh/ch03_04.htm</a></div>
+</li>
+<li class="level1"><div class="li"> Read debug output found in files <strong>ssh.out</strong>, <strong>scp.out</strong> and <strong>sshd.out</strong>. Explain to yourself what is going on.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex27.html';
+var disqus_title   = 'Exercise 27. Networking: secure shell, ssh, sshd, scp';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex27.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex27.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex27.txt</bdi> · Last modified: 2012/12/20 10:54 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer27a5.gif?id=llthw%3Aex27&amp;1428742730" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex27 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:13 GMT -->
+</html>

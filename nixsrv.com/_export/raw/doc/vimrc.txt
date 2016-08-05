@@ -1,0 +1,51 @@
+====== .vimrc ======
+===== .vimrc =====
+<code bash>
+set nocp 
+syntax enable 
+set expandtab 
+set tabstop=4 
+set shiftwidth=4
+colorscheme github
+set autoindent
+set incsearch
+set foldlevel=0
+set foldnestmax=1
+set foldmethod=indent
+set foldignore=
+set foldminlines=0
+set foldignore=
+set nowrap
+set ft=python
+"set keymap=russian-jcukenwin
+set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯЖ;ABCDEFGHIJKLMNOPQRSTUVWXYZ:,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz
+set nu!
+set hidden
+</code>
+===== .gvimrc =====
+<code bash>set nocp
+syntax enable
+set expandtab
+set tabstop=4
+set shiftwidth=4
+colorscheme github
+set autoindent
+set go=
+set guifont=DejaVu\ Sans\ Mono\ 8
+set incsearch
+set guioptions+=a
+set foldlevel=0 
+set foldnestmax=1
+set foldmethod=indent
+set foldignore=
+set foldminlines=0
+set foldignore=
+set nowrap
+set ft=python
+"set keymap=russian-jcukenwin
+set langmap=ФИСВУАПРШОЛДЬТЩЗЙКЫЕГМЦЧНЯЖ;ABCDEFGHIJKLMNOPQRSTUVWXYZ:,фисвуапршолдьтщзйкыегмцчня;abcdefghijklmnopqrstuvwxyz
+set lines=50 columns=120
+set nu!
+set hidden
+</code>
+

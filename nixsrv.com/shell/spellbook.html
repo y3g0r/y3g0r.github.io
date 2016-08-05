@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/shell/spellbook by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:07:53 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>shell:spellbook - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="shell,spellbook"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="spellbookdecf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feede02b.php?mode=list&amp;ns=shell"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/shell/spellbook.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/shell/spellbook.txt"/>
+<link rel="canonical" href="spellbook.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='shell';var JSINFO = {"id":"shell:spellbook","namespace":"shell"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="sorted_list_of_different_commands">Sorted list of different commands</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="sy0">/</span>etc<span class="sy0">/</span>sysctl.d<span class="sy0">/</span>disableipv6.conf ; <span class="kw3">echo</span> net.ipv6.conf.all.disable_ipv6=<span class="nu0">1</span> <span class="sy0">&gt;</span> <span class="sy0">/</span>etc<span class="sy0">/</span>sysctl.d<span class="sy0">/</span>disableipv6.conf
+<span class="sy0">/</span>usr<span class="sy0">/</span>bin<span class="sy0">/</span>kvm <span class="re5">-monitor</span> unix:<span class="sy0">/</span>var<span class="sy0">/</span>run<span class="sy0">/</span>qemu-server<span class="sy0">/</span><span class="nu0">406</span>.mon,server,nowait <span class="re5">-vnc</span> unix:<span class="sy0">/</span>var<span class="sy0">/</span>run<span class="sy0">/</span>qemu-server<span class="sy0">/</span><span class="nu0">406</span>.vnc,password <span class="re5">-pidfile</span> <span class="sy0">/</span>var<span class="sy0">/</span>run<span class="sy0">/</span>qemu-server<span class="sy0">/</span><span class="nu0">406</span>.pid <span class="re5">-daemonize</span> <span class="re5">-usbdevice</span> tablet <span class="re5">-name</span> foobar <span class="re5">-smp</span> <span class="re2">sockets</span>=<span class="nu0">1</span>,<span class="re2">cores</span>=<span class="nu0">1</span> <span class="re5">-nodefaults</span> <span class="re5">-boot</span> <span class="re2">menu</span>=on,<span class="re2">order</span>=cad <span class="re5">-vga</span> cirrus <span class="re5">-tdf</span> <span class="re5">-drive</span> <span class="re2">file</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>cdrom,<span class="re2">if</span>=ide,<span class="re2">index</span>=<span class="nu0">2</span>,<span class="re2">media</span>=cdrom <span class="re5">-drive</span> <span class="re2">file</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>vm<span class="sy0">/</span>vm-<span class="nu0">406</span>-disk-<span class="nu0">1</span>,<span class="re2">if</span>=scsi,<span class="re2">index</span>=<span class="nu0">0</span>,<span class="re2">cache</span>=none,<span class="re2">boot</span>=on <span class="re5">-m</span> <span class="nu0">1024</span> <span class="re5">-netdev</span> <span class="re2">type</span>=tap,<span class="re2">id</span>=vlan1d0,<span class="re2">ifname</span>=tap406i1d0,<span class="re2">script</span>=<span class="sy0">/</span>var<span class="sy0">/</span>lib<span class="sy0">/</span>qemu-server<span class="sy0">/</span>bridge-vlan <span class="re5">-device</span> e1000,<span class="re2">mac</span>=7E:D6:<span class="nu0">68</span>:BF:C8:DA,<span class="re2">netdev</span>=vlan1d0 <span class="re5">-device</span> pci-assign,<span class="re2">host</span>=<span class="nu0">24</span>:<span class="nu0">10.0</span>
+<span class="kw2">awk</span> <span class="st_h">'{print $1}foobar'</span>
+<span class="kw2">awk</span> <span class="re5">-F</span><span class="st_h">'[: ]'</span> <span class="st_h">'{print $5-10}'</span>
+<span class="kw2">awk</span> <span class="re5">-F</span><span class="st_h">'[: ]'</span> <span class="st_h">'{print $5 &quot; &quot; $1}'</span>
+batch <span class="co0">#cron thing</span>
+<span class="kw2">cat</span> access_log-<span class="nu0">2011</span>-03-<span class="nu0">31</span> <span class="sy0">|</span> <span class="kw2">awk</span> <span class="re5">-F</span><span class="st_h">'[: ]'</span> <span class="st_h">'{print $5}'</span> <span class="sy0">|</span> <span class="kw2">uniq</span> <span class="re5">-c</span> <span class="co0"># ip by hours</span>
+<span class="kw2">cat</span> access_log-<span class="nu0">2011</span>-09-<span class="nu0">22</span>.rez <span class="sy0">|</span> <span class="kw2">awk</span> <span class="re5">-F</span><span class="st_h">'[: ]'</span> <span class="st_h">'{print $1}'</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="sy0">|</span> <span class="kw2">uniq</span> <span class="re5">-c</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="re5">-rn</span> <span class="sy0">|</span> <span class="kw2">less</span> <span class="co0"># the same as above</span>
+<span class="kw2">chown</span> root:root <span class="sy0">/</span>dev<span class="sy0">/</span>ttyS0
+colordiff <span class="re5">-y</span>
+cu <span class="re5">-l</span> <span class="sy0">/</span>dev<span class="sy0">/</span>ttyS0 <span class="re5">-s</span> <span class="nu0">9600</span>
+<span class="kw2">dd</span> ; <span class="kw1">time</span> <span class="kw2">dd</span> <span class="re2">if</span>=<span class="sy0">/</span>srv<span class="sy0">/</span>dumps<span class="sy0">/</span>tmp<span class="sy0">/</span>foobar.raw <span class="re2">of</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>vm<span class="sy0">/</span>vm-<span class="nu0">301</span>-disk-<span class="nu0">1</span> <span class="re2">bs</span>=400M
+<span class="kw2">dd</span> <span class="re2">if</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>sdX <span class="re2">of</span>=<span class="sy0">/</span>tmp<span class="sy0">/</span>sda-mbr.bin <span class="re2">bs</span>=<span class="nu0">512</span> <span class="re2">count</span>=<span class="nu0">1</span> <span class="co0">#backup mbr</span>
+<span class="kw2">dd</span> <span class="re2">if</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>vdb <span class="re2">of</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>vdc <span class="re2">bs</span>=<span class="nu0">1</span> <span class="re2">count</span>=<span class="nu0">446</span>
+<span class="kw2">diff</span>
+<span class="kw2">diff</span> <span class="re5">-y</span> <span class="sy0">&lt;</span><span class="br0">&#40;</span>ll <span class="sy0">/</span><span class="br0">&#41;</span> <span class="sy0">&lt;</span><span class="br0">&#40;</span>ll <span class="sy0">/</span>mnt<span class="br0">&#41;</span>
+<span class="kw2">dig</span> <span class="sy0">@</span>8.8.8.8 google.com
+<span class="kw2">du</span> <span class="re5">-h</span> <span class="sy0">|</span> <span class="kw2">grep</span> <span class="st_h">'\d{-}'</span>
+dump 0aLf foo.root <span class="sy0">/</span>
+ethtool <span class="re5">-s</span> eth0 speed <span class="nu0">100</span> duplex full autoneg off
+<span class="kw2">fdisk</span> <span class="co0">#!  DISK Geometry:  41610 cyls/16 heads/63 sectors = 41942880 sectors (20479MB)</span>
+<span class="kw2">find</span> . <span class="re5">-exec</span> <span class="kw2">file</span> <span class="br0">&#123;</span><span class="br0">&#125;</span> \; <span class="sy0">|</span> <span class="kw2">grep</span> text
+<span class="kw2">find</span> . <span class="sy0">|</span> <span class="kw2">xargs</span> <span class="kw2">stat</span> <span class="re5">-f</span> <span class="st0">&quot;%m%t%Sm %N&quot;</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="re5">-rn</span> <span class="sy0">|</span> <span class="kw2">head</span> <span class="re5">-10</span> <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-f2-</span> <span class="co0"># show last modified files ./ -name &quot;*.conf&quot; | xargs grep 1000</span>
+<span class="kw2">find</span> <span class="sy0">/</span> <span class="re5">-ctime</span>  <span class="re5">-2</span> <span class="re5">-not</span> \<span class="br0">&#40;</span> <span class="re5">-path</span> <span class="st0">&quot;/proc/*&quot;</span> <span class="re5">-o</span>  <span class="re5">-path</span> <span class="st0">&quot;/dev/*&quot;</span> <span class="re5">-o</span> <span class="re5">-path</span> <span class="st0">&quot;/sys/*&quot;</span> \<span class="br0">&#41;</span>  <span class="re5">-print</span> <span class="sy0">|</span> <span class="kw2">less</span> <span class="re5">-S</span>
+<span class="kw2">find</span> <span class="sy0">/</span>usr<span class="sy0">/</span>home <span class="re5">-name</span> .profile <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">|</span> <span class="kw2">more</span>
+<span class="kw1">for</span> i <span class="kw1">in</span> <span class="br0">&#123;</span><span class="nu0">10</span>..<span class="nu0">30</span><span class="br0">&#125;</span>; <span class="kw1">do</span> <span class="kw3">echo</span> <span class="kw3">test</span> <span class="re1">$i</span>; <span class="kw1">if</span> <span class="br0">&#40;</span><span class="br0">&#40;</span> <span class="re1">$i</span> <span class="sy0">&lt;</span> <span class="nu0">20</span> <span class="br0">&#41;</span><span class="br0">&#41;</span>; <span class="kw1">then</span> <span class="kw3">echo</span> <span class="kw2">less</span> than <span class="nu0">20</span>; <span class="kw1">fi</span>; <span class="kw1">done</span>; <span class="co0"># loop</span>
+<span class="kw1">for</span>; <span class="re2">c</span>=<span class="nu0">1</span>; <span class="re2">n</span>=<span class="nu0">0</span>; <span class="kw1">for</span> i <span class="kw1">in</span> $<span class="br0">&#40;</span> <span class="kw2">ls</span> <span class="br0">&#41;</span>; <span class="kw1">do</span> <span class="re2">n</span>=$<span class="br0">&#91;</span><span class="re1">$n</span>+<span class="nu0">1</span><span class="br0">&#93;</span>; <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="re1">$n</span> <span class="re5">-gt</span> <span class="re1">$c</span> <span class="br0">&#93;</span>; <span class="kw1">then</span> <span class="kw3">echo</span> item: <span class="re1">$i</span> <span class="re1">$n</span>; <span class="kw2">stat</span> <span class="re1">$i</span>; <span class="kw1">fi</span>; <span class="kw1">done</span> <span class="co0"># show files beginning pattern with pattern</span>
+<span class="kw2">grep</span> <span class="st_h">'31/Mar/2011:12:'</span> access_log-<span class="nu0">2011</span>-03-<span class="nu0">31</span> <span class="sy0">|</span> <span class="kw2">awk</span> <span class="st_h">'{print $1}'</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="sy0">|</span> <span class="kw2">uniq</span> <span class="re5">-c</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="re5">-rn</span> <span class="co0"># uniq ip per hour</span>
+<span class="kw2">grep</span> <span class="re5">-rlm</span> <span class="nu0">1</span> <span class="st_h">'foo'</span> .
+<span class="kw2">grep</span> ntp <span class="sy0">/</span>etc<span class="sy0">/</span>services
+inotifywait  <span class="re5">-mr</span> .
+inotifywatch
+iptables
+iptables <span class="re5">-A</span> FORWARD <span class="re5">-i</span> eth0 <span class="re5">-o</span> eth1 <span class="re5">-m</span> state <span class="re5">--state</span> RELATED,ESTABLISHED <span class="re5">-j</span>
+iptables <span class="re5">-A</span> FORWARD <span class="re5">-p</span> tcp <span class="re5">-d</span> 192.168.0.1 <span class="re5">--dport</span> <span class="nu0">3389</span> <span class="re5">-m</span> state <span class="re5">--state</span> NEW,ESTABLISHED,RELATED <span class="re5">-j</span> ACCEPT
+iptables <span class="re5">-t</span> filter <span class="re5">-A</span> FORWARD <span class="re5">-p</span> tcp <span class="re5">-m</span> tcp <span class="re5">--dport</span> <span class="nu0">25</span> <span class="re5">-j</span> LOG <span class="re5">--log-prefix</span> <span class="st0">&quot;!!!SMTP drop: &quot;</span> <span class="re5">--log-level</span> <span class="nu0">7</span>
+iptables <span class="re5">-t</span> filter <span class="re5">-A</span> FORWARD <span class="re5">-s</span> 10.0.0.0<span class="sy0">/</span><span class="nu0">8</span> <span class="re5">-p</span> tcp <span class="re5">-m</span> tcp <span class="re5">--dport</span> <span class="nu0">25</span> <span class="re5">-j</span> DROP
+iptables <span class="re5">-t</span> filter <span class="re5">-L</span> <span class="re5">-n</span> <span class="re5">-v</span>
+iptables <span class="re5">-t</span> nat <span class="re5">-A</span> POSTROUTING <span class="re5">-o</span> eth0 <span class="re5">-j</span> MASQUERADE <span class="re5">-s</span> 192.168.0.1 <span class="co0">#allow single machine to internet</span>
+iptables <span class="re5">-t</span> nat <span class="re5">-A</span> POSTROUTING <span class="re5">-s</span> 192.168.0.1 <span class="re5">-d</span> 192.168.0.1 <span class="re5">-j</span> MASQUERADE
+iptables <span class="re5">-t</span> nat <span class="re5">-A</span> PREROUTING <span class="re5">--src</span> 10.0.0.1<span class="sy0">/</span><span class="nu0">24</span> <span class="re5">--dst</span> 10.0.0.1 <span class="re5">-p</span> udp <span class="re5">--dport</span> <span class="nu0">53</span> <span class="re5">-j</span> DNAT <span class="re5">--to-destination</span> 8.8.8.8:<span class="nu0">53</span>
+iptables <span class="re5">-t</span> nat <span class="re5">-A</span> PREROUTING <span class="re5">-p</span> tcp <span class="re5">-i</span> eth0 <span class="re5">--dport</span> <span class="nu0">4001</span> <span class="re5">-j</span> DNAT <span class="re5">--to-destination</span> 192.168.0.1:<span class="nu0">3389</span>
+iptables <span class="re5">-t</span> nat <span class="re5">-A</span> PREROUTING <span class="re5">-s</span> 10.0.0.0<span class="sy0">/</span><span class="nu0">24</span> <span class="re5">-d</span> 10.0.0.1<span class="sy0">/</span><span class="nu0">32</span> <span class="re5">-p</span> udp <span class="re5">-m</span> udp <span class="re5">--dport</span> <span class="nu0">53</span> <span class="re5">-j</span> DNAT <span class="re5">--to-destination</span> 192.168.0.1:<span class="nu0">53</span>
+iptables <span class="co0">#part1 iptables -t nat -A PREROUTING -p tcp --dport 8055 --dst 192.168.0.1 -j DNAT --to-destination 192.168.0.1:8055</span>
+iptables <span class="co0">#part2 iptables -t nat -A POSTROUTING -p tcp --dport 8055 --dst 192.168.0.1 -j SNAT --to-source 192.168.0.1</span>
+ldapsearch <span class="re5">-H</span> <span class="st_h">'ldaps://host.site/'</span> <span class="re5">-b</span> <span class="st0">&quot;uid=user,ou=people,dc=domain,dc=site&quot;</span> <span class="re5">-v</span>
+<span class="kw2">less</span>
+<span class="kw2">less</span> <span class="re5">-iMSx4</span> <span class="re5">-FX</span> <span class="re5">-R</span>
+<span class="kw2">ls</span> <span class="re5">-aF</span> <span class="re5">--color</span> <span class="re5">--group-directories-first</span>
+<span class="kw2">ls</span> <span class="re5">-al</span>
+<span class="kw2">ls</span> <span class="re5">-l</span> <span class="sy0">|</span> <span class="kw2">grep</span> <span class="st_h">'^d'</span>
+<span class="kw2">ls</span> <span class="re5">-ltr</span>
+<span class="kw2">ls</span> <span class="re5">-R</span> <span class="sy0">|</span> <span class="kw2">grep</span> <span class="st0">&quot;:$&quot;</span> <span class="sy0">|</span> <span class="kw2">sed</span> <span class="re5">-e</span> <span class="st_h">'s/:$//'</span> <span class="re5">-e</span> <span class="st_h">'s/[^-][^\/]*\//--/g'</span> <span class="re5">-e</span> <span class="st_h">'s/^/   /'</span> <span class="re5">-e</span> <span class="st_h">'s/-/|/'</span> <span class="co0"># show tree</span>
+lsof <span class="re5">-Pi</span> tcp <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-c</span> <span class="nu0">1</span>-<span class="nu0">8</span>,<span class="nu0">13</span>-<span class="nu0">20</span>,<span class="nu0">60</span>-<span class="nu0">100</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="sy0">|</span> <span class="kw2">uniq</span> <span class="co0"># grop daemons by ports, ugly</span>
+lsof <span class="re5">-Pi</span> tcp:<span class="nu0">80</span>
+<span class="kw2">ltrace</span>
+lvchange <span class="re5">--addtag</span> <span class="sy0">@</span>pve-vm-<span class="nu0">300</span> <span class="sy0">/</span>dev<span class="sy0">/</span>vm<span class="sy0">/</span>vm-<span class="nu0">500</span>-disk-<span class="nu0">2</span> <span class="sy0">&amp;&amp;</span> lvchange <span class="re5">--deltag</span> <span class="sy0">@</span>pve-vm-<span class="nu0">500</span> <span class="sy0">/</span>dev<span class="sy0">/</span>vm<span class="sy0">/</span>vm-<span class="nu0">500</span>-disk-<span class="nu0">2</span>
+lvrename <span class="sy0">/</span>dev<span class="sy0">/</span>vm<span class="sy0">/</span>vm-<span class="nu0">500</span>-disk-<span class="nu0">2</span> vm-<span class="nu0">300</span>-disk-<span class="nu0">1</span>
+mail <span class="re5">-s</span> <span class="st0">&quot;subject&quot;</span> someone<span class="sy0">@</span>someaddress.com
+md5sum debian-6.0.1a-amd64-CD-<span class="nu0">1</span>.iso <span class="sy0">|</span> <span class="kw2">awk</span> <span class="st_h">'{print $1}'</span> <span class="sy0">|</span> <span class="kw2">diff</span> <span class="re5">-y</span> <span class="sy0">&lt;</span><span class="br0">&#40;</span><span class="kw2">xargs</span> <span class="kw3">echo</span><span class="br0">&#41;</span> <span class="sy0">&lt;</span><span class="br0">&#40;</span><span class="kw3">echo</span> <span class="st0">&quot;855f552327b1de54625407f554983301&quot;</span><span class="br0">&#41;</span> ; <span class="kw3">echo</span> <span class="re4">$?</span>
+<span class="kw2">mkdir</span> <span class="re5">-pv</span> <span class="sy0">/</span><span class="br0">&#123;</span>bin,cgi-bin,conf,core,etc,icons,include,perllib,share,templates,var,var<span class="sy0">/</span>tmp<span class="br0">&#125;</span>
+<span class="kw2">mkdir</span> <span class="sy0">/</span>tmp<span class="sy0">/</span>ramdisk; <span class="kw2">chmod</span> <span class="nu0">777</span> <span class="sy0">/</span>tmp<span class="sy0">/</span>ramdisk ; <span class="kw2">mount</span> <span class="re5">-t</span> tmpfs <span class="re5">-o</span> <span class="re2">size</span>=16384M tmpfs <span class="sy0">/</span>tmp<span class="sy0">/</span>ramdisk<span class="sy0">/</span> <span class="co0"># ram disk</span>
+modprobe <span class="re5">-r</span> igb <span class="sy0">&amp;&amp;</span> modprobe igb <span class="re2">max_vfs</span>=<span class="nu0">7</span>
+modprobe ip_conntrack ; iptstate
+mysqldump <span class="re5">-umoodle</span>  <span class="re5">-p</span> moodle <span class="sy0">&gt;</span> <span class="st0">&quot;/srv/bak/moodlemysqldump-<span class="es4">$(date +%d_%m_%Y_%H-%m-%S)</span>.sql&quot;</span>
+nc <span class="re5">-v</span> <span class="re5">-w</span> <span class="nu0">2</span> <span class="re5">-z</span> localhost <span class="nu0">1</span>-<span class="nu0">65536</span>
+nc ; <span class="kw3">echo</span> QUIT <span class="sy0">|</span> nc <span class="re5">-v</span> <span class="re5">-w</span> <span class="nu0">5</span> yandex.ru <span class="nu0">20</span>-<span class="nu0">250</span> <span class="nu0">500</span>-<span class="nu0">600</span> <span class="nu0">5990</span>-<span class="nu0">7000</span>
+nc ; <span class="kw2">yes</span> BBBBBBBBBBBBBBBBBBBBBB <span class="sy0">|</span> nc foobar.site <span class="nu0">2222</span> <span class="sy0">&gt;</span> <span class="sy0">/</span>dev<span class="sy0">/</span>null
+<span class="kw2">netstat</span> <span class="re5">-ni</span>
+<span class="kw2">nohup</span> .<span class="sy0">/</span>watchlogin <span class="sy0">&gt;/</span>dev<span class="sy0">/</span>null <span class="nu0">2</span><span class="sy0">&gt;/</span>dev<span class="sy0">/</span>null <span class="sy0">&amp;</span>
+ntpdate <span class="re5">-u</span> 192.168.0.1
+objdump <span class="re5">-p</span> <span class="sy0">|</span> <span class="kw2">grep</span> NEEDED
+portmap
+qm start
+qmrestore
+qmrestore <span class="re5">--storage</span> vm <span class="sy0">/</span>srv<span class="sy0">/</span>dumps<span class="sy0">/</span>bak<span class="sy0">/</span>vzdump-qemu-<span class="nu0">146</span>-<span class="nu0">2011</span>_08_30-02_31_39.tgz <span class="nu0">148</span>
+route add <span class="re5">-net</span> 192.168.0.1 netmask 255.255.255.0 gw 192.168.0.1 dev vmbr2
+route delete <span class="re5">-net</span> 192.168.0.1<span class="sy0">/</span><span class="nu0">24</span> gw 0.0.0.0
+rsync <span class="re5">-avve</span> <span class="kw2">ssh</span> root<span class="sy0">@</span>host:<span class="sy0">/</span>srv<span class="sy0">/</span>dumps<span class="sy0">/</span>bak<span class="sy0">/</span> <span class="sy0">/</span>mnt<span class="sy0">/</span>host
+<span class="kw2">scp</span> <span class="re5">-P</span> <span class="nu0">3022</span> foo orl<span class="sy0">@</span>host:<span class="sy0">/</span>home<span class="sy0">/</span>foo
+script
+<span class="kw2">sed</span> <span class="re5">-i</span> <span class="st_h">'s/old-word/new-word/g'</span> <span class="sy0">*</span>.txt
+<span class="kw2">sed</span> ; <span class="kw2">find</span> .<span class="sy0">/</span><span class="nu0">14</span><span class="sy0">*</span> <span class="re5">-type</span> f <span class="re5">-exec</span> <span class="kw2">sed</span> <span class="re5">-i</span> <span class="st_h">'s/vlan1/vlan3/'</span> <span class="br0">&#123;</span><span class="br0">&#125;</span> \;
+shmux
+sockstat <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-c</span> <span class="nu0">1</span>-<span class="nu0">15</span>,<span class="nu0">29</span>-<span class="nu0">80</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="sy0">|</span> <span class="kw2">uniq</span>
+<span class="kw2">sort</span> myfile.txt <span class="sy0">|</span> <span class="kw2">uniq</span>
+ssh-copy-id
+<span class="kw2">ssh</span> <span class="re5">-f</span> <span class="re5">-N</span> <span class="re5">-L</span> <span class="nu0">1234</span>:localhost:<span class="nu0">110</span> user<span class="sy0">@</span>POP3_server <span class="co0"># port forwarding</span>
+<span class="kw2">ssh</span> <span class="re5">-fN</span> <span class="re5">-R</span> 127.0.0.1:<span class="nu0">22000</span>:foo.site:<span class="nu0">22</span> bar.site
+<span class="kw2">ssh</span> <span class="re5">-R</span> remote_port:localhost:<span class="nu0">22</span> your_home_computer
+<span class="kw2">ssh</span> <span class="re5">-t</span>
+<span class="kw2">ssh</span> ; <span class="kw2">date</span> +<span class="sy0">%</span>Y<span class="sy0">%</span>m<span class="sy0">%</span>d<span class="sy0">%</span>T <span class="re5">-s</span> <span class="st0">&quot;<span class="es5">`ssh root@vbox1 'date &quot;+%Y%m%d %T&quot;'`</span>&quot;</span>
+<span class="kw2">ssh</span> ; <span class="kw1">for</span> HOST <span class="kw1">in</span> foo bar foobar; <span class="kw1">do</span> <span class="kw2">ssh</span> <span class="re1">$HOST</span> <span class="kw2">mkdir</span> <span class="re5">-p</span> .ssh ; <span class="kw2">cat</span> .ssh<span class="sy0">/</span>id_rsa.pub <span class="sy0">|</span> <span class="kw2">ssh</span> <span class="re1">$HOST</span> <span class="st_h">'cat &gt;&gt; .ssh/authorized_keys'</span>; <span class="kw1">done</span>
+<span class="kw2">ssh</span> ; <span class="kw2">ssh-keygen</span> <span class="re5">-t</span> rsa ; <span class="kw2">ssh</span> b<span class="sy0">@</span>B <span class="kw2">mkdir</span> <span class="re5">-p</span> .ssh ; <span class="kw2">cat</span> .ssh<span class="sy0">/</span>id_rsa.pub <span class="sy0">|</span> <span class="kw2">ssh</span> b<span class="sy0">@</span>B <span class="st_h">'cat &gt;&gt; .ssh/authorized_keys'</span>
+<span class="kw2">ssh</span> ; <span class="kw2">tar</span> cfv - .vimrc <span class="sy0">|</span> <span class="kw2">ssh</span> 192.168.0.1 <span class="st_h">'cd /home/orl; tar xfv -'</span>
+<span class="kw2">ssh</span> host <span class="st_h">'cat /srv/tmp/foo.root'</span> <span class="sy0">|</span> restore <span class="re5">-rf</span> -
+<span class="kw2">strace</span>
+<span class="kw2">strace</span> <span class="re5">-f</span>
+<span class="kw2">strace</span> <span class="re5">-f</span> <span class="re5">-o</span> eximstart <span class="sy0">/</span>etc<span class="sy0">/</span>init.d<span class="sy0">/</span>exim4 start
+<span class="kw2">strace</span> <span class="re5">-T</span> <span class="kw2">tar</span> <span class="re5">-zxf</span> <span class="sy0">/</span>tmp<span class="sy0">/</span>mail.110429.tar.gz <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">|</span> <span class="kw2">awk</span> <span class="st_h">'{last=$NF; NF--; print last, $0}'</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="sy0">|</span> <span class="kw2">head</span>
+<span class="kw2">strace</span> <span class="re5">-T</span> <span class="kw2">tar</span> <span class="re5">-zxf</span> <span class="sy0">/</span>tmp<span class="sy0">/</span>mail.110429.tar.gz <span class="nu0">2</span><span class="sy0">&gt;&amp;</span><span class="nu0">1</span> <span class="sy0">|</span> <span class="kw2">awk</span> <span class="st_h">'{last=$NF; NF--; print last, $0}'</span> <span class="sy0">|</span> <span class="kw2">sort</span> <span class="sy0">|</span> <span class="kw2">head</span>
+<span class="kw2">sudo</span> <span class="re5">-l</span>
+<span class="kw2">sudo</span> <span class="re5">-v</span>
+sysctl net.ipv4.ip_forward=<span class="nu0">1</span>
+sysrq-trigger; <span class="kw3">echo</span> <span class="re5">-e</span> <span class="st0">&quot;u<span class="es1">\n</span>s<span class="es1">\n</span>b<span class="es1">\n</span>&quot;</span> <span class="sy0">&gt;</span> <span class="sy0">/</span>proc<span class="sy0">/</span>sysrq-trigger
+<span class="kw2">tar</span> <span class="re5">--create</span> <span class="re5">--verbose</span> <span class="re5">--gzip</span> <span class="re5">--preserve-permissions</span> <span class="re5">--exclude</span>=<span class="sy0">/</span>dev <span class="re5">--exclude</span>=<span class="sy0">/</span>home <span class="re5">--exclude</span>=<span class="sy0">/</span>media <span class="re5">--exclude</span>=<span class="sy0">/</span>mnt <span class="re5">--exclude</span>=<span class="sy0">/</span>opt <span class="re5">--exclude</span>=<span class="sy0">/</span>proc <span class="re5">--exclude</span>=<span class="sy0">/</span>srv <span class="re5">--exclude</span>=<span class="sy0">/</span>srvs <span class="re5">--exclude</span>=<span class="sy0">/</span>tmp <span class="re5">--exclude</span>=<span class="sy0">/</span>usr <span class="re5">--exclude</span>=<span class="sy0">/</span>var <span class="re5">--exclude</span>=<span class="sy0">/</span>sys <span class="re5">--file</span>=foo.root <span class="sy0">/</span>
+<span class="kw2">tar</span> <span class="re5">--one-file-system</span>
+<span class="kw2">tar</span> <span class="re5">-czf</span> <span class="sy0">/</span>srv<span class="sy0">/</span>bak<span class="sy0">/</span>moodledata-$<span class="br0">&#40;</span><span class="kw2">date</span> +<span class="sy0">%</span>d_<span class="sy0">%</span>m_<span class="sy0">%</span>Y_<span class="sy0">%</span>H-<span class="sy0">%</span>m-<span class="sy0">%</span>S<span class="br0">&#41;</span>.tgz <span class="sy0">/</span>var<span class="sy0">/</span>moodledata
+<span class="kw2">tar</span> <span class="re5">-zxvf</span> foo, <span class="kw2">tar</span> <span class="re5">-tf</span> foo
+tcpdump <span class="re5">-vv</span> <span class="st_h">'udp port 53'</span>
+tcpdump <span class="kw2">ip</span> proto \\icmp
+tcpdump <span class="kw2">ip</span> proto \\icmp and src host 192.168.0.1
+tune2fs <span class="re5">-m</span> <span class="nu0">0</span> <span class="sy0">/</span>dev<span class="sy0">/</span>sda1
+update-initramfs <span class="re5">-u</span> <span class="re5">-k</span> 2.6.35-<span class="nu0">1</span>-pve
+<span class="kw2">vim</span> <span class="sy0">/</span>etc<span class="sy0">/</span>aliases
+visudo orl     <span class="re2">ALL</span>=<span class="br0">&#40;</span>ALL<span class="br0">&#41;</span> NOPASSWD: ALL
+vzdump <span class="re5">--compress</span> <span class="re5">--dumpdir</span> <span class="sy0">/</span>srv<span class="sy0">/</span>dumps<span class="sy0">/</span>bak<span class="sy0">/</span>manual <span class="nu0">106</span></pre>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'spellbook.html';
+var disqus_title   = 'Sorted list of different commands';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="spellbook.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="spellbook.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>shell/spellbook.txt</bdi> · Last modified: 2012/06/01 08:48 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer6976.gif?id=shell%3Aspellbook&amp;1428742778" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/shell/spellbook by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:07:55 GMT -->
+</html>

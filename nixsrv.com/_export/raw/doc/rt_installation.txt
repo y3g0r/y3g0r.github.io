@@ -1,0 +1,73 @@
+<code bash>
+@required_packages
+    aptitude install rt4-apache libapache2-mod-fastcgi request-tracker4 rt4-db-sqlit libfcgi-perl
+#configure apache2 with ssl and basic auth
+    a2enmod ssl
+    a2enmod rewrite
+    a2enmod fastcgi
+    grep -Ev '^$|^\s*#' /etc/apache2/sites-enabled/
+        <IfModule mod_ssl.c>
+        <VirtualHost _default_:443>
+                AddDefaultCharset UTF-8
+                ServerAdmin webmaster@localhost
+                DocumentRoot /var/www
+                <Location />
+                    Options +FollowSymLinks +Multiviews +Indexes
+                    AuthType basic
+                    AuthName "basicauth"
+                    AuthUserFile /etc/apache2/htpasswd
+                    Require valid-user
+                </Location>
+                FastCgiServer /usr/share/request-tracker4/libexec/rt-server.fcgi -initial-env RT_SITE_CONFIG=/etc/request-tracker4/RT_SiteConfig.pm
+                Alias /rt/NoAuth/images /usr/share/request-tracker4/html/NoAuth/images
+                ScriptAlias /rt /usr/share/request-tracker4/libexec/rt-server.fcgi
+                <Location /rt/>
+                    DirectoryIndex index.html
+                </Location>
+                <Location /rt/REST/1.0/NoAuth>
+                    Order Allow,Deny
+                    Allow from 127.0.0.1
+                </Location>
+                <Directory /var/lib/git>
+                    Order allow,deny
+                    Allow from all
+                    Options +ExecCGI
+                    AddHandler cgi-script .cgi
+                    DirectoryIndex gitweb.cgi
+                    RewriteEngine on
+                    RewriteRule ^([^.]+\.git.*)$ /git/gitweb.cgi/$0 [L,PT]
+                </Directory>
+                <Directory />
+                    Options FollowSymLinks
+                    AllowOverride None
+                </Directory>
+                <Directory /var/www/>
+                    Options Indexes FollowSymLinks MultiViews
+                    AllowOverride None
+                    Order allow,deny
+                    allow from all
+                </Directory>
+                ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+                <Directory "/usr/lib/cgi-bin">
+                    AllowOverride None
+                    Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+                    Order allow,deny
+                    Allow from all
+                </Directory>
+                ErrorLog ${APACHE_LOG_DIR}/error.log 
+                LogLevel warn
+                CustomLog ${APACHE_LOG_DIR}/ssl_access.log combined 
+                SSLEngine on
+                SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+                SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+                <FilesMatch "\.(cgi|shtml|phtml|php)$">
+                        SSLOptions +StdEnvVars
+                </FilesMatch>
+                <Directory /usr/lib/cgi-bin>
+                        SSLOptions +StdEnvVars
+                </Directory>
+        </VirtualHost>
+        </IfModule>
+add users with passwords
+    htpasswd -s /etc/apache2/htpasswd foor
+</code>

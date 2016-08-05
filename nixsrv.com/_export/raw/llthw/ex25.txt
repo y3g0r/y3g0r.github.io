@@ -1,0 +1,172 @@
+====== Exercise 25. Networking: configuration files, /etc/network/interfaces ======
+
+Configuring network interfaces from command line is all well, but now it is time to learn how to tell **vm1** to configure them automatically. For this you will learn about the **/etc/network/interfaces** configuration file:
+<code bash>
+user1@vm1:~$ cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+#(1) (2)
+auto lo
+#(3)   (4)(5)  (6)
+iface lo inet loopback
+
+# The primary network interface
+#(7)           (8)
+allow-hotplug eth0
+#(9)   (10) (11) (12)
+iface eth0 inet dhcp
+</code>
+
+As usual, fields and their descriptions:
+^ Field     ^ Description  ^
+| **(1)**   | Automatically configure interface. |
+| **(2)**   | Interface name.                  |
+| **(3)**   | Start of interface configuration. |
+| **(4)**   | Name of interface being configured. |
+| **(5)**   | This interface uses TCP/IP networking, IPv4. |
+| **(6)**   | It is loopback interface. Default loopback address will be assigned to it automatically. |
+| **(7)**   | Configure interface automatically when it becomes available (think usb-modem here).   |
+| **(8)**   | Interface name.                   |
+| **(9)**   | Start of interface configuration. |
+| **(10)**  | Name of interface being configured. |
+| **(11)**  | This interface uses TCP/IP networking, IPv4. |
+| **(12)**  | This interface gets its parameters automatically via DHCP. |
+
+Other important files which contain network configuration, but we will not touch them for here:
+  - **[[http://en.wikipedia.org/wiki/Hosts_(file)|/etc/hosts]]** — a computer file used in an operating system to map hostnames to IP addresses. The hosts file is a plain text file and is conventionally named hosts.
+  - **[[http://en.wikipedia.org/wiki/Hostname|/etc/hostname]]** — a label that is assigned to a device connected to a computer network and that is used to identify the device in various forms of electronic communication.
+  - **[[http://en.wikipedia.org/wiki/Resolv.conf|/etc/resolv.conf]]** — a computer file used in various operating systems to configure the Domain Name System (DNS) resolver library. The file is a plain-text file usually created by the network administrator or by applications that manage the configuration tasks of the system. The resolvconf program is one such program on linux machines which manages the resolv.conf file.
+
+Let us remember **tap0** from previous exercise. If you reboot **vm1** it is gone. Of course you can enable it by retyping relevant commands, but let us imagine that you need it to become available automatically after reboot. 
+
+Now you will learn how to configure an interface using **/etc/network/interfaces** file.
+===== Do this =====
+
+<code bash 1>
+ip a s
+sudo vim /etc/network/interfaces
+</code>
+
+Now add this lines to the end of configuration file:
+<code bash 3>
+auto tap0
+iface tap0 inet static
+        address 10.2.2.2
+        netmask 255.255.255.0
+        tunctl_user uml-net
+
+allow-hotplug tap1
+iface tap1 inet static
+        address 10.3.3.3
+        netmask 255.255.255.0
+</code>
+
+Now type **:wq<ENTER>** and continue:
+
+<code bash 13>
+sudo /etc/init.d/networking start
+ip a s
+sudo tunctl -t tap1 -u uml-net
+ip a s
+</code>
+====== What you should see ======
+<code bash>
+user1@vm1:~$ ip a s
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 08:00:27:d4:45:68 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:4568/64 scope link
+       valid_lft forever preferred_lft forever
+user1@vm1:~$ sudo vim /etc/network/interfaces
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet dhcp
+
+auto tap0
+iface tap0 inet static
+        address 10.2.2.2
+        netmask 255.255.255.0
+        tunctl_user uml-net
+
+allow-hotplug tap1
+iface tap1 inet static
+        address 10.3.3.3
+        netmask 255.255.255.0
+~
+"/etc/network/interfaces" 21L, 457C written               21,1-8        Bot
+user1@vm1:~$ sudo /etc/init.d/networking start
+Configuring network interfaces...Set 'tap0' persistent and owned by uid 104 done.
+user1@vm1:~$ ip a s
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 08:00:27:d4:45:68 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:4568/64 scope link
+       valid_lft forever preferred_lft forever
+3: tap0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UNKNOWN qlen 500
+    link/ether 46:63:30:70:b5:21 brd ff:ff:ff:ff:ff:ff
+    inet 10.2.2.2/24 brd 10.2.2.255 scope global tap0
+    inet6 fe80::4463:30ff:fe70:b521/64 scope link
+       valid_lft forever preferred_lft forever
+user1@vm1:~$ sudo tunctl -t tap1 -u uml-net
+Set 'tap1' persistent and owned by uid 104
+user1@vm1:~$ ip a s
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+    link/ether 08:00:27:d4:45:68 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:4568/64 scope link
+       valid_lft forever preferred_lft forever
+3: tap0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UNKNOWN qlen 500
+    link/ether 46:63:30:70:b5:21 brd ff:ff:ff:ff:ff:ff
+    inet 10.2.2.2/24 brd 10.2.2.255 scope global tap0
+    inet6 fe80::4463:30ff:fe70:b521/64 scope link
+       valid_lft forever preferred_lft forever
+4: tap1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UNKNOWN qlen 500
+    link/ether 8a:ed:90:33:93:55 brd ff:ff:ff:ff:ff:ff
+    inet 10.3.3.3/24 brd 10.3.3.255 scope global tap1
+    inet6 fe80::88ed:90ff:fe33:9355/64 scope link
+       valid_lft forever preferred_lft forever
+user1@vm1:~$
+</code>
+===== Explanation ======
+  - Print out current interface configuration.
+  - Edit **/etc/network/interfaces**.
+  - Automatically configure **tap0**.
+  - Set the following //IPv4 static parameters // fop **tap0**.
+  - Add IP address **10.2.2.2** to **tap0**.
+  - Specify //netmask// for this IP address. Parameters //broadcast// and //network// are derived from this //netmask// automatically.
+  - Specify user who will own **tap0** interface.
+  - Empty line for readability. 
+  - Add the following parameters to **tap1** interface //when it appears in the system//.
+  - Set the following //IPv4 static parameters // fop **tap1**.
+  - Add IP address **10.3.3.3** to **tap0**.
+  - Specify //netmask// for this IP address. 
+  - Applies changes in network configuration.
+  - Prints out current interface configuration. You are able to see that **tap0** is add to the list of interfaces.
+  - Adds **tap1** pseudo-interface.
+  - Prints out current interface configuration. You are able to see that its parameters specified in **/etc/network/interfaces** are applied to it automatically.
+====== Extra credit ======  
+  - Explain how //network// and //broadcast// parameters are derived.
+  - Try this: **ping kitty**. Failure is expected. Now add an entry to **/etc/hosts** so that you will be able to successfully ping.

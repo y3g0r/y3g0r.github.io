@@ -1,0 +1,396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex25 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:02 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex25 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex25"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex25decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex25.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex25.txt"/>
+<link rel="canonical" href="ex25.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex25","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_25_networkingconfiguration_filesetcnetworkinterfaces">Exercise 25. Networking: configuration files, /etc/network/interfaces</h1>
+<div class="level1">
+<p>
+Configuring network interfaces from command line is all well, but now it is time to learn how to tell <strong>vm1</strong> to configure them automatically. For this you will learn about the <strong>/etc/network/interfaces</strong> configuration file:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">cat</span> <span class="sy0">/</span>etc<span class="sy0">/</span>network<span class="sy0">/</span>interfaces
+<span class="co0"># This file describes the network interfaces available on your system</span>
+<span class="co0"># and how to activate them. For more information, see interfaces(5).</span>
+&nbsp;
+<span class="co0"># The loopback network interface</span>
+<span class="co0">#(1) (2)</span>
+auto lo
+<span class="co0">#(3)   (4)(5)  (6)</span>
+iface lo inet loopback
+&nbsp;
+<span class="co0"># The primary network interface</span>
+<span class="co0">#(7)           (8)</span>
+allow-hotplug eth0
+<span class="co0">#(9)   (10) (11) (12)</span>
+iface eth0 inet dhcp</pre>
+<p>
+As usual, fields and their descriptions:
+</p>
+<div class="table sectionedit2"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> Field </th><th class="col1 leftalign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <strong>(1)</strong> </td><td class="col1"> Automatically configure interface. </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <strong>(2)</strong> </td><td class="col1 leftalign"> Interface name. </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <strong>(3)</strong> </td><td class="col1"> Start of interface configuration. </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <strong>(4)</strong> </td><td class="col1"> Name of interface being configured. </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <strong>(5)</strong> </td><td class="col1"> This interface uses TCP/IP networking, IPv4. </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <strong>(6)</strong> </td><td class="col1"> It is loopback interface. Default loopback address will be assigned to it automatically. </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <strong>(7)</strong> </td><td class="col1 leftalign"> Configure interface automatically when it becomes available (think usb-modem here). </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <strong>(8)</strong> </td><td class="col1 leftalign"> Interface name. </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> <strong>(9)</strong> </td><td class="col1"> Start of interface configuration. </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> <strong>(10)</strong> </td><td class="col1"> Name of interface being configured. </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> <strong>(11)</strong> </td><td class="col1"> This interface uses TCP/IP networking, IPv4. </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> <strong>(12)</strong> </td><td class="col1"> This interface gets its parameters automatically via <abbr title="Dynamic Host Configuration Protocol">DHCP</abbr>. </td>
+</tr>
+</table></div>
+<p>
+Other important files which contain network configuration, but we will not touch them for here:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Hosts_(file)" class="urlextern" title="http://en.wikipedia.org/wiki/Hosts_(file)" rel="nofollow">/etc/hosts</a></strong> — a computer file used in an operating system to map hostnames to IP addresses. The hosts file is a plain text file and is conventionally named hosts.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Hostname" class="urlextern" title="http://en.wikipedia.org/wiki/Hostname" rel="nofollow">/etc/hostname</a></strong> — a label that is assigned to a device connected to a computer network and that is used to identify the device in various forms of electronic communication.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Resolv.conf" class="urlextern" title="http://en.wikipedia.org/wiki/Resolv.conf" rel="nofollow">/etc/resolv.conf</a></strong> — a computer file used in various operating systems to configure the Domain Name System (<abbr title="Domain Name System">DNS</abbr>) resolver library. The file is a plain-text file usually created by the network administrator or by applications that manage the configuration tasks of the system. The resolvconf program is one such program on linux machines which manages the resolv.conf file.</div>
+</li>
+</ol>
+<p>
+Let us remember <strong>tap0</strong> from previous exercise. If you reboot <strong>vm1</strong> it is gone. Of course you can enable it by retyping relevant commands, but let us imagine that you need it to become available automatically after reboot.
+</p>
+<p>
+Now you will learn how to configure an interface using <strong>/etc/network/interfaces</strong> file.
+</p>
+</div>
+<h2 class="sectionedit3" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno">1:</span> <span class="kw2">ip</span> a s
+<span class="lno">2:</span> <span class="kw2">sudo</span> <span class="kw2">vim</span> <span class="sy0">/</span>etc<span class="sy0">/</span>network<span class="sy0">/</span>interfaces
+</pre>
+<p>
+Now add this lines to the end of configuration file:
+</p>
+<pre class="bash code bash"><span class="lno"> 3:</span> auto tap0
+<span class="lno"> 4:</span> iface tap0 inet static
+<span class="lno"> 5:</span>         address 10.2.2.2
+<span class="lno"> 6:</span>         netmask 255.255.255.0
+<span class="lno"> 7:</span>         tunctl_user uml-net
+<span class="lno"> 8:</span>
+<span class="lno"> 9:</span> allow-hotplug tap1
+<span class="lno">10:</span> iface tap1 inet static
+<span class="lno">11:</span>         address 10.3.3.3
+<span class="lno">12:</span>         netmask 255.255.255.0
+</pre>
+<p>
+Now type <strong>:wq&lt;ENTER&gt;</strong> and continue:
+</p>
+<pre class="bash code bash"><span class="lno">13:</span> <span class="kw2">sudo</span> <span class="sy0">/</span>etc<span class="sy0">/</span>init.d<span class="sy0">/</span>networking start
+<span class="lno">14:</span> <span class="kw2">ip</span> a s
+<span class="lno">15:</span> <span class="kw2">sudo</span> tunctl <span class="re5">-t</span> tap1 <span class="re5">-u</span> uml-net
+<span class="lno">16:</span> <span class="kw2">ip</span> a s
+</pre>
+</div>
+<h1 class="sectionedit4" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">ip</span> a s
+<span class="nu0">1</span>: lo: <span class="sy0">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">16436</span> qdisc noqueue state UNKNOWN
+    link<span class="sy0">/</span>loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1<span class="sy0">/</span><span class="nu0">8</span> scope host lo
+    inet6 ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> scope host
+       valid_lft forever preferred_lft forever
+<span class="nu0">2</span>: eth0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UP qlen <span class="nu0">1000</span>
+    link<span class="sy0">/</span>ether 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15<span class="sy0">/</span><span class="nu0">24</span> brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">vim</span> <span class="sy0">/</span>etc<span class="sy0">/</span>network<span class="sy0">/</span>interfaces
+<span class="co0"># and how to activate them. For more information, see interfaces(5).</span>
+&nbsp;
+<span class="co0"># The loopback network interface</span>
+auto lo
+iface lo inet loopback
+&nbsp;
+<span class="co0"># The primary network interface</span>
+allow-hotplug eth0
+iface eth0 inet dhcp
+&nbsp;
+auto tap0
+iface tap0 inet static
+        address 10.2.2.2
+        netmask 255.255.255.0
+        tunctl_user uml-net
+&nbsp;
+allow-hotplug tap1
+iface tap1 inet static
+        address 10.3.3.3
+        netmask 255.255.255.0
+~
+<span class="st0">&quot;/etc/network/interfaces&quot;</span> 21L, 457C written               <span class="nu0">21</span>,<span class="nu0">1</span>-<span class="nu0">8</span>        Bot
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="sy0">/</span>etc<span class="sy0">/</span>init.d<span class="sy0">/</span>networking start
+Configuring network interfaces...Set <span class="st_h">'tap0'</span> persistent and owned by uid <span class="nu0">104</span> done.
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ip</span> a s
+<span class="nu0">1</span>: lo: <span class="sy0">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">16436</span> qdisc noqueue state UNKNOWN
+    link<span class="sy0">/</span>loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1<span class="sy0">/</span><span class="nu0">8</span> scope host lo
+    inet6 ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> scope host
+       valid_lft forever preferred_lft forever
+<span class="nu0">2</span>: eth0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UP qlen <span class="nu0">1000</span>
+    link<span class="sy0">/</span>ether 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15<span class="sy0">/</span><span class="nu0">24</span> brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="nu0">3</span>: tap0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UNKNOWN qlen <span class="nu0">500</span>
+    link<span class="sy0">/</span>ether <span class="nu0">46</span>:<span class="nu0">63</span>:<span class="nu0">30</span>:<span class="nu0">70</span>:b5:<span class="nu0">21</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.2.2.2<span class="sy0">/</span><span class="nu0">24</span> brd 10.2.2.255 scope global tap0
+    inet6 fe80::<span class="nu0">4463</span>:30ff:fe70:b521<span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> tunctl <span class="re5">-t</span> tap1 <span class="re5">-u</span> uml-net
+Set <span class="st_h">'tap1'</span> persistent and owned by uid <span class="nu0">104</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ip</span> a s
+<span class="nu0">1</span>: lo: <span class="sy0">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">16436</span> qdisc noqueue state UNKNOWN
+    link<span class="sy0">/</span>loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1<span class="sy0">/</span><span class="nu0">8</span> scope host lo
+    inet6 ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> scope host
+       valid_lft forever preferred_lft forever
+<span class="nu0">2</span>: eth0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UP qlen <span class="nu0">1000</span>
+    link<span class="sy0">/</span>ether 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15<span class="sy0">/</span><span class="nu0">24</span> brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="nu0">3</span>: tap0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UNKNOWN qlen <span class="nu0">500</span>
+    link<span class="sy0">/</span>ether <span class="nu0">46</span>:<span class="nu0">63</span>:<span class="nu0">30</span>:<span class="nu0">70</span>:b5:<span class="nu0">21</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.2.2.2<span class="sy0">/</span><span class="nu0">24</span> brd 10.2.2.255 scope global tap0
+    inet6 fe80::<span class="nu0">4463</span>:30ff:fe70:b521<span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="nu0">4</span>: tap1: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UNKNOWN qlen <span class="nu0">500</span>
+    link<span class="sy0">/</span>ether 8a:ed:<span class="nu0">90</span>:<span class="nu0">33</span>:<span class="nu0">93</span>:<span class="nu0">55</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.3.3.3<span class="sy0">/</span><span class="nu0">24</span> brd 10.3.3.255 scope global tap1
+    inet6 fe80::88ed:90ff:fe33:<span class="nu0">9355</span><span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="co4">user1@vm1:~$</span></pre>
+</div>
+<h2 class="sectionedit5" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Print out current interface configuration.</div>
+</li>
+<li class="level1"><div class="li"> Edit <strong>/etc/network/interfaces</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Automatically configure <strong>tap0</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Set the following <em>IPv4 static parameters </em> fop <strong>tap0</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Add IP address <strong>10.2.2.2</strong> to <strong>tap0</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Specify <em>netmask</em> for this IP address. Parameters <em>broadcast</em> and <em>network</em> are derived from this <em>netmask</em> automatically.</div>
+</li>
+<li class="level1"><div class="li"> Specify user who will own <strong>tap0</strong> interface.</div>
+</li>
+<li class="level1"><div class="li"> Empty line for readability. </div>
+</li>
+<li class="level1"><div class="li"> Add the following parameters to <strong>tap1</strong> interface <em>when it appears in the system</em>.</div>
+</li>
+<li class="level1"><div class="li"> Set the following <em>IPv4 static parameters </em> fop <strong>tap1</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Add IP address <strong>10.3.3.3</strong> to <strong>tap0</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Specify <em>netmask</em> for this IP address. </div>
+</li>
+<li class="level1"><div class="li"> Applies changes in network configuration.</div>
+</li>
+<li class="level1"><div class="li"> Prints out current interface configuration. You are able to see that <strong>tap0</strong> is add to the list of interfaces.</div>
+</li>
+<li class="level1"><div class="li"> Adds <strong>tap1</strong> pseudo-interface.</div>
+</li>
+<li class="level1"><div class="li"> Prints out current interface configuration. You are able to see that its parameters specified in <strong>/etc/network/interfaces</strong> are applied to it automatically.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit6" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Explain how <em>network</em> and <em>broadcast</em> parameters are derived.</div>
+</li>
+<li class="level1"><div class="li"> Try this: <strong>ping kitty</strong>. Failure is expected. Now add an entry to <strong>/etc/hosts</strong> so that you will be able to successfully ping.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex25.html';
+var disqus_title   = 'Exercise 25. Networking: configuration files, /etc/network/interfaces';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex25.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex25.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex25.txt</bdi> · Last modified: 2013/01/17 16:00 (external edit)<br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer2b85.gif?id=llthw%3Aex25&amp;1428742729" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex25 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:05 GMT -->
+</html>

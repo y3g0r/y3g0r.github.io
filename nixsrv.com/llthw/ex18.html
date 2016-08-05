@@ -1,0 +1,548 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex18 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:40 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex18 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex18"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex18decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex18.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex18.txt"/>
+<link rel="canonical" href="ex18.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex18","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_18_loggingvarlog_rsyslog_logger">Exercise 18. Logging, /var/log, rsyslog, logger</h1>
+<div class="level1">
+<p>
+Daemon are those programs which run in the background. Because of this a question arises: how do they tell you how they are doing? And how do they tell you that something got wrong? This problem is solved by log files, in which daemons write their status and operations. In Debian this files reside in <strong>/var/log</strong> directory.
+</p>
+<p>
+But who writes those files? The most obvious answer, <em>The daemons themselves</em>, is actually often wrong. In some cases daemons do indeed write log files themselves, but usually they do it through the daemon called <strong>rsyslogd</strong>, which is called a <em>logging daemon</em>. It writes logs to different files for simplifying searching and analyzing them. Do distinguish between this files it has a concept called <em>facilities</em>. This is list of standard facilities:
+</p>
+<div class="table sectionedit2"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0">Facility</th><th class="col1" colspan="2">Facility Description</th><th class="col3">Facility</th><th class="col4">Facility Description</th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign">auth </td><td class="col1 leftalign" colspan="2">Authorization-related messages </td><td class="col3">local0</td><td class="col4">local use 0 </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign">authpriv </td><td class="col1" colspan="2">Security information of sensitive nature</td><td class="col3">local1</td><td class="col4">local use 1 </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign">cron </td><td class="col1 leftalign" colspan="2">Cron information </td><td class="col3">local2</td><td class="col4">local use 2 </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign">daemon </td><td class="col1 leftalign" colspan="2">System daemons </td><td class="col3">local3</td><td class="col4">local use 3 </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign">ftp </td><td class="col1 leftalign" colspan="2"><abbr title="File Transfer Protocol">FTP</abbr> demon messagestion messages </td><td class="col3">local4</td><td class="col4">local use 4 </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign">kern </td><td class="col1 leftalign" colspan="2">Kernel messages </td><td class="col3">local5</td><td class="col4">local use 5 </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign">lpr </td><td class="col1 leftalign" colspan="2">Line printer subsystem </td><td class="col3">local6</td><td class="col4">local use 6 </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign">mail </td><td class="col1 leftalign" colspan="2">Mail subsystem </td><td class="col3">local7</td><td class="col4">local use 7 </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign">news </td><td class="col1 leftalign" colspan="2">News subsystem </td><td class="col3 leftalign"> </td><td class="col4 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign">security </td><td class="col1 leftalign" colspan="2">Depreacated name for <strong>auth</strong> </td><td class="col3 leftalign"> </td><td class="col4 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign">syslog </td><td class="col1" colspan="2">Messages generated internally by syslogd</td><td class="col3 leftalign"> </td><td class="col4 leftalign"> </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign">user </td><td class="col1 leftalign" colspan="2"> </td><td class="col3 leftalign"> </td><td class="col4 leftalign"> </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign">uucp </td><td class="col1 leftalign" colspan="2">UUCP subsystem </td><td class="col3 leftalign"> </td><td class="col4 leftalign"> </td>
+</tr>
+</table></div>
+<p>
+Every entry is also marked with severity status for ease of analyzing what happaned:
+</p>
+<div class="table sectionedit3"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0">Code Name</th><th class="col1 leftalign">Severity </th><th class="col2 leftalign">Description </th><th class="col3">General Description</th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign">alert </td><td class="col1 leftalign">Alert </td><td class="col2 leftalign">Action must be taken immediately. </td><td class="col3">Should be corrected immediately, therefore notify staff who can fix the problem. An example would be the loss of a backup <abbr title="Internet Service Provider">ISP</abbr> connection.</td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign">crit </td><td class="col1 leftalign">Critical </td><td class="col2 leftalign">Critical conditions. </td><td class="col3">Should be corrected immediately, but indicates failure in a primary system, an example is a loss of primary <abbr title="Internet Service Provider">ISP</abbr> connection.</td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign">debug </td><td class="col1 leftalign">Debug </td><td class="col2 leftalign">Debug-level messages. </td><td class="col3">Info useful to developers for debugging the application, not useful during operations.</td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign">emerg </td><td class="col1 leftalign">Emergency </td><td class="col2 leftalign">System is unusable. </td><td class="col3">A “panic” condition usually affecting multiple apps/servers/sites. At this level it would usually notify all tech staff on call.</td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign">err </td><td class="col1 leftalign">Error </td><td class="col2 leftalign">Error conditions. </td><td class="col3">Non-urgent failures, these should be relayed to developers or admins; each item must be resolved within a given time.</td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign">error </td><td class="col1 leftalign">Error </td><td class="col2 leftalign">Deprecated name for <strong>err</strong> </td><td class="col3">Non-urgent failures, these should be relayed to developers or admins; each item must be resolved within a given time.</td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign">info </td><td class="col1 leftalign">Informational </td><td class="col2 leftalign">Informational messages. </td><td class="col3">Normal operational messages - may be harvested for reporting, measuring throughput, etc. - no action required.</td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign">notice </td><td class="col1 leftalign">Notice </td><td class="col2 leftalign">Normal but significant condition. </td><td class="col3">Events that are unusual but not error conditions - might be summarized in an email to developers or admins to spot potential problems - no immediate action required.</td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign">panic </td><td class="col1 leftalign">Emergency </td><td class="col2 leftalign">Deprecated name for <strong>emerg</strong> </td><td class="col3">A “panic” condition usually affecting multiple apps/servers/sites. At this level it would usually notify all tech staff on call.</td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign">warning </td><td class="col1 leftalign">Warning </td><td class="col2 leftalign">Warning conditions. </td><td class="col3">Warning messages, not an error, but indication that an error will occur if action is not taken, e.g. file system 85% full - each item must be resolved within a given time.</td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign">warn </td><td class="col1 leftalign">Warning </td><td class="col2 leftalign">Deprecated name for <strong>warning</strong> </td><td class="col3">Warning messages, not an error, but indication that an error will occur if action is not taken, e.g. file system 85% full - each item must be resolved within a given time.</td>
+</tr>
+</table></div>
+<p>
+Because if log files are left to themselves they tend to grow really big and consume all available disk space, there is a mechanism called rotation. This mechanism by default usually keeps only seven last log files, for last 7 days, including today. Rotation is performed by <strong>logrotate</strong> daemon, to help you understand what this daemon does I wrote it out for you:
+</p>
+<pre class="code">
+Day 0
+    log.0 is created
+Day 1
+    mv log.0 log.1
+    log.0 is created
+Day 2
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 3
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 4
+    mv log.3 log.4
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 5
+    mv log.4 log.5
+    mv log.3 log.4
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 6
+    mv log.5 log.6
+    mv log.4 log.5
+    mv log.3 log.4
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 7
+    rm log.6
+    mv log.5 log.6
+    mv log.4 log.5
+    mv log.3 log.4
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created</pre>
+<p>
+Let me reiterate for you:
+</p>
+<ol>
+<li class="level1"><div class="li"> <em><a href="http://en.wikipedia.org/wiki/Computer_data_logging" class="urlextern" title="http://en.wikipedia.org/wiki/Computer_data_logging" rel="nofollow">Logging</a></em> is the process of recording events, with an automated computer program, in a certain scope in order to provide an audit trail that can be used to understand the activity of the system and to diagnose problems.</div>
+</li>
+<li class="level1"><div class="li"> <em>Logging daemon</em> is a program which other programs may ask to write something down in a log file.</div>
+</li>
+<li class="level1"><div class="li"> Every log entry has <em>facility</em> (logging category) and <em>severity</em> (how important it is) attributes.</div>
+</li>
+<li class="level1"><div class="li"> <em>Rotation</em> is a process of keeping only limited number of log files to avoid disks filling up.</div>
+</li>
+<li class="level1"><div class="li"> In Debian, log files are usually found in <strong>/var/log</strong> directory.</div>
+</li>
+</ol>
+<p>
+This are useful commands to work with logs (remember to open relevant <strong>man</strong> pages and find out what those program options are for):
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>logger Hello, I have a kitty!</strong> — write a custom log message.</div>
+</li>
+<li class="level1"><div class="li"> <strong>ls -altr /var/log</strong> — list log directory in such a way that lastly modified files are in the end.</div>
+</li>
+<li class="level1"><div class="li"> <strong>grep user1 /var/log/auth.log</strong> — list all lines in a file which contain <strong>user1</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>grep -irl user1 /var/log</strong> — list all files which contain <strong>user1</strong> anywhere.</div>
+</li>
+<li class="level1"><div class="li"> <strong>find /var/log -mmin -10</strong> — find any files which are modified in last 10 minutes.</div>
+</li>
+<li class="level1"><div class="li"> <strong>tail /var/log/auth.log</strong> — print out last 10 lines of a log file.</div>
+</li>
+<li class="level1"><div class="li"> <strong>tail -f /var/log/auth.log</strong> — follow a log file in real time. It is very useful when configuring daemons.</div>
+</li>
+</ol>
+<p>
+No you will learn how to view logs and write something to system log.
+</p>
+</div>
+<h2 class="sectionedit4" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno"> 1:</span> <span class="kw2">sudo</span> <span class="re5">-s</span>
+<span class="lno"> 2:</span> <span class="kw3">cd</span> <span class="sy0">/</span>var<span class="sy0">/</span>log
+<span class="lno"> 3:</span> <span class="kw2">ls</span> <span class="re5">-altr</span> <span class="sy0">|</span> <span class="kw2">tail</span>
+<span class="lno"> 4:</span> <span class="kw2">tail</span> auth.log
+<span class="lno"> 5:</span> <span class="kw2">grep</span> user1 auth.log <span class="sy0">|</span> <span class="kw2">tail</span>
+<span class="lno"> 6:</span> <span class="sy0">/</span>etc<span class="sy0">/</span>init.d<span class="sy0">/</span>exim4 restart
+<span class="lno"> 7:</span> <span class="kw2">find</span> <span class="sy0">/</span>var<span class="sy0">/</span>log <span class="re5">-mmin</span> <span class="re5">-5</span>
+<span class="lno"> 8:</span> <span class="kw2">tail</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>exim4<span class="sy0">/</span>mainlog
+<span class="lno"> 9:</span> <span class="kw2">grep</span> <span class="re5">-irl</span> rcconf .
+<span class="lno">10:</span> <span class="kw2">tail</span> .<span class="sy0">/</span>dpkg.log
+<span class="lno">11:</span> <span class="kw2">last</span>
+<span class="lno">12:</span> lastlog
+<span class="lno">13:</span> logger local0.alert I am a kitty, sittin <span class="kw1">in</span> ur system watchin u work ^^
+<span class="lno">14:</span> <span class="kw2">ls</span> <span class="re5">-altr</span> <span class="sy0">|</span> <span class="kw2">tail</span>
+<span class="lno">15:</span> <span class="kw2">tail</span> messages
+</pre>
+</div>
+<h1 class="sectionedit5" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="re5">-s</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># cd /var/log</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># ls -altr | tail</span>
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">46955</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> messages
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">19744</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> <span class="kw2">dmesg</span>
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm     <span class="nu0">696</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> daemon.log
+drwxr-xr-x  <span class="nu0">7</span> root        root   <span class="nu0">4096</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> .
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">60738</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> syslog
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">58158</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> kern.log
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">12652</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> debug
+<span class="re5">-rw-rw-r--</span>  <span class="nu0">1</span> root        utmp  <span class="nu0">75264</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> wtmp
+<span class="re5">-rw-rw-r--</span>  <span class="nu0">1</span> root        utmp <span class="nu0">292584</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> lastlog
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">38790</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">40</span> auth.log
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># tail auth.log</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">22</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">983</span><span class="br0">&#93;</span>: Server listening on 0.0.0.0 port <span class="nu0">22</span>.
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">22</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">983</span><span class="br0">&#93;</span>: Server listening on :: port <span class="nu0">22</span>.
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">44</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">1214</span><span class="br0">&#93;</span>: Accepted password <span class="kw1">for</span> user1 from 194.85.195.183 port <span class="nu0">53775</span> ssh2
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">44</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">1214</span><span class="br0">&#93;</span>: pam_unix<span class="br0">&#40;</span>sshd:session<span class="br0">&#41;</span>: session opened <span class="kw1">for</span> user user1 by <span class="br0">&#40;</span><span class="re2">uid</span>=<span class="nu0">0</span><span class="br0">&#41;</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">30</span>:<span class="nu0">49</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">30</span>:<span class="nu0">53</span> vm1 <span class="kw2">login</span><span class="br0">&#91;</span><span class="nu0">1260</span><span class="br0">&#93;</span>: pam_securetty<span class="br0">&#40;</span>login:auth<span class="br0">&#41;</span>: unexpected response from failed conversation <span class="kw1">function</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">30</span>:<span class="nu0">53</span> vm1 <span class="kw2">login</span><span class="br0">&#91;</span><span class="nu0">1260</span><span class="br0">&#93;</span>: pam_securetty<span class="br0">&#40;</span>login:auth<span class="br0">&#41;</span>: cannot determine username
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">35</span>:08 vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">35</span>:<span class="nu0">14</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">40</span>:<span class="nu0">32</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># tail auth.log | grep user1</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">44</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">1214</span><span class="br0">&#93;</span>: Accepted password <span class="kw1">for</span> user1 from 194.85.195.183 port <span class="nu0">53775</span> ssh2
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">44</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">1214</span><span class="br0">&#93;</span>: pam_unix<span class="br0">&#40;</span>sshd:session<span class="br0">&#41;</span>: session opened <span class="kw1">for</span> user user1 by <span class="br0">&#40;</span><span class="re2">uid</span>=<span class="nu0">0</span><span class="br0">&#41;</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">30</span>:<span class="nu0">49</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">35</span>:08 vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">35</span>:<span class="nu0">14</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">40</span>:<span class="nu0">32</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># grep user1 auth.log | tail</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">26</span>:<span class="nu0">33</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">1302</span><span class="br0">&#93;</span>: Accepted password <span class="kw1">for</span> user1 from 194.85.195.183 port <span class="nu0">53008</span> ssh2
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">26</span>:<span class="nu0">33</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">1302</span><span class="br0">&#93;</span>: pam_unix<span class="br0">&#40;</span>sshd:session<span class="br0">&#41;</span>: session opened <span class="kw1">for</span> user user1 by <span class="br0">&#40;</span><span class="re2">uid</span>=<span class="nu0">0</span><span class="br0">&#41;</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">26</span>:<span class="nu0">38</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:02 vm1 sshd<span class="br0">&#91;</span><span class="nu0">1302</span><span class="br0">&#93;</span>: pam_unix<span class="br0">&#40;</span>sshd:session<span class="br0">&#41;</span>: session closed <span class="kw1">for</span> user user1
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">44</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">1214</span><span class="br0">&#93;</span>: Accepted password <span class="kw1">for</span> user1 from 194.85.195.183 port <span class="nu0">53775</span> ssh2
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">44</span> vm1 sshd<span class="br0">&#91;</span><span class="nu0">1214</span><span class="br0">&#93;</span>: pam_unix<span class="br0">&#40;</span>sshd:session<span class="br0">&#41;</span>: session opened <span class="kw1">for</span> user user1 by <span class="br0">&#40;</span><span class="re2">uid</span>=<span class="nu0">0</span><span class="br0">&#41;</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">30</span>:<span class="nu0">49</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">35</span>:08 vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">35</span>:<span class="nu0">14</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">40</span>:<span class="nu0">32</span> vm1 sudo:    user1 : <span class="re2">TTY</span>=pts<span class="sy0">/</span><span class="nu0">0</span> ; <span class="re2">PWD</span>=<span class="sy0">/</span>home<span class="sy0">/</span>user1 ; <span class="re2">USER</span>=root ; <span class="re2">COMMAND</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># /etc/init.d/exim4 restart</span>
+Stopping MTA <span class="kw1">for</span> restart: exim4_listener.
+Restarting MTA: exim4.
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># find /var/log -mmin -5</span>
+<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>exim4<span class="sy0">/</span>mainlog
+<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>auth.log
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># tail /var/log/exim4/mainlog</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">24</span>:<span class="nu0">11</span> exim <span class="nu0">4.72</span> daemon started: <span class="re2">pid</span>=<span class="nu0">1159</span>, -q30m, listening <span class="kw1">for</span> SMTP on <span class="br0">&#91;</span>127.0.0.1<span class="br0">&#93;</span>:<span class="nu0">25</span> <span class="br0">&#91;</span>::<span class="nu0">1</span><span class="br0">&#93;</span>:<span class="nu0">25</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">24</span>:<span class="nu0">11</span> Start queue run: <span class="re2">pid</span>=<span class="nu0">1165</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">24</span>:<span class="nu0">11</span> End queue run: <span class="re2">pid</span>=<span class="nu0">1165</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">22</span> exim <span class="nu0">4.72</span> daemon started: <span class="re2">pid</span>=<span class="nu0">1190</span>, -q30m, listening <span class="kw1">for</span> SMTP on <span class="br0">&#91;</span>127.0.0.1<span class="br0">&#93;</span>:<span class="nu0">25</span> <span class="br0">&#91;</span>::<span class="nu0">1</span><span class="br0">&#93;</span>:<span class="nu0">25</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">22</span> Start queue run: <span class="re2">pid</span>=<span class="nu0">1196</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">22</span> End queue run: <span class="re2">pid</span>=<span class="nu0">1196</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">41</span>:<span class="nu0">18</span> exim <span class="nu0">4.72</span> daemon started: <span class="re2">pid</span>=<span class="nu0">1622</span>, -q30m, listening <span class="kw1">for</span> SMTP on <span class="br0">&#91;</span>127.0.0.1<span class="br0">&#93;</span>:<span class="nu0">25</span> <span class="br0">&#91;</span>::<span class="nu0">1</span><span class="br0">&#93;</span>:<span class="nu0">25</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">41</span>:<span class="nu0">18</span> Start queue run: <span class="re2">pid</span>=<span class="nu0">1624</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">41</span>:<span class="nu0">18</span> End queue run: <span class="re2">pid</span>=<span class="nu0">1624</span>
+<span class="nu0">2012</span>-06-<span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">42</span>:<span class="nu0">28</span> exim <span class="nu0">4.72</span> daemon started: <span class="re2">pid</span>=<span class="nu0">1886</span>, -q30m, listening <span class="kw1">for</span> SMTP on <span class="br0">&#91;</span>127.0.0.1<span class="br0">&#93;</span>:<span class="nu0">25</span> <span class="br0">&#91;</span>::<span class="nu0">1</span><span class="br0">&#93;</span>:<span class="nu0">25</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># grep -irl rcconf .</span>
+.<span class="sy0">/</span><span class="kw2">aptitude</span>
+.<span class="sy0">/</span>apt<span class="sy0">/</span>history.log
+.<span class="sy0">/</span>apt<span class="sy0">/</span>term.log
+.<span class="sy0">/</span>dpkg.log
+.<span class="sy0">/</span>auth.log
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># tail ./dpkg.log</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">40</span> status unpacked rcconf <span class="nu0">2.5</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">40</span> status unpacked rcconf <span class="nu0">2.5</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">40</span> trigproc man-db 2.5.7-<span class="nu0">8</span> 2.5.7-<span class="nu0">8</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">40</span> status half-configured man-db 2.5.7-<span class="nu0">8</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">40</span> status installed man-db 2.5.7-<span class="nu0">8</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">41</span> startup packages configure
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">41</span> configure rcconf <span class="nu0">2.5</span> <span class="nu0">2.5</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">41</span> status unpacked rcconf <span class="nu0">2.5</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">41</span> status half-configured rcconf <span class="nu0">2.5</span>
+<span class="nu0">2012</span>-06-<span class="nu0">26</span> <span class="nu0">19</span>:<span class="nu0">27</span>:<span class="nu0">41</span> status installed rcconf <span class="nu0">2.5</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># last</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Fri Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">26</span>   still logged <span class="kw1">in</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Fri Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">14</span> - down   <span class="br0">&#40;</span>00:09<span class="br0">&#41;</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Thu Jun <span class="nu0">28</span> <span class="nu0">19</span>:<span class="nu0">40</span> - <span class="nu0">11</span>:<span class="nu0">25</span>  <span class="br0">&#40;</span><span class="nu0">15</span>:<span class="nu0">45</span><span class="br0">&#41;</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Wed Jun <span class="nu0">27</span> <span class="nu0">19</span>:<span class="nu0">14</span> - <span class="nu0">17</span>:04  <span class="br0">&#40;</span><span class="nu0">21</span>:<span class="nu0">50</span><span class="br0">&#41;</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Tue Jun <span class="nu0">26</span> <span class="nu0">13</span>:<span class="nu0">54</span> - <span class="nu0">18</span>:<span class="nu0">18</span> <span class="br0">&#40;</span><span class="nu0">1</span>+04:<span class="nu0">23</span><span class="br0">&#41;</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Thu Jun <span class="nu0">21</span> <span class="nu0">15</span>:<span class="nu0">23</span> - <span class="nu0">13</span>:<span class="nu0">11</span> <span class="br0">&#40;</span><span class="nu0">4</span>+<span class="nu0">21</span>:<span class="nu0">47</span><span class="br0">&#41;</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Fri Jun <span class="nu0">15</span> <span class="nu0">19</span>:<span class="nu0">34</span> - <span class="nu0">12</span>:01 <span class="br0">&#40;</span><span class="nu0">5</span>+<span class="nu0">16</span>:<span class="nu0">26</span><span class="br0">&#41;</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Fri Jun <span class="nu0">15</span> <span class="nu0">19</span>:<span class="nu0">11</span> - <span class="nu0">19</span>:<span class="nu0">34</span>  <span class="br0">&#40;</span>00:<span class="nu0">22</span><span class="br0">&#41;</span>
+reboot   system boot  2.6.32-<span class="nu0">5</span>-amd64   Fri Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">24</span> - <span class="nu0">12</span>:<span class="nu0">26</span>  <span class="br0">&#40;</span>00:02<span class="br0">&#41;</span>
+user1    pts<span class="sy0">/</span><span class="nu0">0</span>        sis.site  Fri Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">14</span> - down   <span class="br0">&#40;</span>00:09<span class="br0">&#41;</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># lastlog</span>
+Username         Port     From             Latest
+root                                       <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+daemon                                     <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+bin                                        <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+sys                                        <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+<span class="kw2">sync</span>                                       <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+games                                      <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+<span class="kw2">man</span>                                        <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+<span class="kw2">lp</span>                                         <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+mail                                       <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+news                                       <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+uucp                                       <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+proxy                                      <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+www-data                                   <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+backup                                     <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+list                                       <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+irc                                        <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+gnats                                      <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+nobody                                     <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+libuuid                                    <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+Debian-exim                                <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+statd                                      <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+sshd                                       <span class="sy0">**</span>Never logged <span class="kw1">in</span><span class="sy0">**</span>
+user1            pts<span class="sy0">/</span><span class="nu0">0</span>    sis.site  Fri Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">45</span> +0400 <span class="nu0">2012</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># logger local0.alert I am a kitty, sittin in ur system watchin u work ^^</span>
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># ls -altr | tail</span>
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm     <span class="nu0">696</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> daemon.log
+drwxr-xr-x  <span class="nu0">7</span> root        root   <span class="nu0">4096</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> .
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">58158</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> kern.log
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">12652</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> debug
+<span class="re5">-rw-rw-r--</span>  <span class="nu0">1</span> root        utmp  <span class="nu0">75264</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> wtmp
+<span class="re5">-rw-rw-r--</span>  <span class="nu0">1</span> root        utmp <span class="nu0">292584</span> Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span> lastlog
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">38971</span> Jun <span class="nu0">29</span> <span class="nu0">13</span>:<span class="nu0">17</span> auth.log
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm     <span class="nu0">229</span> Jun <span class="nu0">29</span> <span class="nu0">13</span>:<span class="nu0">19</span> user.log
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">60932</span> Jun <span class="nu0">29</span> <span class="nu0">13</span>:<span class="nu0">19</span> syslog
+<span class="re5">-rw-r-----</span>  <span class="nu0">1</span> root        adm   <span class="nu0">47047</span> Jun <span class="nu0">29</span> <span class="nu0">13</span>:<span class="nu0">19</span> messages
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0"># tail messages</span>
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">1.846975</span><span class="br0">&#93;</span> processor LNXCPU:00: registered <span class="kw2">as</span> cooling_device0
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">1.868828</span><span class="br0">&#93;</span> usbcore: registered new interface driver hiddev
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">1.895676</span><span class="br0">&#93;</span> input: QEMU 0.14.1 QEMU USB Tablet <span class="kw2">as</span> <span class="sy0">/</span>devices<span class="sy0">/</span>pci0000:00<span class="sy0">/</span>0000:00:<span class="nu0">01.2</span><span class="sy0">/</span>usb1<span class="sy0">/</span><span class="nu0">1</span>-<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">1</span>-<span class="nu0">1</span>:<span class="nu0">1.0</span><span class="sy0">/</span>input<span class="sy0">/</span>input4
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">1.895743</span><span class="br0">&#93;</span> generic-usb 0003:0627:<span class="nu0">0001.0001</span>: input,hidraw0: USB HID v0.01 Pointer <span class="br0">&#91;</span>QEMU 0.14.1 QEMU USB Tablet<span class="br0">&#93;</span> on usb-0000:00:<span class="nu0">01.2</span>-<span class="nu0">1</span><span class="sy0">/</span>input0
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">1.895762</span><span class="br0">&#93;</span> usbcore: registered new interface driver usbhid
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">1.895765</span><span class="br0">&#93;</span> usbhid: v2.6:USB HID core driver
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">2.373061</span><span class="br0">&#93;</span> EXT3 FS on vda1, internal journal
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">2.394992</span><span class="br0">&#93;</span> loop: module loaded
+Jun <span class="nu0">29</span> <span class="nu0">12</span>:<span class="nu0">28</span>:<span class="nu0">21</span> vm1 kernel: <span class="br0">&#91;</span>    <span class="nu0">2.413478</span><span class="br0">&#93;</span> input: ImExPS<span class="sy0">/</span><span class="nu0">2</span> Generic Explorer Mouse <span class="kw2">as</span> <span class="sy0">/</span>devices<span class="sy0">/</span>platform<span class="sy0">/</span>i8042<span class="sy0">/</span>serio1<span class="sy0">/</span>input<span class="sy0">/</span>input5
+Jun <span class="nu0">29</span> <span class="nu0">13</span>:<span class="nu0">19</span>:<span class="nu0">11</span> vm1 user1: local0.alert I am a kitty, sittin <span class="kw1">in</span> ur system watchin u work ^^
+root<span class="sy0">@</span>vm1:<span class="sy0">/</span>var<span class="sy0">/</span>log<span class="co0">#</span></pre>
+</div>
+<h2 class="sectionedit6" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Opens <em>root</em> (superuser) shell. This is because you are not allowed to read all log files due security considerations when working as <em>user1</em>.</div>
+</li>
+<li class="level1"><div class="li"> Changes directory to <strong>/var/log</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all files sorted by date, with last modified ones at the bottom.</div>
+</li>
+<li class="level1"><div class="li"> Prints out last 10 lines from <strong>auth.log</strong>, which contains information about logging into the system.</div>
+</li>
+<li class="level1"><div class="li"> Prints out last 10 lines from <strong>auth.log</strong> which contain <strong>user1</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Restars <strong>exim4</strong> mail server.</div>
+</li>
+<li class="level1"><div class="li"> Prints out files changes in last 5 minutes. Now you can easily spot in which file <strong>exim4</strong> logs its operation.</div>
+</li>
+<li class="level1"><div class="li"> Prints out last 10 lines from <strong>exim4</strong> log.</div>
+</li>
+<li class="level1"><div class="li"> Searches for <strong>rcconf</strong> through all files in current directory. Now you can easily spot where Debian package system logs its operations.</div>
+</li>
+<li class="level1"><div class="li"> Pritns out last 10 lines from <strong>dpkg.log</strong>, which contain information about package installation and removal.</div>
+</li>
+<li class="level1"><div class="li"> Prints out information about last logins of users.</div>
+</li>
+<li class="level1"><div class="li"> Prints out information about the most recent logins of all users.</div>
+</li>
+<li class="level1"><div class="li"> Passes your message to <strong>rsyslogd</strong> daemon.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all files sorted by date, with last modified ones at the bottom, again. Now you may see there did your message go.</div>
+</li>
+<li class="level1"><div class="li"> Prints out last 10 lines from <strong>messages</strong>, you are able to see that your message is indeed logged.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit7" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Read man pages for <strong>rsyslogd</strong> and <strong>logger</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Find out the difference between <strong>last</strong> and <strong>lastlog</strong> by reading corresponding man pages.</div>
+</li>
+<li class="level1"><div class="li"> Read <strong>logrotate</strong> man page and remember that it exists.</div>
+</li>
+<li class="level1"><div class="li"> Execute <strong>tail -f /var/log/auth.log</strong> and make second connection to <strong>vm1</strong> (with putty if you are working on Windows). Nice, huh?</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex18.html';
+var disqus_title   = 'Exercise 18. Logging, /var/log, rsyslog, logger';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex18.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex18.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex18.txt</bdi> · Last modified: 2012/07/27 09:52 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerce9b.gif?id=llthw%3Aex18&amp;1428742723" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex18 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:43 GMT -->
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex14 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:20 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex14 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex14"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex14decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex14.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex14.txt"/>
+<link rel="canonical" href="ex14.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex14","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_14_package_managementdebian_package_management_utility_aptitude">Exercise 14. Package management: Debian package management utility aptitude</h1>
+<div class="level1">
+<p>
+Now it is time to get the sacred knowledge of adding new programs to your Linux system. The programs in Linux are called <em>packages</em>, and are usually installed from <em>network repositories</em> by tools knows as <em>package managers</em>.
+</p>
+<ul>
+<li class="level1"><div class="li"> <em>Package</em> is typically a compressed program, and you install a package just like this: <strong>aptitude install program . . .</strong> To avoid installation of malicious programs, all packages are digitally signed by their creators, which means that if package is modified after its creation package manager will not allow you to install it.</div>
+</li>
+<li class="level1"><div class="li"> <em>Package manager</em> is a program which allows you install other program. Many programs <em>depend</em> on other programs, for example a program which uses dialog windows typically needs a program which knows how to draw those windows. Package manager knows about this dependencies, and when you ask it to install a particular programs it installs all programs which are needed for the one you asked to work. Debian package manager is called <em>aptitude</em>.</div>
+</li>
+<li class="level1"><div class="li"> <em>Network repository</em> is a site with many packages, readily available for installation.</div>
+</li>
+</ul>
+<p>
+This is an outline of typical program installation:
+</p>
+<pre class="code">
+YOU
+   Search for available programs using package manager
+   Ask your package manager to install a program
+Package manager
+    Looks up for all programs which are needed to install current one
+    Marks them for installation in package manager database
+    Installs all needed programs including the one you need
+        Downloads all needed programs
+        Extracts files from those packages to places on your system defined by FHS standard
+            For every program runs a special install script which allow it to perform initial actions:
+                Create a directory
+                Create a database
+                Generate default configuration file
+                ...
+    Updates the system package database by modifying status of installed programs to installed
+YOU
+    Are able to run you freshly installed program now</pre>
+<p>
+It is time to understand where extracted files go. In Linux all same types of files are installed in the same locations. For example, executable files from all programs are installed in <strong>/usr/bin</strong>, documentation from all programs in <strong>/usr/share/doc</strong> and so on. This may sound a bit messy, but it is very useful. Which files go where is defined a document called <em>FHS standard</em>, you can view it by invoking <strong>man 7 hier</strong>. I will show you abbreviated version of The Filesystem Hierarchy Standard, Version 2.2 below:
+</p>
+<ul>
+<li class="level1"><div class="li"> <strong>/</strong> – This is the root directory. This is where the whole tree starts.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/bin</strong> – This directory contains executable programs which are needed in single user mode and to bring the up or repair it.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/boot</strong> – Contains static files for the boot loader. This directory only holds the files which are needed the boot process. The map installer and configuration files should go to /sbin and /etc.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/dev</strong> – Special or device files, which refer to physical devices. See mknod(1).</div>
+</li>
+<li class="level1"><div class="li"> <strong>/etc</strong> – Contains configuration files which are local to the machine. </div>
+</li>
+<li class="level1"><div class="li"> <strong>/home</strong> – On machines with home directories for users, these are usually beneath this directory, directly o The structure of this directory depends on local administration decisions. </div>
+</li>
+<li class="level1"><div class="li"> <strong>/lib</strong> – This directory should hold those shared libraries that are necessary to boot the system and to run commands in the root file system.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/media</strong> – This directory contains mount points for removable media such as CD and DVD disks or USB sticks.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/mnt</strong> – This directory is a mount point for a temporarily mounted file system. In some distributions, /mnt contains subdirectories intended to be used as mount points for several temporary file systems.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/proc</strong> – This is a mount point for the proc file system, which provides information about running processes and the kernel. This pseudo-file system is described in more detail in proc(5).</div>
+</li>
+<li class="level1"><div class="li"> <strong>/root</strong> – This directory is usually the home directory for the root user (optional).</div>
+</li>
+<li class="level1"><div class="li"> <strong>/sbin</strong> – Like /bin, this directory holds commands needed to boot the system, but which are usually not executed by normal users.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/srv</strong> – This directory contains site-specific data that is served by this system.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/tmp</strong> – This directory contains temporary files which may be deleted with no notice, such as by a regular job or at system boot up.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/usr</strong> – This directory is usually mounted from a separate partition. It should hold only sharable, read-only data, so that it can be mounted by various machines running Linux.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/usr/bin</strong> – This is the primary directory for executable programs. Most programs executed by normal users which are not needed for booting or for repairing the system and which are not installed locally should be placed in this directory.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/usr/local</strong> – This is where programs which are local to the site typically go.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/usr/share</strong> – This directory contains subdirectories with specific application data, that can be shared among different architectures of the same <abbr title="Operating System">OS</abbr>. Often one finds stuff here that used to live in /usr/doc or /usr/lib or /usr/man.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/usr/share/doc</strong> – Documentation about installed programs.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var</strong> – This directory contains files which may change in size, such as spool and log files.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var/log</strong> – Miscellaneous log files.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var/spool</strong> – Spooled (or queued) files for various programs.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var/tmp</strong> – Like /tmp, this directory holds temporary files stored for an unspecified duration.</div>
+</li>
+</ul>
+<p>
+Well, that was big. But you do not need to memorize it, <strong>man hier 7</strong> is always there for you. For now you need to know only about <strong>/usr/bin</strong>, <strong>/usr/share</strong> and <strong>/var/log</strong>.
+</p>
+<p>
+Let us talk about packages and package managers a little more. First, let us reiterate:
+</p>
+<ul>
+<li class="level1"><div class="li"> Every program is called a <em>package</em>.</div>
+</li>
+<li class="level1"><div class="li"> <em>Package manager</em> manages all you packages, that is installs and uninstalls them for you.</div>
+</li>
+<li class="level1"><div class="li"> To be able to do this, package managers holds a database of installed and available packages.</div>
+</li>
+</ul>
+<p>
+Every package in this database has a status, which indicates whether package is installed, if it can be updated and so on. You can print out currently installed packages by typing <strong>dpkg -l</strong>. Example output is shown below:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">dpkg</span> <span class="re5">-l</span> <span class="sy0">|</span> <span class="kw2">head</span> <span class="sy0">|</span> <span class="kw2">less</span> <span class="re5">-S</span>
+<span class="re2">Desired</span>=Unknown<span class="sy0">/</span>Install<span class="sy0">/</span>Remove<span class="sy0">/</span>Purge<span class="sy0">/</span>Hold
+<span class="sy0">|</span> <span class="re2">Status</span>=Not<span class="sy0">/</span>Inst<span class="sy0">/</span>Conf-files<span class="sy0">/</span>Unpacked<span class="sy0">/</span>halF-conf<span class="sy0">/</span>Half-inst<span class="sy0">/</span>trig-aWait<span class="sy0">/</span>Trig-pend
+<span class="sy0">|/</span> Err?=<span class="br0">&#40;</span>none<span class="br0">&#41;</span><span class="sy0">/</span>Reinst-required <span class="br0">&#40;</span>Status,Err: <span class="re2">uppercase</span>=bad<span class="br0">&#41;</span>
+<span class="sy0">||/</span> Name                      Version                Description
++++-=====================-====================-========================================================
+ii  acpi                  <span class="nu0">1.5</span>-<span class="nu0">2</span>                displays information on ACPI devices
+ii  acpi-support-base     <span class="nu0">0.137</span>-<span class="nu0">5</span>              scripts <span class="kw1">for</span> handling base ACPI  events such <span class="kw2">as</span> the power
+ii  acpid                 <span class="nu0">1</span>:2.0.7-1squeeze4    Advanced Configuration and Power Interface event daemon</pre>
+<p>
+As you can see, those statuses are shown in first three columns. From this output we can tall that all package are desired to be installed, are indeed installed and there is no error because third column is empty. Here is a list of all possible package statuses.
+</p>
+<p>
+First column. Desired action, what we want to do with package:
+</p>
+<ol>
+<li class="level1"><div class="li"> u = Unknown (an unknown state) </div>
+</li>
+<li class="level1"><div class="li"> i = Install. The package is selected for installation.</div>
+</li>
+<li class="level1"><div class="li"> r = The package is selected for deinstallation (i.e. we want to remove all files, except configuration files).</div>
+</li>
+<li class="level1"><div class="li"> p = Purge. The package is selected to be purged (i.e. we want to remove everything from system directories, even configuration files).</div>
+</li>
+<li class="level1"><div class="li"> h = A package marked to be on hold is not handled by dpkg, unless forced to do that with option –force-hold.</div>
+</li>
+</ol>
+<p>
+Second column. Package status, in what state package currently is:
+</p>
+<ol>
+<li class="level1"><div class="li"> n = Not-installed. The package is not installed on your system.</div>
+</li>
+<li class="level1"><div class="li"> c = Config-files. Only the configuration files of the package exist on the system.</div>
+</li>
+<li class="level1"><div class="li"> H = Half-installed. The installation of the package has been started, but not completed for some reason.</div>
+</li>
+<li class="level1"><div class="li"> U = Unpacked. The package is unpacked, but not configured.</div>
+</li>
+<li class="level1"><div class="li"> F = Half-configured. The package is unpacked and configuration has been started, but not yet completed for some reason.</div>
+</li>
+<li class="level1"><div class="li"> W = Triggers-awaiting. The package awaits trigger processing by another package.</div>
+</li>
+<li class="level1"><div class="li"> t = Triggers-pending. The package has been triggered.</div>
+</li>
+<li class="level1"><div class="li"> i = Installed. The package is unpacked and configured OK.</div>
+</li>
+</ol>
+<p>
+Third column. Something got wrong:
+</p>
+<ol>
+<li class="level1"><div class="li"> R = reinst-required. A package marked reinst-required is broken and requires reinstallation. These packages cannot be removed, unless forced with option –force-remove-reinstreq.</div>
+</li>
+</ol>
+<p>
+Again, you don not need to memorize this, just remember <strong>info dpkg</strong> command which will show you exactly this information. And do not bother with package statuses for now, just remember that <strong>ii</strong> status means everything is ok with the package.
+</p>
+<p>
+Enough talking, let us install a program called <em>midnight commander</em> which is a file manager, that is it allows you to visually navigate directories on your system and perform such operations on your files as copying, renaming or deleting them.
+</p>
+<p>
+Now you will learn how search, install and remove packages.
+</p>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno">1:</span> <span class="kw2">aptitude</span> search mc <span class="sy0">|</span> <span class="kw2">grep</span> <span class="re5">-i</span> <span class="st_h">'midnight commander'</span>
+<span class="lno">2:</span> <span class="kw2">sudo</span> <span class="kw2">aptitude</span> <span class="kw2">install</span> mc
+<span class="lno">3:</span> <span class="kw2">dpkg</span> <span class="re5">-L</span> mc <span class="sy0">|</span> <span class="kw2">grep</span> <span class="st_h">'/usr/bin'</span>
+<span class="lno">4:</span> <span class="kw2">aptitude</span> search mc <span class="sy0">|</span> <span class="kw2">grep</span> <span class="re5">-i</span> <span class="st_h">'midnight commander'</span>
+<span class="lno">5:</span> mc
+<span class="lno">6:</span> <span class="sy0">&lt;</span>F10<span class="sy0">&gt;&lt;</span>ENTER<span class="sy0">&gt;</span>
+<span class="lno">7:</span> <span class="kw2">sudo</span> <span class="kw2">aptitude</span> remove mc
+</pre>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">aptitude</span> search mc <span class="sy0">|</span> <span class="kw2">grep</span> <span class="re5">-i</span> <span class="st_h">'midnight commander'</span>
+p   mc                              - Midnight Commander - a powerful <span class="kw2">file</span> manag
+p   mc-dbg                          - Midnight Commander - a powerful <span class="kw2">file</span> manag
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># sudo aptitude install mc</span>
+The following NEW packages will be installed:
+  libglib2.0-<span class="nu0">0</span><span class="br0">&#123;</span>a<span class="br0">&#125;</span> libglib2.0-data<span class="br0">&#123;</span>a<span class="br0">&#125;</span> mc shared-mime-info<span class="br0">&#123;</span>a<span class="br0">&#125;</span>
+<span class="nu0">0</span> packages upgraded, <span class="nu0">4</span> newly installed, <span class="nu0">0</span> to remove and <span class="nu0">0</span> not upgraded.
+Need to get <span class="nu0">2</span>,<span class="nu0">957</span> kB<span class="sy0">/</span><span class="nu0">5</span>,<span class="nu0">157</span> kB of archives. After unpacking <span class="nu0">17.0</span> MB will be used.
+Do you want to <span class="kw3">continue</span>? <span class="br0">&#91;</span>Y<span class="sy0">/</span>n<span class="sy0">/</span>?<span class="br0">&#93;</span> y
+Get:<span class="nu0">1</span> http:<span class="sy0">//</span>mirror.yandex.ru<span class="sy0">/</span>debian<span class="sy0">/</span> squeeze<span class="sy0">/</span>main libglib2.0-<span class="nu0">0</span> amd64 2.24.2-<span class="nu0">1</span> <span class="br0">&#91;</span><span class="nu0">1</span>,<span class="nu0">122</span> kB<span class="br0">&#93;</span>
+Get:<span class="nu0">2</span> http:<span class="sy0">//</span>mirror.yandex.ru<span class="sy0">/</span>debian<span class="sy0">/</span> squeeze<span class="sy0">/</span>main libglib2.0-data all 2.24.2-<span class="nu0">1</span> <span class="br0">&#91;</span><span class="nu0">994</span> kB<span class="br0">&#93;</span>
+Get:<span class="nu0">3</span> http:<span class="sy0">//</span>mirror.yandex.ru<span class="sy0">/</span>debian<span class="sy0">/</span> squeeze<span class="sy0">/</span>main shared-mime-info amd64 <span class="nu0">0.71</span>-<span class="nu0">4</span> <span class="br0">&#91;</span><span class="nu0">841</span> kB<span class="br0">&#93;</span>
+Fetched <span class="nu0">2</span>,<span class="nu0">957</span> kB <span class="kw1">in</span> 0s <span class="br0">&#40;</span><span class="nu0">4</span>,010 kB<span class="sy0">/</span>s<span class="br0">&#41;</span>
+Selecting previously deselected package libglib2.0-<span class="nu0">0</span>.
+<span class="br0">&#40;</span>Reading database ... <span class="nu0">24220</span> files and directories currently installed.<span class="br0">&#41;</span>
+Unpacking libglib2.0-<span class="nu0">0</span> <span class="br0">&#40;</span>from ...<span class="sy0">/</span>libglib2.0-<span class="nu0">0</span>_2.24.2-<span class="nu0">1</span>_amd64.deb<span class="br0">&#41;</span> ...
+Selecting previously deselected package libglib2.0-data.
+Unpacking libglib2.0-data <span class="br0">&#40;</span>from ...<span class="sy0">/</span>libglib2.0-data_2.24.2-<span class="nu0">1</span>_all.deb<span class="br0">&#41;</span> ...
+Selecting previously deselected package mc.
+Unpacking mc <span class="br0">&#40;</span>from ...<span class="sy0">/</span>mc_3<span class="sy0">%</span>3a4.7.0.9-<span class="nu0">1</span>_amd64.deb<span class="br0">&#41;</span> ...
+Selecting previously deselected package shared-mime-info.
+Unpacking shared-mime-info <span class="br0">&#40;</span>from ...<span class="sy0">/</span>shared-mime-info_0.71-<span class="nu0">4</span>_amd64.deb<span class="br0">&#41;</span> ...
+Processing triggers <span class="kw1">for</span> man-db ...
+Setting up libglib2.0-<span class="nu0">0</span> <span class="br0">&#40;</span>2.24.2-<span class="nu0">1</span><span class="br0">&#41;</span> ...
+Setting up libglib2.0-data <span class="br0">&#40;</span>2.24.2-<span class="nu0">1</span><span class="br0">&#41;</span> ...
+Setting up mc <span class="br0">&#40;</span><span class="nu0">3</span>:4.7.0.9-<span class="nu0">1</span><span class="br0">&#41;</span> ...
+Setting up shared-mime-info <span class="br0">&#40;</span><span class="nu0">0.71</span>-<span class="nu0">4</span><span class="br0">&#41;</span> ...
+<span class="co4">user1@vm1:~$ </span><span class="kw2">aptitude</span> search mc <span class="sy0">|</span> <span class="kw2">grep</span> <span class="re5">-i</span> <span class="st_h">'midnight commander'</span>
+i   mc                              - Midnight Commander - a powerful <span class="kw2">file</span> manag
+p   mc-dbg                          - Midnight Commander - a powerful <span class="kw2">file</span> manag
+<span class="co4">user1@vm1:~$ </span>mc
+  Left     File     Command     Options     Right
+<span class="sy0">|&lt;</span>  ~ ---------------------.<span class="br0">&#91;</span>^<span class="br0">&#93;</span><span class="sy0">&gt;||&lt;</span>  ~ ---------------------.<span class="br0">&#91;</span>^<span class="br0">&#93;</span><span class="sy0">&gt;|</span>
+<span class="sy0">|</span><span class="st_h">'n  Name    | Size |Modify time||'</span>n  Name    <span class="sy0">|</span> Size <span class="sy0">|</span>Modify <span class="kw1">time</span><span class="sy0">|</span>
+<span class="sy0">|/</span>..         <span class="sy0">|</span>P--DIR<span class="sy0">|</span>un  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">49</span><span class="sy0">||/</span>..         <span class="sy0">|</span>P--DIR<span class="sy0">|</span>un  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">49</span><span class="sy0">|</span>
+<span class="sy0">|/</span>.aptitude  <span class="sy0">|</span>  <span class="nu0">4096</span><span class="sy0">|</span>un <span class="nu0">25</span> <span class="nu0">18</span>:<span class="nu0">34</span><span class="sy0">||/</span>.aptitude  <span class="sy0">|</span>  <span class="nu0">4096</span><span class="sy0">|</span>un <span class="nu0">25</span> <span class="nu0">18</span>:<span class="nu0">34</span><span class="sy0">|</span>
+<span class="sy0">|/</span>.mc        <span class="sy0">|</span>  <span class="nu0">4096</span><span class="sy0">|</span>un <span class="nu0">25</span> <span class="nu0">18</span>:<span class="nu0">41</span><span class="sy0">||/</span>.mc        <span class="sy0">|</span>  <span class="nu0">4096</span><span class="sy0">|</span>un <span class="nu0">25</span> <span class="nu0">18</span>:<span class="nu0">41</span><span class="sy0">|</span>
+<span class="sy0">|</span> .bash~story<span class="sy0">|</span> <span class="nu0">10149</span><span class="sy0">|</span>un <span class="nu0">21</span> <span class="nu0">12</span>:01<span class="sy0">||</span> .bash~story<span class="sy0">|</span> <span class="nu0">10149</span><span class="sy0">|</span>un <span class="nu0">21</span> <span class="nu0">12</span>:01<span class="sy0">|</span>
+<span class="sy0">|</span> .bash~ogout<span class="sy0">|</span>   <span class="nu0">220</span><span class="sy0">|</span>un  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">48</span><span class="sy0">||</span> .bash~ogout<span class="sy0">|</span>   <span class="nu0">220</span><span class="sy0">|</span>un  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">48</span><span class="sy0">|</span>
+<span class="sy0">|</span> .bashrc    <span class="sy0">|</span>  <span class="nu0">3184</span><span class="sy0">|</span>un <span class="nu0">14</span> <span class="nu0">12</span>:<span class="nu0">24</span><span class="sy0">||</span> .bashrc    <span class="sy0">|</span>  <span class="nu0">3184</span><span class="sy0">|</span>un <span class="nu0">14</span> <span class="nu0">12</span>:<span class="nu0">24</span><span class="sy0">|</span>
+<span class="sy0">|</span> .lesshst   <span class="sy0">|</span>   <span class="nu0">157</span><span class="sy0">|</span>un <span class="nu0">25</span> <span class="nu0">11</span>:<span class="nu0">31</span><span class="sy0">||</span> .lesshst   <span class="sy0">|</span>   <span class="nu0">157</span><span class="sy0">|</span>un <span class="nu0">25</span> <span class="nu0">11</span>:<span class="nu0">31</span><span class="sy0">|</span>
+<span class="sy0">|</span>----------------------------------------------------------------<span class="sy0">|</span>
+<span class="sy0">|</span>UP--DIR                        <span class="re5">--UP--DIR</span>                        <span class="sy0">|</span>
+ <span class="re5">-----------</span> 6367M<span class="sy0">/</span>7508M <span class="br0">&#40;</span><span class="nu0">84</span><span class="sy0">%</span><span class="br0">&#41;</span> <span class="re5">--------------</span> 6367M<span class="sy0">/</span>7508M <span class="br0">&#40;</span><span class="nu0">84</span><span class="sy0">%</span><span class="br0">&#41;</span> -<span class="sy0">|</span>
+Hint: The homepage of GNU Midnight Commander: http:<span class="sy0">//</span>www.midnight-
+<span class="co4">user1@vm1:~$ </span>                                                  <span class="br0">&#91;</span>^<span class="br0">&#93;</span>
+ 1Help  2Menu  3View  4Edit  5Copy  6Re~ov 7Mkdir 8De~te 9Pu~Dn
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">aptitude</span> remove mc
+The following packages will be REMOVED:
+  libglib2.0-<span class="nu0">0</span><span class="br0">&#123;</span>u<span class="br0">&#125;</span> libglib2.0-data<span class="br0">&#123;</span>u<span class="br0">&#125;</span> mc shared-mime-info<span class="br0">&#123;</span>u<span class="br0">&#125;</span>
+<span class="nu0">0</span> packages upgraded, <span class="nu0">0</span> newly installed, <span class="nu0">4</span> to remove and <span class="nu0">0</span> not upgraded.
+Need to get <span class="nu0">0</span> B of archives. After unpacking <span class="nu0">17.0</span> MB will be freed.
+Do you want to <span class="kw3">continue</span>? <span class="br0">&#91;</span>Y<span class="sy0">/</span>n<span class="sy0">/</span>?<span class="br0">&#93;</span> y
+<span class="br0">&#40;</span>Reading database ... <span class="nu0">24637</span> files and directories currently installed.<span class="br0">&#41;</span>
+Removing shared-mime-info ...
+Removing mc ...
+Removing libglib2.0-data ...
+Removing libglib2.0-<span class="nu0">0</span> ...
+Processing triggers <span class="kw1">for</span> man-db ...
+<span class="co4">user1@vm1:~$</span></pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Search packages which name contains <strong>mc</strong> and show only whose packages which contain “midnight commander” in description. <strong>grep -i</strong> means that grep should search both lowercase and uppercase letters, without it grep will not show you lines containing <strong>Midnight Commander</strong> because they start from uppercase letters. Notice that <strong>mc</strong> has <strong>p</strong> status, which means that the desired action with this package is <em>purge</em>, and because there is nothing in other two status columns, we can conclude that this package is not installed. You man notice, that you did not install this package to begin with, but it is ok, because not installed packages have <em>purged</em> status by default.</div>
+</li>
+<li class="level1"><div class="li"> Installs package “mc”. Because this change is system-wide this command needs to be invoked as superuser, which is allowed to write to all directories in the sytem. Also notice how debian package manager aptitude automatically installs packages libglib2.0-0, libglib2.0-data and shared-mime-info which are needed for mc.</div>
+</li>
+<li class="level1"><div class="li"> Shows you installed package executable files. As you can see, they go into <strong>/usr/bin</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Invokes <strong>mc</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Exits <strong>mc</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Removes mc. Notice that automatically installed packages are also removed automatically. If after <strong>mc</strong> installation you would install something that needs those packages, aptitude will keep them.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_creadit">Extra creadit</h1>
+<div class="level1">
+<p>
+Well, that was a big one. And here is more:
+</p>
+<ol>
+<li class="level1"><div class="li"> Type <strong>aptiutde search emacs</strong>. Find out what <strong>v</strong> means.</div>
+</li>
+<li class="level1"><div class="li"> Read, or at list skim, through <a href="http://www.debian.org/doc/manuals/debian-reference/ch02.en.html" class="urlextern" title="http://www.debian.org/doc/manuals/debian-reference/ch02.en.html" rel="nofollow">Chapter 2. Debian package management</a> of Debian manual.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex14.html';
+var disqus_title   = 'Exercise 14. Package management: Debian package management utility aptitude';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex14.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex14.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex14.txt</bdi> · Last modified: 2012/07/31 14:09 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer11bc.gif?id=llthw%3Aex14&amp;1428742718" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex14 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:24 GMT -->
+</html>

@@ -1,0 +1,141 @@
+====== Exercise 3. Bash: The shell, .profile, .bashrc, .bash_history ======
+
+When working with Linux using CLI (command line interface), you are interacting with a program called a //shell//. All you type is passed to the shell, which interprets what you have typed, does parameters expansion (which is somewhat similar to brace expansion in algebra) and executes programs for you. Shell which we will be using is called //Bash//, which stands for //Bourne Again Shell//, which is in turn a pun. Now I will show you general overview of how the bash works in plain English:
+
+<code>
+YOU
+    Log into a Linux box
+    Your identity is verified by username (user1) and password (123qwe)
+    Bash is executed
+Bash
+    reads and executes initial commands from your profile, which define:
+        What your command prompt will look like
+        What colors you will see when working in Linux
+        What you editor is
+        What you viewer is 
+        ...
+    After initial commands are read, Bash enters in a loop
+        While not ordered to exit by typing 'exit', 'logout' or hitting <CTRL+D>:
+            Read a line
+            Parse this line, expand braces
+            Execute command with expanded parameters
+</code>
+
+I repeat, any command which you type is not executed directly, but expanded firstly and only then executed. For example, when you type **ls *** the star ** * ** is expanded into list of all files in current directory.
+
+Now you will learn how to modify your profile and how to write and view your history.
+
+===== Do this =====
+<code bash 1>
+ls -al
+cat .profile
+echo Hello, $LOGNAME!
+cp -v .profile .profile.bak
+echo 'echo Hello, $LOGNAME!' >> .profile
+tail -n 5 .profile
+history -w
+ls -altr
+cat .bash_history
+exit
+</code>
+
+====== What you should see ======
+
+<code bash>
+user1@vm1's password:
+Linux vm1 2.6.32-5-amd64 #1 SMP Sun May 6 04:00:17 UTC 2012 x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Thu Jun  7 12:03:29 2012 from sis.site
+Hello, user1!
+user1@vm1:~$ ls -al
+total 20
+drwxr-xr-x 2 user1 user1 4096 Jun  7 12:18 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun  6 21:48 .bashrc
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:04 .profile
+user1@vm1:~$ cat .profile
+# ~/.profile: executed by the command interpreter for login shells.
+# This file is not read by bash(1), if ~/.bash_profile or ~/.bash_login
+# exists.
+# see /usr/share/doc/bash/examples/startup-files for examples.
+# the files are located in the bash-doc package.
+
+# the default umask is set in /etc/profile; for setting the umask
+# for ssh logins, install and configure the libpam-umask package.
+#umask 022
+
+# if running bash
+if [ -n "$BASH_VERSION" ]; then
+    # include .bashrc if it exists
+    if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+    fi
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+echo Hello, $LOGNAME!
+user1@vm1:~$ echo Hello, $LOGNAME!
+Hello, user1!
+user1@vm1:~$ cp -v .profile .profile.bak
+`.profile' -> `.profile.bak'
+user1@vm1:~$ echo 'echo Hello, $LOGNAME!' >> .profile
+user1@vm1:~$ tail -n 5 .profile
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+echo Hello, $LOGNAME!
+user1@vm1:~$ history -w
+user1@vm1:~$ ls -altr
+total 28
+-rw-r--r-- 1 user1 user1 3184 Jun  6 21:48 .bashrc
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw------- 1 user1 user1  308 Jun  7 12:21 .bash_history
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+drwxr-xr-x 2 user1 user1 4096 Jun  7 12:25 .
+user1@vm1:~$ cat .bash_history
+ls -al
+cat .profile
+echo Hello, $LOGNAME!
+cp -v .profile .profile.bak
+echo 'echo Hello, $LOGNAME!' >> .profile
+tail -n 5 .profile
+history -w
+ls -altr
+user1@vm1:~$ exit
+logout
+</code>
+
+Don not be afraid, all this commands will be explained. Line numbers correspond to those "Now type this" section.
+
+===== Explanation =====
+
+  - Prints out all files in current directory, including hidden ones. Options **-al** tell ****ls**** to print file list in **long** format and include all files including hidden ones. **.profile** and **.bash_rc** are hidden files, because they start with dot **.**. Every file starting with dot is hidden, it is that simple. This two particular files are shell scripts, They contain instructions which are executed when you log in. 
+  - Prints out your .profile file. Just that.
+  - Tells your shell, which is in your case **bash**, to output a string **Hello, $LOGNAME!**, substituting **$LOGNAME** with environment variable **$LOGNAME** which happens to contain your login.
+  - Copies your **.profile** file to **.profile.bak**. Key **-v** tells **cp** to be verbose, which means it will print out all operations. Remember this key, it is often used to tell commands to feed you more information than they do by default.
+  - Adds a line to your **.bash_rc** profile. From now on, every time you will log into **vm1** this command will be executed. Attention, **>****>** means to add something to file, but **>** means replacing file with something. If you accidentally replaced your **.profile** instead of appending to it, command <code>cp -v .profile.bak .profile</code> will return your old **.profile** file.
+  - Prints out exactly five last lines from **.profile** file.
+  - Writes all your command history to **.bash_history** file. Normally this is done at the end of your session, when you close it by typing **exit** or by pressing **<CTRL>+D**.
+  - Prints out files in current directory. Options **-tr** mean that file list is sorted by time in reverse direction. This means that most recently created and modified files are printed last. Notice how you have 2 new files now.
+  - Prints out file which keeps history of your commands. Notice how all that you have type is here.
+  - Closes the session.
+
+====== Extra credit =====
+
+  - Search online why **ls -al** tells you "total 20" then there are only 5 files present. What does it mean? Notice that "." and ".." are special file entries, which correspond to the current directory and parent directory respectively.
+  - Log in vm1 and type **man -K /etc/profile**, now using cursor keys scroll to "INVOCATION" section and read it. To exit man, type "q". Type **man man** to find out what **-K** man option means.
+  - Type in **uname** with space before the command. Now, type **history**. You see? If you prepend a command with space it won't be saved in history! Hint: usable when you need to specify the password ring on the command line.
+  - Find a wiki page about bash and try to read it. No worries if it scares you, just omit frightening sections for now.

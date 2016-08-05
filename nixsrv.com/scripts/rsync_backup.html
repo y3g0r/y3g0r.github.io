@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/scripts/rsync_backup by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:08:15 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>scripts:rsync_backup - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="scripts,rsync_backup"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="rsync_backupdecf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feed8b11.php?mode=list&amp;ns=scripts"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/scripts/rsync_backup.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/scripts/rsync_backup.txt"/>
+<link rel="canonical" href="rsync_backup.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='scripts';var JSINFO = {"id":"scripts:rsync_backup","namespace":"scripts"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="simple_backup_script_with_rsync">Simple backup script with rsync</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co0">#!/bin/bash</span>
+<span class="co0"># ----------------------------------------------------------------------</span>
+<span class="co0"># mikes handy rotating-filesystem-snapshot utility</span>
+<span class="co0"># with heavy modifications by orl</span>
+<span class="co0"># ----------------------------------------------------------------------</span>
+<span class="co0"># this needs to be a lot more general, but the basic idea is it makes</span>
+<span class="co0"># rotating backup-snapshots of $bak whenever called</span>
+<span class="co0"># ----------------------------------------------------------------------</span>
+<span class="kw1">set</span> <span class="re5">-x</span>
+<span class="kw1">set</span> <span class="re5">-e</span>
+&nbsp;
+<span class="kw3">unset</span> PATH      <span class="co0"># suggestion from H. Milz: avoid accidental use of $PATH</span>
+&nbsp;
+<span class="co0"># ------------- file locations -----------------------------------------</span>
+&nbsp;
+<span class="re2">bak</span>=<span class="sy0">/</span>bak;
+<span class="re2">src</span>=<span class="sy0">/</span>srv<span class="sy0">/</span>media;
+<span class="re2">excludes</span>=<span class="sy0">/</span>etc<span class="sy0">/</span>opt<span class="sy0">/</span>backup-exclude.txt;
+&nbsp;
+<span class="co0"># ------------- the script itself --------------------------------------</span>
+&nbsp;
+<span class="co0"># make sure we are running as bak</span>
+<span class="kw1">if</span> <span class="br0">&#91;</span><span class="br0">&#91;</span> $<span class="br0">&#40;</span><span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">whoami</span><span class="br0">&#41;</span> <span class="sy0">!</span>= <span class="st_h">'bak'</span> <span class="br0">&#93;</span><span class="br0">&#93;</span>; <span class="kw1">then</span> <span class="br0">&#123;</span> <span class="kw3">echo</span> <span class="st0">&quot;Sorry, must be 'bak'. Exiting...&quot;</span>; <span class="kw3">exit</span>; <span class="br0">&#125;</span> <span class="kw1">fi</span>;
+&nbsp;
+<span class="co0"># make sure we didn't do snapshot today already</span>
+<span class="kw1">if</span> <span class="br0">&#91;</span><span class="br0">&#91;</span> $<span class="br0">&#40;</span><span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">stat</span> <span class="sy0">/</span>bak<span class="sy0">/</span>daily.0 <span class="sy0">|</span> <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">grep</span> Modify <span class="sy0">|</span> <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">cut</span> <span class="re5">-d</span><span class="st_h">' '</span> -f2<span class="br0">&#41;</span> == $<span class="br0">&#40;</span><span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">date</span> <span class="st_h">'+%Y-%m-%d'</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="re4">$1</span> <span class="sy0">!</span>= <span class="st0">&quot;--force&quot;</span> <span class="br0">&#93;</span><span class="br0">&#93;</span> ; <span class="kw1">then</span>
+        <span class="kw3">exit</span> <span class="nu0">2</span>;
+<span class="kw1">fi</span>;
+&nbsp;
+<span class="co0"># ------------- make mysql backup --------------------------------------</span>
+&nbsp;
+<span class="re2">mysql_pw</span>=<span class="st_h">'passwd'</span>;
+<span class="re2">date_suffix</span>=$<span class="br0">&#40;</span><span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">date</span> <span class="st_h">'+%Y-%m-%d'</span><span class="br0">&#41;</span>;
+<span class="sy0">/</span>bin<span class="sy0">/</span>mysqldump <span class="re5">-uroot</span> <span class="re5">-p</span><span class="st_h">'passwd'</span> zabbix <span class="sy0">|</span> <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">gzip</span> <span class="re5">-c</span> <span class="sy0">&gt;</span> <span class="sy0">/</span>bak<span class="sy0">/</span>mysql<span class="sy0">/</span>zabbix-<span class="re1">$date_suffix</span>.sql.gz;
+<span class="kw3">unset</span> mysql_pw;
+&nbsp;
+<span class="re2">openssl_pw</span>=<span class="st_h">'some-large-passphrase'</span>;
+<span class="sy0">/</span>bin<span class="sy0">/</span>openssl aes-<span class="nu0">256</span>-cbc <span class="re5">-in</span> <span class="sy0">/</span>bak<span class="sy0">/</span>mysql<span class="sy0">/</span>zabbix-<span class="co1">${date_suffix}</span>.sql.gz <span class="re5">-out</span> <span class="sy0">/</span>bak<span class="sy0">/</span>mysql<span class="sy0">/</span>zabbix-<span class="co1">${date_suffix}</span>.sql.gz.enc <span class="re5">-pass</span> pass:openssl_pw;
+<span class="kw3">unset</span> openssl_pw;
+&nbsp;
+<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">rm</span> <span class="sy0">/</span>bak<span class="sy0">/</span>mysql<span class="sy0">/</span>zabbix-<span class="re1">$date_suffix</span>.sql.gz;
+&nbsp;
+<span class="re2">total</span>=$<span class="br0">&#40;</span><span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">find</span> <span class="sy0">/</span>bak<span class="sy0">/</span>mysql <span class="re5">-name</span> <span class="st_h">'zabbix*'</span> <span class="sy0">|</span> <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">wc</span> -l<span class="br0">&#41;</span>;
+<span class="re2">old</span>=$<span class="br0">&#40;</span><span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">find</span> <span class="sy0">/</span>bak<span class="sy0">/</span>mysql <span class="re5">-name</span> <span class="st_h">'zabbix*'</span> <span class="re5">-mtime</span> +<span class="nu0">30</span> <span class="sy0">|</span> <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">wc</span> -l<span class="br0">&#41;</span>;
+<span class="kw1">if</span> <span class="br0">&#40;</span><span class="br0">&#40;</span> total - old <span class="sy0">&gt;</span>= <span class="nu0">30</span> <span class="br0">&#41;</span><span class="br0">&#41;</span>; <span class="kw1">then</span>
+        <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">find</span> <span class="sy0">/</span>bak<span class="sy0">/</span>mysql <span class="re5">-name</span> <span class="st_h">'zabbix*'</span> <span class="re5">-mtime</span> +<span class="nu0">30</span> <span class="re5">-delete</span>;
+<span class="kw1">fi</span>;
+&nbsp;
+<span class="co0"># ------------- rotating snapshots -------------------------------------</span>
+&nbsp;
+<span class="co0"># step 1: delete the oldest snapshot, if it exists:</span>
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="re5">-d</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.9 <span class="br0">&#93;</span> ; <span class="kw1">then</span>
+        <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">rm</span> <span class="re5">-rf</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.9 ;
+<span class="kw1">fi</span>;
+&nbsp;
+<span class="co0"># step 2: shift the middle snapshots(s) back by one, if they exist</span>
+<span class="co0"># cp /bin/mv $bak/daily.8 $bak/daily.9 ;</span>
+<span class="co0"># cp /bin/mv $bak/daily.7 $bak/daily.8 ; # etc</span>
+<span class="kw1">for</span> <span class="br0">&#40;</span><span class="br0">&#40;</span><span class="re2">i</span>=<span class="nu0">8</span>;i<span class="sy0">&gt;</span>=<span class="nu0">1</span>;i--<span class="br0">&#41;</span><span class="br0">&#41;</span> ; <span class="kw1">do</span>
+        <span class="kw1">if</span> <span class="br0">&#91;</span> <span class="re5">-d</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.<span class="re1">$i</span> <span class="br0">&#93;</span> ; <span class="kw1">then</span>
+                <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">mv</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.<span class="re1">$i</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.$<span class="br0">&#40;</span><span class="br0">&#40;</span>i+<span class="nu0">1</span><span class="br0">&#41;</span><span class="br0">&#41;</span> ;
+        <span class="kw1">fi</span>;
+<span class="kw1">done</span>;
+&nbsp;
+<span class="co0"># step 3: make a hard-link-only (except for dirs) copy of the latest snapshot,</span>
+<span class="co0"># if that exists</span>
+<span class="kw1">if</span> <span class="br0">&#91;</span> <span class="re5">-d</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.0 <span class="br0">&#93;</span> ; <span class="kw1">then</span>
+        <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">cp</span> <span class="re5">-al</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.0 <span class="re1">$bak</span><span class="sy0">/</span>daily.1 ;
+<span class="kw1">fi</span>;
+&nbsp;
+<span class="co0"># step 4: rsync from the system into the latest snapshot (notice that</span>
+<span class="co0"># rsync behaves like cp --remove-destination by default, so the destination</span>
+<span class="co0"># is unlinked first.  If it were not so, this would copy over the other</span>
+<span class="co0"># snapshot(s) too!</span>
+<span class="sy0">/</span>bin<span class="sy0">/</span>rsync <span class="re5">-va</span> <span class="re5">--delete</span> <span class="re5">--delete-excluded</span> <span class="re5">--exclude-from</span>=<span class="st0">&quot;<span class="es2">$excludes</span>&quot;</span> <span class="re1">$src</span><span class="sy0">/</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.0 <span class="sy0">|&amp;</span> <span class="sy0">&gt;/</span>dev<span class="sy0">/</span>null ;
+&nbsp;
+<span class="co0"># step 5: update the mtime of daily.0 to reflect the snapshot time</span>
+<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">touch</span> <span class="re1">$bak</span><span class="sy0">/</span>daily.0 ;
+&nbsp;
+<span class="co0"># step 6: send backups to a backup server</span>
+<span class="sy0">/</span>bin<span class="sy0">/</span>lftp <span class="re5">-c</span> <span class="st0">&quot;set net:reconnect-interval-base 0; set ftp:ssl-force true; <span class="es1">\
+</span>             open -u user,password ftp://backup-site.com:21; <span class="es1">\
+</span>             mirror --verbose=3 -e -R -L -P 0 /bak/ /bak&quot;</span></pre>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'rsync_backup.html';
+var disqus_title   = 'Simple backup script with rsync';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="rsync_backup.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="rsync_backup.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>scripts/rsync_backup.txt</bdi> · Last modified: 2014/11/03 21:24 by <bdi>orl</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexere2b7.gif?id=scripts%3Arsync_backup&amp;1428742785" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/scripts/rsync_backup by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:08:17 GMT -->
+</html>

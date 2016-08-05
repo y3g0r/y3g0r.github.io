@@ -1,0 +1,8 @@
+If several interfaces look into the same subnet, Linux will answer to all ARP requests with only one MAC address. To solve this:
+
+<code>
+net.ipv4.conf.all.arp_ignore=1
+net.ipv4.conf.all.arp_announce=2
+</code>
+
+Ugh, seems that it does not actually work.

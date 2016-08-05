@@ -1,0 +1,7 @@
+Mirror in progress since Sat, 11 Apr 2015 14:28:10 .. please wait!
+httrack https://nixsrv.com/llthw 
+To pause the engine: create an empty file named 'hts-stop.lock'
+PID=3596
+UID=1000
+GID=1000
+START=1428742690

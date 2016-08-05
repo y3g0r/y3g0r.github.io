@@ -1,0 +1,38 @@
+====== Server interactions page template ======
+
+Use this template, for me it proved to be a great help in diagnosing problems involving server interactions.
+
+Format is simple: for every server involved create a header and under this header write down all the external connections this server makes.
+
+===== Format =====
+Format for connections is the following:
+    daemon:       --> remoteserver/daemod: <portnumber>/protocol
+
+===== balancer.site =====
+    ngnix:         --> webserver0.site/ngnix: 80/tcp
+    ngnix:         --> webserver1.site/ngnix: 80/tcp
+
+===== webserver0.site =====
+    php-fpm:       --> sql.site/postgresql: 5423/tcp
+
+===== webserver1.site =====
+    php-fpm:       --> sql.site/postgresql: 5423/tcp
+
+===== sql.site =====
+    postgresql:    --> backup.sql.site/postgresql: 22/tcp
+
+===== backup.sql.site =====
+
+===== amanda.site =====
+    amanda-server: --> balancer.site/amanda-client: 30000-30100/tcp, 10800/udp
+    amanda-server: --> webserver0.site/amanda-client: 30000-30100/tcp, 10800/udp
+    amanda-server: --> sql.site/amanda-client: 30000-30100/tcp, 10800/udp
+
+===== zabbix.site =====
+    zabbix-server: --> balancer.site/zabbix-agent: 10050/tcp
+    zabbix-server: --> webserver0.site/zabbix-agent: 10050/tcp
+    zabbix-server: --> webserver1.site/zabbix-agent: 10050/tcp
+    zabbix-server: --> sql.site/zabbix-agent: 10050/tcp
+    zabbix-server: --> backup.sql.site/zabbix-agent: 10050/tcp
+    zabbix-server: --> amanda.site/zabbix-agent: 10050/tcp
+

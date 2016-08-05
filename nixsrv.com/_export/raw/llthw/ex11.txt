@@ -1,0 +1,119 @@
+====== Exercise 11. Bash: wrapping up ======
+
+Now that you have tasted how working in Linux using CLI feels, your next step is to open your favorite text editor and make yourself the following table. Search those commands and symbols meaning of which you do not know. Warning! For this to work you must type this table by hand. Search for those terms and commands which are new to you. 
+
+Now you will learn how to grind something. And remember, __//**no copy-pasting**//__!
+
+====== Terms ======
+
+^ Term <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| vim normal mode        |                                |
+| vim command mode       |                                |
+| CLI                    |                                |
+| Shell                  |                                |
+| Profile                |                                |
+| File                   |                                |
+| File descriptor        |                                |
+| Process                |                                |
+| Program                |                                |
+| Environment            |                                |
+| Environment variable   |                                |
+| Redirection            |                                |
+| Pipe                   |                                |
+| Text stream            |                                |
+| Stdin                  |                                |
+| Stdout                 |                                |
+| Stderr                 |                                |
+| EOF                    |                                |
+| Filtering              |                                |
+| Job                    |                                |
+| Foreground job         |                                |
+| Background job         |                                |
+| Exit code              |                                |
+
+====== vim ======
+^ Command <html><font color="white">_____________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+|<code>vim      </code>|                                |
+|<code>h        </code>|                                |
+|<code>j        </code>|                                |
+|<code>k        </code>|                                |
+|<code>l        </code>|                                |
+|<code>i        </code>|                                |
+|<code>o        </code>|                                |
+|<code><ESCAPE> </code>|                                |
+|<code>x        </code>|                                |
+|<code>dd       </code>|                                |
+|<code>:wq      </code>|                                |
+|<code>:q!      </code>|                                |
+|<code>/        </code>|                                |
+
+====== less ======
+
+^ Command <html><font color="white">_____________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+|<code>less     </code>|                                |
+|<code>j        </code>|                                |
+|<code>k        </code>|                                |
+|<code>q        </code>|                                |
+|<code>--ch     </code>|                                |
+|<code>/        </code>|                                |
+|<code>&        </code>|                                |
+
+====== Bash and Bash built-in commands ======
+
+^ Command <html><font color="white">_____________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+|<code>echo      </code>|                                |
+|<code>history   </code>|                                |
+|<code>exit      </code>|                                |
+|<code>pwd       </code>|                                |
+|<code>=         </code>|                                |
+|<code>$         </code>|                                |
+|<code>?         </code>|                                |
+|<code>set       </code>|                                |
+|<code>env       </code>|                                |
+|<code>export    </code>|                                |
+|<code>$LANG     </code>|                                |
+|<code>read      </code>|                                |
+|<code><CTRL>+z  </code>|                                |
+|<code><CTRL>+c  </code>|                                |
+|<code>jobs      </code>|                                |
+|<code>fg        </code>|                                |
+
+====== Redirection ======
+
+^ Command <html><font color="white">_____________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+|<code>>          </code>|                                |
+|<code><          </code>|                                |
+|<code>>>         </code>|                                |
+|<code>|          </code>|                                |
+|<code>/dev/stdin </code>|                                |
+|<code>/dev/stdout</code>|                                |
+|<code>/dev/stderr</code>|                                |
+
+====== Other programs you have learnt ======
+^ Command <html><font color="white">_____________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+|<code>man       </code>|                                |
+|<code>ls        </code>|                                |
+|<code>cat       </code>|                                |
+|<code>dpkg-reconfigure</code>|                          |
+|<code>head      </code>|                                |
+|<code>tail      </code>|                                |
+|<code>grep      </code>|                                |
+|<code>awk       </code>|                                |
+|<code>sed       </code>|                                |
+|<code>tee       </code>|                                |
+|<code>dd        </code>|                                |
+|<code>pv        </code>|                                |
+|<code>locale    </code>|                                |
+|<code>sudo      </code>|                                |
+|<code>cp        </code>|                                |
+|<code>mv        </code>|                                |
+|<code>rm        </code>|                                |
+|<code>touch     </code>|                                |
+|<code>wc        </code>|                                |
+
+After filling in the table, write every command on a post-it note and repeat before going to sleep for a week. Yes, I mean it, shake dust from those pen and paper and do it.
+
+====== Extra credit ======
+
+No extra credit for you, just learn this commands until you know them by heart.
+

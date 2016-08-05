@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex12 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:13 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex12 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex12"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex12decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex12.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex12.txt"/>
+<link rel="canonical" href="ex12.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex12","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_12_documentationman_info">Exercise 12. Documentation: man, info</h1>
+<div class="level1">
+<p>
+Now that you have tasted Linux it is time to introduce online Linux documentation facilities. You already know about <strong>man</strong>, because I told you to look things up in it. Maybe you even had read <strong>man</strong> documentation page. So anyway, what do you need to know about <strong>man</strong> to use it effectively?
+</p>
+<p>
+To begin with, <strong>man</strong> pages are just compressed text files containing special markup so <strong>man</strong> program will know how to format them for you. In Debian they are located in <strong>/usr/share/man/</strong>. You can browse them by using <strong>zless</strong>. It is not even a program but a shell script, which uncompresses files and invokes <strong>less</strong>.
+</p>
+<p>
+Next, I will quote <strong>man</strong> page about its sections:
+</p>
+<ol>
+<li class="level1"><div class="li"> Executable programs or shell commands</div>
+</li>
+<li class="level1"><div class="li"> System calls (functions provided by the kernel)</div>
+</li>
+<li class="level1"><div class="li"> Library calls (functions within program libraries)</div>
+</li>
+<li class="level1"><div class="li"> Special files (usually found in /dev)</div>
+</li>
+<li class="level1"><div class="li"> File formats and conventions eg /etc/passwd</div>
+</li>
+<li class="level1"><div class="li"> Games</div>
+</li>
+<li class="level1"><div class="li"> Miscellaneous (including macro packages and conventions), e.g. man(7), groff(7)</div>
+</li>
+<li class="level1"><div class="li"> System administration commands (usually only for root)</div>
+</li>
+<li class="level1"><div class="li"> Kernel routines [Non standard]</div>
+</li>
+</ol>
+<p>
+It is exactly what it says on the tin. To invoke appropriate <strong>man</strong> section just type its section number, like: <strong>man 1</strong>. No worries if you do not understand what some section means, for now you will need only sections <strong>1</strong> and <strong>8</strong>, which are about programs and system administrator utilities installed on your system. Additionally, you man already know what <strong>man(7)</strong> is for.
+</p>
+<p>
+This are standard sections of a man page:
+</p>
+<ol>
+<li class="level1"><div class="li"> <em>NAME</em> — program name and short description.</div>
+</li>
+<li class="level2"><div class="li"> <em>SYNOPSIS</em> — short list of available program options</div>
+</li>
+<li class="level2"><div class="li"> <em>DESCRIPTION</em> — description of a program and explanation of available parameters.</div>
+</li>
+<li class="level2"><div class="li"> <em>OPTIONS</em> — some man pages keep explanation of available parameters here.</div>
+</li>
+<li class="level2"><div class="li"> <em>EXIT STATUS</em> — every program returns a code which indicates its success or failure. This code values are explained here.</div>
+</li>
+<li class="level2"><div class="li"> <em>RETURN VALUE</em> — usually the same as <em>EXIT STATUS</em>.</div>
+</li>
+<li class="level2"><div class="li"> <em>ERRORS</em> — known errors in a program.</div>
+</li>
+<li class="level2"><div class="li"> <em>ENVIRONMENT</em> — environment variables. Set those before invoking the program.</div>
+</li>
+<li class="level2"><div class="li"> <em>FILES</em> — usually, program configuration files.</div>
+</li>
+<li class="level2"><div class="li"> <em>VERSIONS</em> — information about changes in program.</div>
+</li>
+<li class="level2"><div class="li"> <em>CONFORMING TO</em> — notes about compatibility.</div>
+</li>
+<li class="level2"><div class="li"> <em>NOTES</em> — information which an author of a man page did not know where to put.</div>
+</li>
+<li class="level2"><div class="li"> <em>BUGS</em> — known errors in a program.</div>
+</li>
+<li class="level2"><div class="li"> <em>EXAMPLE</em> — contains examples of program invocation. Very useful!</div>
+</li>
+<li class="level2"><div class="li"> <em>AUTHORS</em> — who wrote the program.</div>
+</li>
+<li class="level2"><div class="li"> <em>SEE ALSO</em> — related man pages.</div>
+</li>
+</ol>
+<p>
+Now about conventions, quoting again:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>bold text</strong> — type exactly as shown.</div>
+</li>
+<li class="level1"><div class="li"> <em class="u"><em>italic text</em></em> — replace with appropriate argument. This text mostly is displayed not <em>italic</em>, but like <em class="u">underlined</em>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>[-abc]</strong> — any or all arguments within <strong>[ ]</strong> are optional.</div>
+</li>
+<li class="level1"><div class="li"> <strong>-a|-b</strong> — options delimited by <strong>|</strong> cannot be used together.</div>
+</li>
+<li class="level1"><div class="li"> <strong>argument …</strong> — argument is repeatable.</div>
+</li>
+<li class="level1"><div class="li"> <strong>[expression] …</strong> — entire expression within <strong>[ ]</strong> is repeatable.</div>
+</li>
+</ol>
+<p>
+I will illustrate this by example. <strong>man less</strong> shows this:
+</p>
+<p>
+<a href="../_detail/llthw/lesse407.html?id=llthw%3Aex12" class="media" title="llthw:less.png"><img src="../_media/llthw/less2178.png_%3b?w=847&amp;tok=b3d844" class="media" alt="" width="847"/></a>
+</p>
+<p>
+Well, looks kinda scary I must say. First 4 lines are easy, just type what is shown and that is it:<br/>
+<strong>1.</strong> <strong>less -?</strong><br/>
+<strong>2.</strong> <strong>less –help</strong><br/>
+<strong>3.</strong> <strong>less -V</strong><br/>
+<strong>4.</strong> <strong>less –version</strong><br/>
+</p>
+<p>
+Starting from line 5, as we can see, <em>italic</em> text is indeed shown as <em class="u">underlined</em>. And, it looks totally incomprehensible. Let us go through it line by line.
+</p>
+<p>
+<strong>5.</strong> <strong>less [-[+]aBcCdeEfFgGiIJKLmMnNqQrRsSuUVwWX~]</strong> — this looks more scary.
+</p>
+<ul>
+<li class="level1"><div class="li"> First, it is optional because all arguments are enclosed in <strong>[]</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Second, when specifying an argument it <em>must</em> start with <strong>-</strong>. This is non-optional. </div>
+</li>
+<li class="level1"><div class="li"> Third, after <strong>-</strong> you <em>may</em> specify optional modifier <strong>+</strong>, which meaning is explained further in the manual.</div>
+</li>
+<li class="level1"><div class="li"> Fourth, you can specify one or several of commands which are shown as sequence of letters here. For example, you may type <strong>less -S .bashrc</strong>, or <strong>less -+S .bashrc</strong>, or <strong>less -SG .bashrc .profile</strong> or <strong>less -+SG .bashrc .profile</strong></div>
+</li>
+</ul>
+<p>
+<strong>6.</strong> <strong>[-b space] [-h lines] [-j line] [-k keyfile]</strong> — simple enough, you may specify any of the keys shown <strong>-b</strong>, <strong>-h</strong>, <strong>-j</strong>, <strong>-k</strong> with parameters <strong>space</strong>, <strong>lines</strong>, <strong>line</strong> and <strong>keyfile</strong> respectively, which are explained in further in the manual.
+</p>
+<p>
+<strong>7.</strong> <strong>[-{oO} logfile] [-p pattern] [-P prompt] [-t tag]</strong> — almost the same as line 6. <strong>-{oO}</strong> means that you may specify <strong>-o</strong> or <strong>-O</strong>, but not both at the same time.
+</p>
+<p>
+<strong>8.</strong> <strong>[-T tagsfile] [-x tab,…] [-y lines] [-[z] lines]</strong> — again, almost the same as line 6. <strong>-x tab,…</strong> means that you may specify several values after <strong>-x</strong>, for example <strong>-x9</strong> or <strong>-x9,17</strong>. <strong>-[z] lines</strong> means, that <strong>-z</strong> is optional, and you may just type <strong>less -10</strong> instead of <strong>less -z10</strong>.
+</p>
+<p>
+<strong>9.</strong> <strong>[-# shift] [+[+]cmd] [- -] [filename]…</strong> — this is somewhat more cryptic. <strong>+[+]cmd</strong> means that you may type <strong>less +cmd</strong> or <strong>less ++ cmd</strong>. <strong>- -</strong> is just a prefix. <strong>[filename]…</strong> reads <em>one-or-more</em> and means that you may specify several files when invoking less, for example <strong>less .bashrc</strong>, <strong>less .bashrc .profile</strong>, etc.
+</p>
+<p>
+We are done! Not so scary, is it? Remember, because you are viewing manuals with <strong>less</strong>, to search what some key means type <strong>/key&lt;ENTER&gt;</strong> or <strong>&amp;key&lt;ENTER&gt;</strong>. For example, to search what <strong>-T</strong> key means, type <strong>/-T&lt;ENTER&gt;</strong>.
+</p>
+<p>
+Now I will give you list of useful man commands:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>man -k .</strong> — list all man pages in your system. Not exactly very useful, but you may want to mediate on this list sometime. Or you can just count them all by typing <strong>man -k . | wc</strong>. </div>
+</li>
+<li class="level1"><div class="li"> <strong>man -k [search string]</strong> — search something in man pages descriptions. Tye this: <strong>man -k tty</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>man -wK [search string]</strong> - search something in man page bodies. Try <strong>man -wK tty</strong>.</div>
+</li>
+</ol>
+<p>
+Well, that is it for <strong>man</strong>. Now, there is another useful documentation utility, <strong>info</strong>. The command list is as follows:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>info […]</strong> — invoke <strong>info</strong>. If you invoke it without arguments, it will take you to the index page. </div>
+</li>
+<li class="level1"><div class="li"> <strong>&lt;UP&gt;</strong>, <strong>&lt;DOWN&gt;</strong>, <strong>&lt;LEFT&gt;</strong>, <strong>&lt;RIGHT&gt;</strong> allows you to scroll text.</div>
+</li>
+<li class="level1"><div class="li"> <strong>&lt;ENTER&gt;</strong> open the link under cursor. Links start with <strong> * </strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>&lt;TAB&gt;</strong> — jump to the next link in document. </div>
+</li>
+<li class="level1"><div class="li"> <strong>u</strong> — go up one level.</div>
+</li>
+<li class="level1"><div class="li"> <strong>p</strong> — go to previous page, just like in browser.</div>
+</li>
+<li class="level1"><div class="li"> <strong>n</strong> — go to next pages.</div>
+</li>
+<li class="level1"><div class="li"> <strong>q</strong> — close info.</div>
+</li>
+</ol>
+<p>
+To start info with already familiar to you as I hope, vi keys, type <strong>info –vi-keys</strong>. Now you can scroll with <strong>j</strong> and <strong>k</strong>.
+</p>
+</div>
+<h1 class="sectionedit2" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Type <strong>man man</strong> and try to decode <em>SYNOPSIS</em> section, which explains how it may be invoked.</div>
+</li>
+<li class="level1"><div class="li"> Type <strong>info</strong> and <strong>h</strong>, read <strong>info</strong> help section.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex12.html';
+var disqus_title   = 'Exercise 12. Documentation: man, info';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex12.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex12.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex12.txt</bdi> · Last modified: 2012/09/20 21:11 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer82d0.gif?id=llthw%3Aex12&amp;1428742717" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex12 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:17 GMT -->
+</html>

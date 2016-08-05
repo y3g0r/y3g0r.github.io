@@ -1,0 +1,16 @@
+<code bash>
+@CRYPTSETUP_LUKS
+    create containers
+        cryptsetup luksFormat /dev/md4 -c aes-xts-plain64:sha256 -s 512 
+        cryptsetup luksOpen /dev/md4 srv
+        mkfs.ext4 /dev/mapper/srv
+    manage containers
+        cryptsetup luksOpen /dev/md4 srv
+        cryptsetup luksClose srv
+    manage keys
+        cryptsetup luksDump /dev/md4
+        cryptsetup luksAddKey /dev/md4 -S 3
+        cryptsetup luksKillSlot /dev/md4 2
+    mount scipts
+        #TODO: add repo link
+</code>

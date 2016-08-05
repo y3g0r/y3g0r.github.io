@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex22 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:52 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex22 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex22"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex22decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex22.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex22.txt"/>
+<link rel="canonical" href="ex22.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex22","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_22_filesystemsmoving_data_aroundtar_dd">Exercise 22. Filesystems: moving data around: tar, dd</h1>
+<div class="level1">
+<p>
+Time to see for yourself how everything in Linux is just a file.
+</p>
+<p>
+This exercise is a big one, but its time to see what you have learned. After you will make it through look up all purposefully unexplained program parameters in the <strong>man</strong>, and try to explain to yourself what each command does.
+</p>
+<p>
+Now you will learn how to juggle with data.
+</p>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno"> 1:</span> <span class="kw2">tar</span> <span class="re5">-czvf</span> root.tgz <span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>
+<span class="lno"> 2:</span> <span class="kw2">tar</span> <span class="re5">-tzvf</span> root.tgz
+<span class="lno"> 3:</span> <span class="kw3">cd</span> <span class="sy0">/</span>tmp
+<span class="lno"> 4:</span> <span class="kw2">tar</span> <span class="re5">-zxvf</span> ~<span class="sy0">/</span>root.tgz
+<span class="lno"> 5:</span> <span class="kw2">ls</span> <span class="re5">-al</span>
+<span class="lno"> 6:</span> <span class="re2">dd_if</span>=$<span class="br0">&#40;</span><span class="kw2">mount</span> <span class="sy0">|</span> <span class="kw2">grep</span> <span class="sy0">/</span>tmp <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-d</span> <span class="st_h">' '</span> <span class="re5">-f</span> <span class="nu0">1</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">echo</span> <span class="re1">$dd_if</span>
+<span class="lno"> 7:</span> <span class="kw2">sudo</span> <span class="kw2">dd</span> <span class="re2">if</span>=<span class="re1">$dd_if</span> <span class="re2">of</span>=~<span class="sy0">/</span>tmp.img <span class="re2">bs</span>=10M
+<span class="lno"> 8:</span> <span class="kw3">cd</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">ls</span> <span class="re5">-alh</span>
+<span class="lno"> 9:</span> <span class="kw2">sudo</span> losetup <span class="sy0">/</span>dev<span class="sy0">/</span>loop1 ~<span class="sy0">/</span>tmp.img <span class="sy0">&amp;&amp;</span> <span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="sy0">/</span>dev<span class="sy0">/</span>loop1 <span class="sy0">/</span>mnt<span class="sy0">/</span>
+<span class="lno">10:</span> <span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">/</span>mnt
+<span class="lno">11:</span> <span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="sy0">/</span>mnt <span class="sy0">&amp;&amp;</span> <span class="kw2">sudo</span> losetup <span class="re5">-d</span> <span class="sy0">/</span>dev<span class="sy0">/</span>loop1
+<span class="lno">12:</span> <span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="re1">$dd_if</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">sudo</span> mkfs.ext3 <span class="re1">$dd_if</span>
+<span class="lno">13:</span> <span class="re2">new_uuid</span>=$<span class="br0">&#40;</span><span class="kw2">sudo</span> tune2fs <span class="re5">-l</span> <span class="re1">$dd_if</span> <span class="sy0">|</span> <span class="kw2">awk</span> <span class="st_h">'/UUID/{print $3}'</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">echo</span> <span class="re1">$new_uuid</span>
+<span class="lno">14:</span> <span class="kw2">grep</span> <span class="st_h">'/tmp'</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="lno">15:</span> <span class="kw2">sed</span> <span class="st0">&quot;s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=<span class="es2">$new_uuid</span> \/tmp ext3 defaults 0 2/&quot;</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+</pre>
+<p>
+Now check the output using <strong>sudo tune2fs -l</strong> and <strong>sudo blkid</strong>. If replacement of UUID in <strong>/etc/fstab</strong> looks sane, perform the actual replacement:
+</p>
+<pre class="bash code bash"><span class="lno">16:</span> <span class="kw2">sudo</span> <span class="kw2">sed</span> <span class="re5">-i</span><span class="st_h">'.bak'</span> <span class="st0">&quot;s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=<span class="es2">$new_uuid</span> \/tmp ext3 defaults 0 2/&quot;</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="lno">17:</span> <span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="re5">-a</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">ls</span> <span class="sy0">/</span>tmp
+<span class="lno">18:</span> <span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="sy0">/</span>tmp <span class="sy0">&amp;&amp;</span> pv ~<span class="sy0">/</span>tmp.img <span class="sy0">|</span> <span class="kw2">sudo</span> <span class="kw2">dd</span> <span class="re2">of</span>=<span class="re1">$dd_if</span> <span class="re2">bs</span>=10M
+<span class="lno">19:</span> <span class="re2">new_uuid</span>=$<span class="br0">&#40;</span><span class="kw2">sudo</span> tune2fs <span class="re5">-l</span> <span class="re1">$dd_if</span> <span class="sy0">|</span> <span class="kw2">awk</span> <span class="st_h">'/UUID/{print $3}'</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">echo</span> <span class="re1">$new_uuid</span>
+<span class="lno">20:</span> <span class="kw2">sudo</span> <span class="kw2">sed</span> <span class="re5">-i</span><span class="st_h">'.bak'</span> <span class="st0">&quot;s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=<span class="es2">$new_uuid</span> \/tmp ext3 defaults 0 2/&quot;</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="lno">21:</span> <span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="re5">-a</span>
+<span class="lno">22:</span> <span class="kw2">rm</span> <span class="re5">-v</span> tmp.img
+</pre>
+<p>
+Type in <strong>y</strong> and press <strong>&lt;ENTER&gt;</strong>.
+</p>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">tar</span> <span class="re5">-czvf</span> root.tgz <span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>
+tar: Removing leading <span class="st_h">'/'</span> from member names
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>bin<span class="sy0">/</span>
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>lib64<span class="sy0">/</span>
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>lib64<span class="sy0">/</span>ld-linux-x86-<span class="nu0">64</span>.so.2
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libdl.so.2
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libncurses.so.5
+<span class="sy0">/</span>opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libc.so.6
+<span class="co4">user1@vm1:~$ </span><span class="kw2">tar</span> <span class="re5">-tzvf</span> root.tgz
+drwxr-xr-x root<span class="sy0">/</span>root         <span class="nu0">0</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>
+drwxr-xr-x root<span class="sy0">/</span>root         <span class="nu0">0</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>bin<span class="sy0">/</span>
+<span class="re5">-rwxr-xr-x</span> root<span class="sy0">/</span>root    <span class="nu0">926536</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+drwxr-xr-x root<span class="sy0">/</span>root         <span class="nu0">0</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>lib64<span class="sy0">/</span>
+<span class="re5">-rwxr-xr-x</span> root<span class="sy0">/</span>root    <span class="nu0">128744</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>lib64<span class="sy0">/</span>ld-linux-x86-<span class="nu0">64</span>.so.2
+drwxr-xr-x root<span class="sy0">/</span>root         <span class="nu0">0</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>
+<span class="re5">-rw-r--r--</span> root<span class="sy0">/</span>root     <span class="nu0">14696</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libdl.so.2
+<span class="re5">-rw-r--r--</span> root<span class="sy0">/</span>root    <span class="nu0">286776</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libncurses.so.5
+<span class="re5">-rwxr-xr-x</span> root<span class="sy0">/</span>root   <span class="nu0">1437064</span> <span class="nu0">2012</span>-07-05 03:<span class="nu0">14</span> opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libc.so.6
+<span class="co4">user1@vm1:~$ </span><span class="kw3">cd</span> <span class="sy0">/</span>tmp
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>tmp$ <span class="kw2">tar</span> <span class="re5">-zxvf</span> ~<span class="sy0">/</span>root.tgz
+opt<span class="sy0">/</span>root<span class="sy0">/</span>
+opt<span class="sy0">/</span>root<span class="sy0">/</span>bin<span class="sy0">/</span>
+opt<span class="sy0">/</span>root<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">bash</span>
+opt<span class="sy0">/</span>root<span class="sy0">/</span>lib64<span class="sy0">/</span>
+opt<span class="sy0">/</span>root<span class="sy0">/</span>lib64<span class="sy0">/</span>ld-linux-x86-<span class="nu0">64</span>.so.2
+opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>
+opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libdl.so.2
+opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libncurses.so.5
+opt<span class="sy0">/</span>root<span class="sy0">/</span>lib<span class="sy0">/</span>libc.so.6
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>tmp$ <span class="kw2">ls</span> <span class="re5">-al</span>
+total <span class="nu0">19</span>
+drwxrwxrwt  <span class="nu0">6</span> root  root   <span class="nu0">1024</span> Jul  <span class="nu0">5</span> 04:<span class="nu0">17</span> .
+drwxr-xr-x <span class="nu0">22</span> root  root   <span class="nu0">1024</span> Jul  <span class="nu0">3</span> 08:<span class="nu0">29</span> ..
+drwxrwxrwt  <span class="nu0">2</span> root  root   <span class="nu0">1024</span> Jul  <span class="nu0">3</span> 08:<span class="nu0">41</span> .ICE-unix
+drwx------  <span class="nu0">2</span> root  root  <span class="nu0">12288</span> Jul  <span class="nu0">3</span> 07:<span class="nu0">47</span> lost+found
+drwxr-xr-x  <span class="nu0">3</span> user1 user1  <span class="nu0">1024</span> Jul  <span class="nu0">5</span> 03:<span class="nu0">24</span> opt
+<span class="re5">-rw-r--r--</span>  <span class="nu0">1</span> root  root    <span class="nu0">489</span> Jul  <span class="nu0">3</span> <span class="nu0">10</span>:<span class="nu0">14</span> sources.list
+<span class="re5">-r--r-----</span>  <span class="nu0">1</span> root  root    <span class="nu0">491</span> Jul  <span class="nu0">3</span> <span class="nu0">10</span>:<span class="nu0">21</span> sudoers
+drwxrwxrwt  <span class="nu0">2</span> root  root   <span class="nu0">1024</span> Jul  <span class="nu0">3</span> 08:<span class="nu0">41</span> .X11-unix
+user1<span class="sy0">@</span>vm1:<span class="sy0">/</span>tmp$ <span class="re2">dd_if</span>=$<span class="br0">&#40;</span><span class="kw2">mount</span> <span class="sy0">|</span> <span class="kw2">grep</span> <span class="sy0">/</span>tmp <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-d</span> <span class="st_h">' '</span> <span class="re5">-f</span> <span class="nu0">1</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">echo</span> <span class="re1">$dd_if</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda8
+<span class="co4">user1@vm1:~$ </span><span class="kw3">cd</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">ls</span> <span class="re5">-alh</span>
+total 243M
+drwxr-xr-x <span class="nu0">3</span> user1 user1 4.0K Jul  <span class="nu0">5</span> 04:<span class="nu0">27</span> .
+drwxr-xr-x <span class="nu0">4</span> root  root  4.0K Jul  <span class="nu0">3</span> 08:<span class="nu0">39</span> ..
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1   <span class="nu0">22</span> Jul  <span class="nu0">3</span> <span class="nu0">10</span>:<span class="nu0">45</span> .bash_history
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">220</span> Jul  <span class="nu0">3</span> 08:<span class="nu0">39</span> .bash_logout
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1 3.2K Jul  <span class="nu0">3</span> 08:<span class="nu0">39</span> .bashrc
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1   <span class="nu0">52</span> Jul  <span class="nu0">5</span> 04:<span class="nu0">12</span> .lesshst
+drwxr-xr-x <span class="nu0">3</span> user1 user1 4.0K Jul  <span class="nu0">5</span> 03:<span class="nu0">23</span> opt
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">675</span> Jul  <span class="nu0">3</span> 08:<span class="nu0">39</span> .profile
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1 1.3M Jul  <span class="nu0">5</span> 04:<span class="nu0">25</span> root.tgz
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> root  root  241M Jul  <span class="nu0">5</span> 04:<span class="nu0">36</span> tmp.img
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> losetup <span class="sy0">/</span>dev<span class="sy0">/</span>loop1 ~<span class="sy0">/</span>tmp.img <span class="sy0">&amp;&amp;</span> <span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="sy0">/</span>dev<span class="sy0">/</span>loop1 <span class="sy0">/</span>mnt<span class="sy0">/</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">/</span>mnt
+total <span class="nu0">19</span>
+drwxrwxrwt  <span class="nu0">6</span> root  root   <span class="nu0">1024</span> Jul  <span class="nu0">5</span> 04:<span class="nu0">17</span> .
+drwxr-xr-x <span class="nu0">22</span> root  root   <span class="nu0">1024</span> Jul  <span class="nu0">3</span> 08:<span class="nu0">29</span> ..
+drwxrwxrwt  <span class="nu0">2</span> root  root   <span class="nu0">1024</span> Jul  <span class="nu0">3</span> 08:<span class="nu0">41</span> .ICE-unix
+drwx------  <span class="nu0">2</span> root  root  <span class="nu0">12288</span> Jul  <span class="nu0">3</span> 07:<span class="nu0">47</span> lost+found
+drwxr-xr-x  <span class="nu0">3</span> user1 user1  <span class="nu0">1024</span> Jul  <span class="nu0">5</span> 03:<span class="nu0">24</span> opt
+<span class="re5">-rw-r--r--</span>  <span class="nu0">1</span> root  root    <span class="nu0">489</span> Jul  <span class="nu0">3</span> <span class="nu0">10</span>:<span class="nu0">14</span> sources.list
+<span class="re5">-r--r-----</span>  <span class="nu0">1</span> root  root    <span class="nu0">491</span> Jul  <span class="nu0">3</span> <span class="nu0">10</span>:<span class="nu0">21</span> sudoers
+drwxrwxrwt  <span class="nu0">2</span> root  root   <span class="nu0">1024</span> Jul  <span class="nu0">3</span> 08:<span class="nu0">41</span> .X11-unix
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="sy0">/</span>mnt <span class="sy0">&amp;&amp;</span> <span class="kw2">sudo</span> losetup <span class="re5">-d</span> <span class="sy0">/</span>dev<span class="sy0">/</span>loop1
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="re1">$dd_if</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">sudo</span> mkfs.ext3 <span class="re1">$dd_if</span>
+mke2fs 1.41.12 <span class="br0">&#40;</span><span class="nu0">17</span>-May-<span class="nu0">2010</span><span class="br0">&#41;</span>
+Filesystem <span class="re2">label</span>=
+OS type: Linux
+Block <span class="re2">size</span>=<span class="nu0">1024</span> <span class="br0">&#40;</span><span class="re2">log</span>=<span class="nu0">0</span><span class="br0">&#41;</span>
+Fragment <span class="re2">size</span>=<span class="nu0">1024</span> <span class="br0">&#40;</span><span class="re2">log</span>=<span class="nu0">0</span><span class="br0">&#41;</span>
+<span class="re2">Stride</span>=<span class="nu0">0</span> blocks, Stripe <span class="re2">width</span>=<span class="nu0">0</span> blocks
+<span class="nu0">61752</span> inodes, <span class="nu0">246784</span> blocks
+<span class="nu0">12339</span> blocks <span class="br0">&#40;</span><span class="nu0">5.00</span><span class="sy0">%</span><span class="br0">&#41;</span> reserved <span class="kw1">for</span> the super user
+First data <span class="re2">block</span>=<span class="nu0">1</span>
+Maximum filesystem <span class="re2">blocks</span>=<span class="nu0">67371008</span>
+<span class="nu0">31</span> block <span class="kw2">groups</span>
+<span class="nu0">8192</span> blocks per group, <span class="nu0">8192</span> fragments per group
+<span class="nu0">1992</span> inodes per group
+Superblock backups stored on blocks:
+        <span class="nu0">8193</span>, <span class="nu0">24577</span>, <span class="nu0">40961</span>, <span class="nu0">57345</span>, <span class="nu0">73729</span>, <span class="nu0">204801</span>, <span class="nu0">221185</span>
+&nbsp;
+Writing inode tables: <span class="kw1">done</span>
+Creating journal <span class="br0">&#40;</span><span class="nu0">4096</span> blocks<span class="br0">&#41;</span>: <span class="kw1">done</span>
+Writing superblocks and filesystem accounting information: <span class="kw1">done</span>
+&nbsp;
+This filesystem will be automatically checked every <span class="nu0">27</span> mounts or
+<span class="nu0">180</span> days, whichever comes first.  Use tune2fs <span class="re5">-c</span> or <span class="re5">-i</span> to override.
+<span class="co4">user1@vm1:~$ </span><span class="re2">new_uuid</span>=$<span class="br0">&#40;</span><span class="kw2">sudo</span> tune2fs <span class="re5">-l</span> <span class="re1">$dd_if</span> <span class="sy0">|</span> <span class="kw2">awk</span> <span class="st_h">'/UUID/{print $3}'</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="kw3">echo</span> <span class="re1">$new_uuid</span>
+f8288adc-3ef9-4a6e-aab2-92624276b8ba
+<span class="co4">user1@vm1:~$ </span><span class="kw2">grep</span> <span class="st_h">'/tmp'</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="co0"># /tmp was on /dev/sda8 during installation</span>
+<span class="re2">UUID</span>=011b4530-e4a9-4d13-926b-48d9e33b64bf <span class="sy0">/</span>tmp ext3 defaults <span class="nu0">0</span> <span class="nu0">2</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sed</span> <span class="st0">&quot;s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=<span class="es2">$new_uuid</span> \/tmp ext3 defaults 0 2/&quot;</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="co0"># /etc/fstab: static file system information.</span>
+<span class="co0">#</span>
+<span class="co0"># Use 'blkid' to print the universally unique identifier for a</span>
+<span class="co0"># device; this may be used with UUID= as a more robust way to name devices</span>
+<span class="co0"># that works even if disks are added and removed. See fstab(5).</span>
+<span class="co0">#</span>
+<span class="co0"># &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;</span>
+proc            <span class="sy0">/</span>proc           proc    defaults        <span class="nu0">0</span>       <span class="nu0">0</span>
+<span class="co0"># / was on /dev/sda1 during installation</span>
+<span class="re2">UUID</span>=91aacf33-0b35-474c-9c61-311e04b0bed1 <span class="sy0">/</span>               ext3    <span class="re2">errors</span>=remount-ro <span class="nu0">0</span>       <span class="nu0">1</span>
+<span class="co0"># /home was on /dev/sda9 during installation</span>
+<span class="re2">UUID</span>=e27b0efb-8cf0-439c-9ebe-d59c927dd590 <span class="sy0">/</span>home           ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># /tmp was on /dev/sda8 during installation</span>
+<span class="re2">UUID</span>=f8288adc-3ef9-4a6e-aab2-92624276b8ba <span class="sy0">/</span>tmp ext3 defaults <span class="nu0">0</span> <span class="nu0">2</span>
+<span class="co0"># /usr was on /dev/sda5 during installation</span>
+<span class="re2">UUID</span>=9f49821b-7f94-<span class="nu0">4915</span>-b9a9-ed9f12bb6847 <span class="sy0">/</span>usr            ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># /var was on /dev/sda6 during installation</span>
+<span class="re2">UUID</span>=b7e908a1-a1cd-4d5c-bc79-c3a99d003e7c <span class="sy0">/</span>var            ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># swap was on /dev/sda7 during installation</span>
+<span class="re2">UUID</span>=292981d7-5a17-488f-8d9a-176b65f45d46 none            swap    sw              <span class="nu0">0</span>       <span class="nu0">0</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>scd0       <span class="sy0">/</span>media<span class="sy0">/</span>cdrom0   udf,iso9660 user,noauto     <span class="nu0">0</span>       <span class="nu0">0</span>
+<span class="kw2">sudo</span> <span class="kw2">sed</span> <span class="re5">-i</span><span class="st_h">'.bak'</span> <span class="st0">&quot;s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=<span class="es2">$new_uuid</span> \/tmp ext3 defaults 0 2/&quot;</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="re5">-a</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">ls</span> <span class="sy0">/</span>tmp
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="sy0">/</span>tmp <span class="sy0">&amp;&amp;</span> pv ~<span class="sy0">/</span>tmp.img <span class="sy0">|</span> <span class="kw2">sudo</span> <span class="kw2">dd</span> <span class="re2">of</span>=<span class="re1">$dd_if</span> <span class="re2">bs</span>=10M
+ 241MB <span class="nu0">0</span>:00:04 <span class="br0">&#91;</span>54.2MB<span class="sy0">/</span>s<span class="br0">&#93;</span> <span class="br0">&#91;</span>===============================================================================================================<span class="sy0">&gt;</span><span class="br0">&#93;</span> <span class="nu0">100</span><span class="sy0">%</span>
+<span class="nu0">0</span>+<span class="nu0">1928</span> records <span class="kw1">in</span>
+<span class="nu0">0</span>+<span class="nu0">1928</span> records out
+<span class="nu0">252706816</span> bytes <span class="br0">&#40;</span><span class="nu0">253</span> MB<span class="br0">&#41;</span> copied, <span class="nu0">5.52494</span> s, <span class="nu0">45.7</span> MB<span class="sy0">/</span>s
+<span class="co4">user1@vm1:~$ </span><span class="kw2">rm</span> <span class="re5">-v</span> tmp.img
+rm: remove write-protected regular <span class="kw2">file</span> <span class="sy0">`</span>tmp.img<span class="st_h">'? y
+removed `tmp.img'</span>
+<span class="co4">user1@vm1:~$</span></pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Creates in archive or <strong>/opt/root/</strong> in your home directory. Archive file has extension <strong>.tgz</strong> because this archive actually consists of two parts, like a matryoshka doll. First part is designated by letter <strong>t</strong> and is one big file in which all archived files are merged by program <strong>tar</strong>. Second part is designated by letters <strong>gz</strong> and means that <strong>tar</strong> called <strong>gzip</strong> program for you to compress it.</div>
+</li>
+<li class="level1"><div class="li"> Tests this archive.</div>
+</li>
+<li class="level1"><div class="li"> Changes directory to <strong>/tmp</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Extracts your archive.</div>
+</li>
+<li class="level1"><div class="li"> Prints out directory contents.</div>
+</li>
+<li class="level1"><div class="li"> Extracts name of a partition which is mounted on <strong>/tmp</strong>, stores it in <strong>dd_if</strong> variable, and if extraction was successful prints out <strong>dd_if</strong> value. <strong>if</strong> stands for <em>input file</em>.</div>
+</li>
+<li class="level1"><div class="li"> Copies whole partition to <strong>tmp.img</strong> in your home directory. <strong>dd</strong> is called as superuser because you are accessing file <strong>/dev/sda8</strong> representing your partition which is not accessible for normal users.</div>
+</li>
+<li class="level1"><div class="li"> Changes directory to your home directory and prints out its content. </div>
+</li>
+<li class="level1"><div class="li"> Tells Linux to use <strong>tmp.img</strong> file as a physical partition (sort of) and mounts it.</div>
+</li>
+<li class="level1"><div class="li"> Prints out content of <strong>tmp.img</strong>. You are able to see that it really is exact copy of <strong>/tmp</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Unmounts <strong>tmp.img</strong> and tells Linux to stop treating is as partition.</div>
+</li>
+<li class="level1"><div class="li"> Unmounts <strong>/tmp</strong> and creates new filesystem there, deleting everything which was there in the process.</div>
+</li>
+<li class="level1"><div class="li"> Extracts UUID of your new <strong>/tmp</strong> filesystem, stores it in <strong>new_uuid</strong> and prints it out.</div>
+</li>
+<li class="level1"><div class="li"> Prints out a line describing old <strong>/tmp</strong> partition from <strong>/etc/fstab</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Shows you how modified <strong>/etc/fstab</strong> will look. It is done by using regular expression, which work as a mask which define this line: <pre class="code">UUID=f8288adc-3ef9-4a6e-aab2-92624276b8ba /tmp ext3 defaults 0 2</pre>
+<p>
+After you finish this book I will give you a link which will allow you to learn how to create such regular expressions.
+</p>
+</div>
+</li>
+<li class="level1"><div class="li"> Makes actual replacement of <strong>/tmp</strong> old UUID with new UUID.</div>
+</li>
+<li class="level1"><div class="li"> Mounts all filesystems described in <strong>/etc/fstab</strong> and lists contents of your new <strong>/tmp</strong> </div>
+</li>
+<li class="level1"><div class="li"> Unmounts new <strong>/tmp</strong> and restores old <strong>/tmp</strong> from <strong>tmp.img</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Gets old <strong>/tmp</strong> UUID, which is actually the same as it was before you created a new filesystem, because <strong>tmp.img</strong> is perfect copy of your old <strong>/tmp</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Replaces new UUID with old UUID in your <strong>/etc/fstab</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Mounts all filesystems from <strong>/etc/fstab</strong>. If this command does not result in error, chances are you did everything right. Congratulations.</div>
+</li>
+<li class="level1"><div class="li"> Removes <strong>tmp.img</strong> from your home directory.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Try to explain in detail what each command does. Take a list of paper and write it all out. Look up all not well understood commands and parameters in the <strong>man</strong>.</div>
+</li>
+<li class="level1"><div class="li"> It is a bit early for this, but why you were able to remove <strong>tmp.img</strong> from your home directory issuing removal command as <strong>user1</strong>, considering that <strong>tmp.img</strong> was created as <strong>root</strong>?</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex22.html';
+var disqus_title   = 'Exercise 22. Filesystems: moving data around: tar, dd';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex22.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex22.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex22.txt</bdi> · Last modified: 2012/09/20 21:21 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerd184.gif?id=llthw%3Aex22&amp;1428742725" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex22 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:54 GMT -->
+</html>

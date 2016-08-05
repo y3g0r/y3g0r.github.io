@@ -1,0 +1,16 @@
+====== sysdig, auditd cheatsheet ======
+
+<code bash>
+auditd -fn | grep -v foo
+auditctl -a task,always
+auditctl -a exit,always -S execv
+auditctl -d exclude,always -F msgtype=syscall
+sysdig fd.name contains /home
+sysdig proc.name=konsole and evt.type=open
+sysdig -c topprocs_net
+sysdig -s2000 -X -c echo_fds fd.cip=8.8.8.8
+sysdig -c fdcount_by fd.sport "evt.type=accept"
+sysdig -c fdbytes_by fd.sport
+sysdig -c topprocs_file
+sysdig -c fdcount_by proc.name "fd.type=file"
+</code>

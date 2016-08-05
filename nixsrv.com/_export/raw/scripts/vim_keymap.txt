@@ -1,0 +1,106 @@
+====== Maps alt+h,j,k,l to cursor movement. Ugly. ======
+
+Much more sane solution will be using autokey program: http://code.google.com/p/autokey/
+
+===== ~/.xbindkeysrc =====
+<code bash>
+"xbindkeys_show"
+   control+shift+0
+
+# set directly keycode (here control + f with my keyboard)
+
+#up
+"~/profile/macro/_play up"
+    m:0x8 + c:45
+    Alt + k 
+
+#down
+"~/profile/macro/_play down"
+    m:0x8 + c:44
+    Alt_L 
+
+#left
+"~/profile/macro/_play left"
+    m:0x8 + c:43
+    Alt_L 
+
+#right
+"~/profile/macro/_play right"
+    m:0x8 + c:46
+    Alt_L 
+
+#esc
+"~/profile/macro/_play esc"
+    m:0x8 + c:58
+    Alt_L 
+
+#backspace
+"~/profile/macro/_play backspace"
+    m:0x8 + c:57
+    Alt_L 
+</code> 
+
+===== ~/profile/macro/_play =====
+<code bash>
+#!/bin/sh
+
+case $1 in
+    up) 
+        echo "
+        KeyStrRelease Alt_L
+        KeyStrRelease k 
+        KeyStrPress Up
+        KeyStrRelease Up
+        KeyStrPress Alt_L
+        " | xmacroplay -d 0 :0
+        ;;
+    down)
+        echo "
+        KeyStrRelease Alt_L
+        KeyStrRelease j
+        KeyStrPress Down
+        KeyStrRelease Down
+        KeyStrPress Alt_L
+        " | xmacroplay -d 0 :0
+        ;;
+    left)
+        echo "
+        KeyStrRelease Alt_L
+        KeyStrRelease h 
+        KeyStrPress Left
+        KeyStrRelease Left
+        KeyStrPress Alt_L
+        " | xmacroplay -d 0 :0
+        ;;
+    right)
+        echo "
+        KeyStrRelease Alt_L
+        KeyStrRelease l 
+        KeyStrPress Right
+        KeyStrRelease Right
+        KeyStrPress Alt_L
+        " | xmacroplay -d 0 :0
+        ;;
+    esc)
+        echo "
+        KeyStrRelease Alt_L
+        KeyStrRelease m 
+        KeyStrPress Escape
+        KeyStrRelease Escape
+        KeyStrPress Alt_L
+        " | xmacroplay -d 0 :0
+        ;;
+    backspace)
+        echo "
+        KeyStrRelease Alt_L
+        KeyStrRelease n 
+        KeyStrPress BackSpace
+        KeyStrRelease BackSpace
+        KeyStrPress Alt_L
+        " | xmacroplay -d 0 :0
+        ;;
+    *) 
+        echo "Invalid option: $1"
+        ;;
+esac
+</code>

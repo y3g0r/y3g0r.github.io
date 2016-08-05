@@ -1,0 +1,554 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex11 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:09 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex11 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex11"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex11decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex11.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex11.txt"/>
+<link rel="canonical" href="ex11.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex11","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_11_bashwrapping_up">Exercise 11. Bash: wrapping up</h1>
+<div class="level1">
+<p>
+Now that you have tasted how working in Linux using CLI feels, your next step is to open your favorite text editor and make yourself the following table. Search those commands and symbols meaning of which you do not know. Warning! For this to work you must type this table by hand. Search for those terms and commands which are new to you.
+</p>
+<p>
+Now you will learn how to grind something. And remember, <em class="u"><em><strong>no copy-pasting</strong></em></em>!
+</p>
+</div>
+<h1 class="sectionedit2" id="terms">Terms</h1>
+<div class="level1">
+<div class="table sectionedit3"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Term <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> vim normal mode </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> vim command mode </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> CLI </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> Shell </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> Profile </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> File </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> File descriptor </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> Process </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> Program </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> Environment </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> Environment variable </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> Redirection </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign"> Pipe </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign"> Text stream </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign"> Stdin </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign"> Stdout </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row17">
+<td class="col0 leftalign"> Stderr </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row18">
+<td class="col0 leftalign"> <abbr title="End of file">EOF</abbr> </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row19">
+<td class="col0 leftalign"> Filtering </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row20">
+<td class="col0 leftalign"> Job </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row21">
+<td class="col0 leftalign"> Foreground job </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row22">
+<td class="col0 leftalign"> Background job </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row23">
+<td class="col0 leftalign"> Exit code </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h1 class="sectionedit4" id="vim">vim</h1>
+<div class="level1">
+<div class="table sectionedit5"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command <font color="white">_____________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"><pre class="code">vim      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0"><pre class="code">h        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"><pre class="code">j        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0"><pre class="code">k        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"><pre class="code">l        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0"><pre class="code">i        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0"><pre class="code">o        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0"><pre class="code">&lt;ESCAPE&gt; </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0"><pre class="code">x        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0"><pre class="code">dd       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0"><pre class="code">:wq      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row12">
+<td class="col0"><pre class="code">:q!      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row13">
+<td class="col0"><pre class="code">/        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h1 class="sectionedit6" id="less">less</h1>
+<div class="level1">
+<div class="table sectionedit7"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command <font color="white">_____________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"><pre class="code">less     </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0"><pre class="code">j        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"><pre class="code">k        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0"><pre class="code">q        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"><pre class="code">--ch     </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0"><pre class="code">/        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0"><pre class="code">&amp;        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h1 class="sectionedit8" id="bash_and_bash_built-in_commands">Bash and Bash built-in commands</h1>
+<div class="level1">
+<div class="table sectionedit9"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command <font color="white">_____________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"><pre class="code">echo      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0"><pre class="code">history   </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"><pre class="code">exit      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0"><pre class="code">pwd       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"><pre class="code">=         </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0"><pre class="code">$         </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0"><pre class="code">?         </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0"><pre class="code">set       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0"><pre class="code">env       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0"><pre class="code">export    </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0"><pre class="code">$LANG     </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row12">
+<td class="col0"><pre class="code">read      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row13">
+<td class="col0"><pre class="code">&lt;CTRL&gt;+z  </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row14">
+<td class="col0"><pre class="code">&lt;CTRL&gt;+c  </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row15">
+<td class="col0"><pre class="code">jobs      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row16">
+<td class="col0"><pre class="code">fg        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h1 class="sectionedit10" id="redirection">Redirection</h1>
+<div class="level1">
+<div class="table sectionedit11"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command <font color="white">_____________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"><pre class="code">&gt;          </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0"><pre class="code">&lt;          </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"><pre class="code">&gt;&gt;         </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0"><pre class="code">|          </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"><pre class="code">/dev/stdin </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0"><pre class="code">/dev/stdout</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0"><pre class="code">/dev/stderr</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h1 class="sectionedit12" id="other_programs_you_have_learnt">Other programs you have learnt</h1>
+<div class="level1">
+<div class="table sectionedit13"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command <font color="white">_____________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"><pre class="code">man       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0"><pre class="code">ls        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"><pre class="code">cat       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0"><pre class="code">dpkg-reconfigure</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"><pre class="code">head      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0"><pre class="code">tail      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0"><pre class="code">grep      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0"><pre class="code">awk       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0"><pre class="code">sed       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0"><pre class="code">tee       </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0"><pre class="code">dd        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row12">
+<td class="col0"><pre class="code">pv        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row13">
+<td class="col0"><pre class="code">locale    </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row14">
+<td class="col0"><pre class="code">sudo      </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row15">
+<td class="col0"><pre class="code">cp        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row16">
+<td class="col0"><pre class="code">mv        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row17">
+<td class="col0"><pre class="code">rm        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row18">
+<td class="col0"><pre class="code">touch     </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row19">
+<td class="col0"><pre class="code">wc        </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+<p>
+After filling in the table, write every command on a post-it note and repeat before going to sleep for a week. Yes, I mean it, shake dust from those pen and paper and do it.
+</p>
+</div>
+<h1 class="sectionedit14" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<p>
+No extra credit for you, just learn this commands until you know them by heart.
+</p>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex11.html';
+var disqus_title   = 'Exercise 11. Bash: wrapping up';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex11.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex11.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex11.txt</bdi> · Last modified: 2013/01/17 15:58 (external edit)<br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer41c9.gif?id=llthw%3Aex11&amp;1428742716" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex11 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:13 GMT -->
+</html>

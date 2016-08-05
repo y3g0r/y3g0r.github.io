@@ -1,0 +1,209 @@
+====== Exercise 19. Filesystems: mounting, mount, /etc/fstab ======
+
+I hope you are familiar with concept of partitions. In case if you are not I will introduce you briefly to it. First, quote from [[http://en.wikipedia.org/wiki/Disk_partitioning|Wikipedia]]:
+
+>Disk partitioning is the act of dividing a hard disk drive into multiple logical storage units referred to as partitions, to treat one physical disk drive as if it were multiple disks. 
+
+Take a look:
+<code bash>
+user1@vm1:~$ sudo parted /dev/vda
+GNU Parted 2.3
+Using /dev/vda
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) unit GB
+(parted) p
+Model: Virtio Block Device (virtblk)
+Disk /dev/vda: 17.2GB
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+
+Number  Start   End     Size    Type      File system     Flags
+ 1      0.00GB  13.3GB  13.3GB  extended
+ 5      0.00GB  1.02GB  1.02GB  logical   ext3            boot
+ 6      1.03GB  2.05GB  1.02GB  logical   linux-swap(v1)
+ 7      2.05GB  3.07GB  1.02GB  logical   ext3
+ 8      3.07GB  5.12GB  2.05GB  logical   ext3
+ 9      5.12GB  9.22GB  4.09GB  logical   ext3
+10      9.22GB  13.3GB  4.09GB  logical   ext3
+
+(parted)
+</code>
+
+This is one physical hard disk which is divided in 7 different partitions. The reasons to do do are numerous, but best understood as an application of "divide and conquer" principle. When divided in such a way one rogue program can not bring whole sever down by consuming all disk space, this program will be limited to its partition. I will not talk about //partitioning// disks just just yet, but I will continue taking about file systems, by quoting [[http://en.wikipedia.org/wiki/File_system|Wikipedia]] again:
+
+> A file system (or filesystem) is a means to organize data expected to be retained after a program terminates by providing procedures to store, retrieve and update data, as well as manage the available space on the device(s) which contain it. A file system organizes data in an efficient manner and is tuned to the specific characteristics of the device. A tight coupling usually exists between the operating system and the file system. Some file systems provide mechanisms to control access to the data and metadata. Ensuring reliability is a major responsibility of a file system. Some file systems allow multiple programs to update the same file at nearly the same time.
+
+> Unix-like operating systems create a virtual file system, which makes all the files on all the devices appear to exist in a single hierarchy. This means, in those systems, there is one root directory, and every file existing on the system is located under it somewhere. Unix-like systems can use a RAM disk or network shared resource as its root directory.
+
+What this means is that all file systems are integrated in one big tree. For those familiar with Microsoft Windows this means that instead **C:**, **D:**, and so on naming scheme there is a single root, **/**, to which all other partitions connect. The process of connecting a file system to existing directory is called //mounting//. A directory to which a file system is connected is called a //mount point//. Again, take a look:
+<code bash>
+user1@vm1:~$ mount
+/dev/vda5 on / type ext3 (rw,errors=remount-ro)
+tmpfs on /lib/init/rw type tmpfs (rw,nosuid,mode=0755)
+proc on /proc type proc (rw,noexec,nosuid,nodev)
+sysfs on /sys type sysfs (rw,noexec,nosuid,nodev)
+udev on /dev type tmpfs (rw,mode=0755)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+devpts on /dev/pts type devpts (rw,noexec,nosuid,gid=5,mode=620)
+/dev/vda10 on /home type ext3 (rw)
+/dev/vda7 on /tmp type ext3 (rw)
+/dev/vda9 on /usr type ext3 (rw)
+/dev/vda8 on /var type ext3 (rw)
+</code>
+
+This are the same partitions I showed you earlier in this list you their mount points. Ones which //do not// start with **/dev/vda** are virtual file systems, which allow to access different system facilities, but they are not relevant for this exercise. Now let us take a look at **/etc/fstab** file:
+<code bash>
+user1@vm1:~$ cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc            /proc           proc    defaults    0       0
+# / was on /dev/vda5 during installation
+UUID=128559db-a2e0-4983-91ad-d4f43f27da49 /         ext3    errors=remount-ro 0       1
+# /home was on /dev/vda10 during installation
+UUID=32852d29-ddee-4a8d-9b1e-f46569a6b897 /home     ext3    defaults        0       2
+# /tmp was on /dev/vda7 during installation
+UUID=869db6b4-aea0-4a25-8bd2-f0b53dd7a88e /tmp      ext3    defaults        0       2
+# /usr was on /dev/vda9 during installation
+UUID=0221be16-496b-4277-b131-2371ce097b44 /usr      ext3    defaults        0       2
+# /var was on /dev/vda8 during installation
+UUID=2db00f94-3605-4229-8813-0ee23ad8634e /var      ext3    defaults        0       2
+# swap was on /dev/vda6 during installation
+UUID=3a936af2-2c04-466d-b98d-09eacc5d104c none      swap    sw              0       0
+/dev/scd0       /media/cdrom0   udf,iso9660 user,noauto     0       0
+</code>
+Looks scary, but let us take one line:
+<code bash>
+# <file system>                             <mount point>  <type>  <options>         <dump>  <pass>
+UUID=128559db-a2e0-4983-91ad-d4f43f27da49   /              ext3    errors=remount-ro 0       1
+</code>
+
+And take it apart field by field:
+
+<code bash>
+UUID=128559db-a2e0-4983-91ad-d4f43f27da49 # Filesystem to mount. This UUID is synonim for /dev/vda5
+/                    # This is root filesystem, mount it to /
+ext3                 # This is ext3 filesystem. There are many different filesystems out there
+errors=remount-ro    # If any errors encountered during mounting filesystem should be remounted read-only                
+0                    # This filesystem should not be backed up by dump utility
+1                    # This filesystem should be checked first by fsck utility
+</code>
+
+As always, this information is available to you via **man fstab**. Now I will show you several commands for working with existing file systems:
+  - **mount** — print out all mounted filesystems.
+  - **mount -a** — mount all filesystem described in **/etc/fstab**.
+  - **mount /dev/sda<N> /<mount point>** — mount a partition.
+  - **umount /dev/sda<N> /<mount point>** — mount a partition.
+  - **mount -h** — print out short help about using mount.
+  - **fsck** — check partition for errors.
+  - **blkid** — print out unique partition identifiers. 
+
+Now you will learn how to list mounted partitions, mount and unmount them.
+
+===== Do this =====
+
+<code bash 1>
+cat /etc/fstab
+mount
+sudo blkid
+sudo umount /tmp
+mount
+sudo fsck /tmp
+sudo mount -a
+mount
+</code>
+
+====== What you should see ======
+
+<code bash>
+user1@vm1:~$ cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc            /proc           proc    defaults        0       0
+# / was on /dev/sda1 during installation
+UUID=05d469bb-dbfe-4d5a-9bb2-9c0fe9fa8577 /               ext3    errors=remount-ro 0       1
+# /home was on /dev/sda9 during installation
+UUID=a1b936a0-df38-4bf5-b095-6220ffdfc63c /home           ext3    defaults        0       2
+# /tmp was on /dev/sda8 during installation
+UUID=d0a86453-0dbb-4f33-a023-6c09fe9fa202 /tmp ext3 defaults 0 2
+# /usr was on /dev/sda5 during installation
+UUID=b9544cbb-cdb6-4f3b-89e7-a339f52bfac7 /usr            ext3    defaults        0       2
+# /var was on /dev/sda6 during installation
+UUID=e15e713b-5850-4bc3-b99e-ab6f1d037caa /var            ext3    defaults        0       2
+# swap was on /dev/sda7 during installation
+UUID=4d516f09-80ff-4956-8a75-e9757697f6b1 none            swap    sw              0       0
+/dev/scd0       /media/cdrom0   udf,iso9660 user,noauto     0       0
+user1@vm1:~$ mount
+/dev/sda1 on / type ext3 (rw,errors=remount-ro)
+tmpfs on /lib/init/rw type tmpfs (rw,nosuid,mode=0755)
+proc on /proc type proc (rw,noexec,nosuid,nodev)
+sysfs on /sys type sysfs (rw,noexec,nosuid,nodev)
+udev on /dev type tmpfs (rw,mode=0755)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+devpts on /dev/pts type devpts (rw,noexec,nosuid,gid=5,mode=620)
+/dev/sda9 on /home type ext3 (rw)
+/dev/sda5 on /usr type ext3 (rw)
+/dev/sda6 on /var type ext3 (rw)
+/dev/sda8 on /tmp type ext3 (rw)
+/dev/sda8 on /tmp type ext3 (rw)
+user1@vm1:~$ sudo blkid
+/dev/sda1: UUID="05d469bb-dbfe-4d5a-9bb2-9c0fe9fa8577" TYPE="ext3"
+/dev/sda5: UUID="b9544cbb-cdb6-4f3b-89e7-a339f52bfac7" TYPE="ext3"
+/dev/sda6: UUID="e15e713b-5850-4bc3-b99e-ab6f1d037caa" TYPE="ext3"
+/dev/sda7: UUID="4d516f09-80ff-4956-8a75-e9757697f6b1" TYPE="swap"
+/dev/sda8: UUID="d0a86453-0dbb-4f33-a023-6c09fe9fa202" TYPE="ext3"
+/dev/sda9: UUID="a1b936a0-df38-4bf5-b095-6220ffdfc63c" TYPE="ext3"
+user1@vm1:~$ sudo umount /tmp
+user1@vm1:~$ mount
+/dev/sda1 on / type ext3 (rw,errors=remount-ro)
+tmpfs on /lib/init/rw type tmpfs (rw,nosuid,mode=0755)
+proc on /proc type proc (rw,noexec,nosuid,nodev)
+sysfs on /sys type sysfs (rw,noexec,nosuid,nodev)
+udev on /dev type tmpfs (rw,mode=0755)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+devpts on /dev/pts type devpts (rw,noexec,nosuid,gid=5,mode=620)
+/dev/sda9 on /home type ext3 (rw)
+/dev/sda5 on /usr type ext3 (rw)
+/dev/sda6 on /var type ext3 (rw)
+user1@vm1:~$ sudo fsck /tmp
+fsck from util-linux-ng 2.17.2
+e2fsck 1.41.12 (17-May-2010)
+/dev/sda8: clean, 11/61752 files, 13973/246784 blocks
+user1@vm1:~$ sudo mount -a
+user1@vm1:~$ mount
+/dev/sda1 on / type ext3 (rw,errors=remount-ro)
+tmpfs on /lib/init/rw type tmpfs (rw,nosuid,mode=0755)
+proc on /proc type proc (rw,noexec,nosuid,nodev)
+sysfs on /sys type sysfs (rw,noexec,nosuid,nodev)
+udev on /dev type tmpfs (rw,mode=0755)
+tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev)
+devpts on /dev/pts type devpts (rw,noexec,nosuid,gid=5,mode=620)
+/dev/sda9 on /home type ext3 (rw)
+/dev/sda5 on /usr type ext3 (rw)
+/dev/sda6 on /var type ext3 (rw)
+/dev/sda8 on /tmp type ext3 (rw)
+user1@vm1:~$
+</code>
+
+===== Explanation =====
+
+  - Prints out contents of your **/etc/fstab** file which contains information about your partitions and where to mount them.
+  - Prints out currently mounted partitions.
+  - Prints out UUIDs of all partitions in your system.
+  - Unmounts **/tmp** partition so you will be able to check it.
+  - Prints out currently mounted partitions once again. **/tmp** is now absent from this list.
+  - Check **/tmp** partition for errors. **fsck** knows which partition to check by reading corresponding **/etc/fstab** entry.
+  - Mounts all partitions described in **/etc/fstab**.   
+  - Prints out currently mounted partitions yet another time. **/tmp** has returned to this list.
+====== Extra credit =====
+  - Read **man fstab**, **man mount**.
+  - Read http://tldp.org/LDP/sag/html/filesystems.html

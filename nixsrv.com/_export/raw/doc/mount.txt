@@ -1,0 +1,7 @@
+====== mount ======
+<code bash>
+# mount a partition or file which contain a partition table using loop device
+     fdisk -lu /dev/sda12 # remember offset of a partition you want
+     losetup /dev/loop1 /dev/sda12 -o $((206848 * 512)) # add loop device 
+     mount.ntfs-3g /dev/loop1 /mnt # mount it
+</code>

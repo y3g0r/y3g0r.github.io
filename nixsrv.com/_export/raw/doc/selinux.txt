@@ -1,0 +1,40 @@
+====== Basic rule setup ======
+
+<code bash>
+    getenforce
+    setenforce
+    #naive policy generation
+        cd /etc/selinux/targeted/modules/active
+        audit2allow -M php-fpm < /var/log/audit/audit.log
+        semodule -i php-fpm.pp
+    ps -Z
+    ls -Z
+    chcon -v --type=httpd_sys_content_t /var/www
+    chcon -v --type=httpd_sys_content_t /var/www/test.php
+    cd /etc/selinux/targeted/modules/active
+        mkdir custom
+        audit2allow -M php-fpm < /var/log/audit/audit.log
+        vim php-fpm.te
+        checkmodule -M -m -o php-fpm.mod php-fpm.te
+        semodule_package -o php-fpm.pp -m php-fpm.mod
+        semodule -i php-fpm.pp
+        semodule -l
+    vim selinux/targeted/modules/active/custom/compile.sh
+        #!/bin/bash
+        checkmodule -M -m -o php-fpm.mod php-fpm.te
+        semodule_package -o php-fpm.pp -m php-fpm.mod
+    vim selinux/targeted/modules/active/custom/php-fpm.te
+        # 
+        module php-fpm 1.0;
+        # 
+        require {
+                type httpd_sys_content_t;
+                type httpd_t;
+                class dir { read write create remove_name add_name rmdir };
+                class file { read write create getattr open unlink rename append };
+        }
+        # 
+        #============= httpd_t ==============
+        allow httpd_t httpd_sys_content_t:dir { read write create remove_name add_name rmdir};
+        allow httpd_t httpd_sys_content_t:file { read write create getattr open unlink rename append }
+</code>

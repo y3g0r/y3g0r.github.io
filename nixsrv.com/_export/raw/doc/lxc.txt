@@ -1,0 +1,26 @@
+====== Cheatsheet ======
+
+<code bash>
+#install under normal user
+    sudo aptitude install lxc
+    mkdir -p ~/.config/lxc
+    echo "lxc.id_map = u 0 100000 65536" > ~/.config/lxc/default.conf
+    echo "lxc.id_map = g 0 100000 65536" >> ~/.config/lxc/default.conf
+    echo "lxc.network.type = veth" >> ~/.config/lxc/default.conf
+    echo "lxc.network.link = lxcbr0" >> ~/.config/lxc/default.conf
+    echo "$USER veth lxcbr0 2" | sudo tee -a /etc/lxc/lxc-usernet
+#usage
+    lxc-create --template download --name test1 -- --list
+    lxc-create -t download -n u1 -- -d ubuntu -r trusty -a amd64
+    lxc-start -n u1 -d
+    lxc-attach -n u1
+    lxc-stop -n u1
+    lxc-destroy -n u1
+#macvlan
+    lxc.network.type = macvlan
+    lxc.network.macvlan.mode = bridge
+    lxc.network.hwaddr = 00:16:3e:48:35:d2
+    lxc.network.flags = up
+    lxc.network.link = enps0
+    lxc.network.ipv4 = 10.0.5.3/24
+</code>

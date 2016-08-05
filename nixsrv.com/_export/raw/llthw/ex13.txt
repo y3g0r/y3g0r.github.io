@@ -1,0 +1,34 @@
+====== Exercise 13. Documentation: Google ======
+
+===== Introduction to finding documentation =====
+
+Now that you know how to work with online Linux documentation, I will tell you this: "Online Linux documentation is good, but it just is not enough." This means that man pages are useful if you already familiar with how a particular program works, but are very unhelpful when you do not. 
+
+To get yourself started you need to read a book or find a small recipe which allows you get started which is called a "how to". For example, to get started with Apache web-server you may google for "apache how to". That is ok, and that is what Google is for, but now I will give you a big warning:
+
+<html><span style="color:red;font-size:200%;"><b>Do not</b> follow any How To blindly, ever!</span></html>
+
+The correct way to use Google is this:
+  - Find a "How To".
+  - Follow it, but //read, or at least skim, through all man pages for programs about which you do not know about//. Also, //read about all options in the howto which are unknown to you//. It is //that// important.
+  - //**Not**// paste, but type most of commands, the hard way. It requires some effort, but really helps to memorize them and even better understand what you are doing.
+
+===== List of useful resources =====
+
+Sometimes it is better to search a particular site instead of blindly typing stuff into Google. This is list of the useful resources:
+  - http://en.wikipedia.org is invaluable when getting initial information about some topic. Its links section is even more invaluable.
+  - http://stackexchange.com/ This is very useful site for finding information about usage examples and use cases. StackExchange network includes several resources, of which most useful to you are http://serverfault.com/ and http://unix.stackexchange.com/. http://stackoverflow.com/ is a very useful resource when you are doing bash scripting.
+  - http://www.cyberciti.biz/ contains many useful "how to's" and examples.
+  - Homepages of many programs provide good and sometimes great documentation. For example this are for apache and ngnix, respectively: http://httpd.apache.org/docs/, http://nginx.org/en/docs/.
+  - http://tldp.org/ is The Linux Documentation Project and contains many in-depth guides about different topics.
+
+===== Search tips =====
+
+Google has a query language which gives you ability to execute powerful queries. This is main commands of this language:
+  - **(screen|tmux) how to** — search for screen and tmux howtos at the same time. Remember about shell parameter expansion? This is similar.
+  - **site:serverfault.com query** — search something on this site only. You may search several sites at once with **(site:serverfault.com | site:stackexchange.com)**
+  - **"a long query"** — shows you only those pages which contain this query exactly.
+  - **-query** — excludes something from search results.
+
+====== Extra credit ======
+  - Go to http://www.google.com/advanced_search and find out what else can be searched. Try searching for file types and last updated pages.

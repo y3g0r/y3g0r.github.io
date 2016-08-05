@@ -1,0 +1,32 @@
+<code bash>
+#General configuration description
+    # network configuraion 
+        # notice that sophos_firewall gw is NOT a mistake
+        # that's because ovh tells to use this config
+                         ~~~~~ internet ~~~~~
+                        /                    \
+                       /                      \ 
+          gw:169.254.10.254/24             gw:169.254.10.254/24(!!!)
+                 /                           /
+            vmbr0:169.254.10.44/24----eth0:169.254.9.8/24
+                /                          /                             
+         proxmox_server              sophos_firewall             other_vms
+               /                          \                        /
+            vmbr1:10.10.10.100/24------eth1:10.10.10.1/24----------
+    # web-admin configuration
+        # all web-admin traffic is being proxied through nginx, use https:// urls below to access
+        # this is because such configuration greatly reduces attack surface
+        # because web-admin application can have LOTS of potenitally vulnerable points
+        # so leaving it unprotected facing the internet is not good
+        # downside is that there are 2 logins: first through webserver, than thorugh web-admin
+          ~~~~ internet ~~~~                  proxmox_web_admin:127.0.0.1:8006
+                    \                              /
+                   nginx_with_web_auth(https://169.254.10.44:8007,https://169.254.10.44:8008)
+                                                                        \
+                                                                      sophos_web_admin:10.10.10.1:4444
+    # system configuration
+        # ipv6 is disabled, because it's unneeded right now
+        # iptables are allowing incoming traffic only on TCP ports 22,8007,8008
+        # fail2ban is blocking connections from machines which attempt unsuccessful login attempts
+        # raid check script is being run via cron and will send email in case of disk failure
+</code>

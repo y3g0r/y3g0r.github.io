@@ -1,0 +1,68 @@
+====== Exercise 5. Bash: environment variables, env, set, export ======
+
+Consider the following: you want a program to print out your username. How will this program know it? For this in Linux there are [[http://en.wikipedia.org/wiki/Environment_variable#Unix|environment variables]]. What this means is that there are many variables in your shell, many of which are set up automatically, and every time you run a program, some of them  are passed to this program. 
+
+To elaborate on this:
+  - Some variables are set just for your current shell. They are called //local shell variables//. You can list them by typing **set**, a bash built-in command, which means that no other program is started then you execute it. This command is processed by bash itself.
+  - Other variables are passed to every program you launch from your current shell. They are called //environment variables// and can be listed by **env** program, which means that then typing **env** you will see what variables every program you start gets.
+
+You may want do dig a bit deeper. To do this, grasp the concept of a //[[http://en.wikipedia.org/wiki/Child_process|subshell]]// which is a child process that is created when you run a program and which //becomes// your program. 
+
+Now you will learn how to create variables and how to use them.
+
+===== Do this =====
+<code bash 1>
+foo='Hello World!'
+echo $foo
+set | grep foo
+env | grep foo
+export foo
+env | grep foo
+foo='ls -al'
+$foo
+</code>
+====== What you should see ======
+<code bash>
+uset1@vm1:~$ foo='Hello World!'
+user1@vm1:~$ echo $foo
+Hello World!
+user1@vm1:~$ set | grep foo
+foo='Hello World!'
+user1@vm1:~$ env | grep foo
+user1@vm1:~$ export foo
+user1@vm1:~$ env | grep foo
+foo=Hello World!
+user1@vm1:~$ foo='ls -al'
+user1@vm1:~$ $foo
+total 36
+drwxr-xr-x 2 user1 user1 4096 Jun 14 12:23 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1 4042 Jun 15 18:52 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .bashrc
+-rw------- 1 user1 user1   50 Jun 15 18:41 .lesshst
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+</code>
+
+===== Explanation =====
+  - Creates a variable **foo** and places the line "Hello World!" into it.
+  - Prints out variable **foo**.
+  - Prints out list of all your environment variables, which is passed to **grep**, which prints out only lines containing variable **foo**. Notice how variable **foo** is present.
+  - Prints out all list of your environment variables which are passed to any program you execute. Notice how variable **foo** is absent.
+  - Makes variable **foo** available to all programs you execute from the current shell.
+  - Now you can see that your variable is indeed available to all programs you execute.
+  - Puts **ls /** into variable **foo**.
+  - Executes a command which is contained in variable **foo**.
+
+====== Extra credit =====
+
+  - Type in and execute **env** and **set**. See how many different variable there are? No worries, usually you can quickly understand what a variable does by googling it. Try to do this.
+  - Try typing: <code>set | egrep '^[[:alpha:]].*$'</code> Now, try just **set**. See what I did here? Quick explanation is that <code>egrep '^[[:alpha:]].*$'</code> prints out only those lines which start with alphanumeric character, that is every letter, and omits any other lines. Don't bother too much with this for now. Don not bother about **|** symbol either, I will explain it later on.
+  - Read about difference between **env** and **set** here: [[http://stackoverflow.com/questions/3341372/differnce-between-the-shell-and-environment-variable-in-bash]] Remember, stackoverflow is your friend! I will repeat it many times.
+  - Try typing **set FOO=helloworld bash -c 'echo $FOO'**. Explanation is here: [[http://stackoverflow.com/questions/10938483/bash-specifying-environment-variables-for-echo-on-command-line]]. Again, don not bother with this too much, it will come to you after lots of practice automatically, I promise. 
+  - Try this: <code>
+PS1_BAK=$PS1
+PS1='Hello, world! $(pwd) > '
+PS1=$PS1_BAK</code> Notice how I used **$(pwd)** to access command output as a variable. Now, type **man bash**, **/** (yes, just a slash), **PS1**, press **<ENTER>**. You can now press **n** to go to the next result. Skim through //PROMPTING// and type **q** to exit man. Now, navigate to [[http://stackexchange.com/]] and search **bash PS1**. Understand how those two documentation sources differ.

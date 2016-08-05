@@ -1,0 +1,76 @@
+======Exercise 21. Filesystems: changing root directory, chroot======
+
+Let me start with another [[http://en.wikipedia.org/wiki/Chroot|Wikipedia]] quote:
+
+>A chroot on Unix operating systems is an operation that changes the apparent root directory for the current running process and its children. A program that is run in such a modified environment cannot name (and therefore normally not access) files outside the designated directory tree. The term //chroot// may refer to the chroot(2) system call or the chroot(8) wrapper program. The modified environment is called a //chroot jail//.
+
+What this means is that you can create a directory (for example **/opt/root**), copy necessary program there and execute this program. For such program **/opt/root/** will be the root directory **/**. To understand why you would want that, read [[http://en.wikipedia.org/wiki/Chroot#Uses|Wikipedia chroot]] article. 
+
+It is practice time. You will do now create a minimal chroot environment with **bash**. To do this you will create a directory structure and copy bash and its dependencies into it.
+ 
+Now you will learn how to create a chroot environment and enter into it.
+
+===== Type this =====
+<code 1 bash>
+sudo -s
+ldd /bin/bash
+mkdir -vp /opt/root/bin
+mkdir -v /opt/root/lib
+mkdir -v /opt/root/lib64
+cp -v /bin/bash /opt/root/bin/
+cp -v /lib/libncurses.so.5 /opt/root/lib/
+cp -v /lib/libdl.so.2 /opt/root/lib
+cp -v /lib/libc.so.6 /opt/root/lib
+cp -v /lib64/ld-linux-x86-64.so.2 /opt/root/lib64
+chroot /opt/root/
+</code>
+
+Wohoo, you just created yourself a Linux! //Sort of.//
+====== What you should see ======
+<code bash>
+user1@vm1:/opt~ sudo -s
+root@vm1:/opt# ldd /bin/bash
+        linux-vdso.so.1 =>  (0x00007fff17bff000)
+        libncurses.so.5 => /lib/libncurses.so.5 (0x00007f4b1edc6000)
+        libdl.so.2 => /lib/libdl.so.2 (0x00007f4b1ebc2000)
+        libc.so.6 => /lib/libc.so.6 (0x00007f4b1e85f000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007f4b1f012000)
+root@vm1:/opt# mkdir -vp /opt/root/bin
+mkdir: created directory `/opt/root'
+mkdir: created directory `/opt/root/bin'
+root@vm1:/opt# mkdir -v /opt/root/lib
+mkdir: created directory `/opt/root/lib'
+root@vm1:/opt# mkdir -v /opt/root/lib64
+mkdir: created directory `/opt/root/lib64'
+root@vm1:/opt# cp -v /bin/bash /opt/root/bin/
+`/bin/bash' -> `/opt/root/bin/bash'
+root@vm1:/opt# cp -v /lib/libncurses.so.5 /opt/root/lib/
+`/lib/libncurses.so.5' -> `/opt/root/lib/libncurses.so.5'
+root@vm1:/opt# cp -v /lib/libdl.so.2 /opt/root/lib
+`/lib/libdl.so.2' -> `/opt/root/lib/libdl.so.2'
+root@vm1:/opt# cp -v /lib/libc.so.6 /opt/root/lib
+`/lib/libc.so.6' -> `/opt/root/lib/libc.so.6'
+root@vm1:/opt# cp -v /lib64/ld-linux-x86-64.so.2 /opt/root/lib64
+`/lib64/ld-linux-x86-64.so.2' -> `/opt/root/lib64/ld-linux-x86-64.so.2'
+root@vm1:/opt# chroot /opt/root/
+</code>
+
+===== Explanation =====
+
+  - Executes **bash** as superuser (root).
+  - Prints out libraries which **bash** needs to run.
+  - Creates **/opt/root/** and **/opt/root/bin/** directories in one command. Neat, eh?
+  - Creates **/opt/root/lib** directory.
+  - Creates **/opt/root/lib64** directory.
+  - Copies **/bin/bash** to **/opt/root/bin/**.
+  - Copies **/lib/libncurses.so.5** to **/opt/root/lib/**.
+  - Copies **/lib/libdl.so.2** to **/opt/root/lib/**.
+  - Copies **/lib/libc.so.6** to **/opt/root/lib/**.
+  - Copies **/lib64/ld-linux-x86-64.so.2** to **/opt/root/lib64/**.
+  - Changes root directory to **/opt/root/**.
+
+====== Extra credit ======
+
+  - Read **man chroot**, **man ldd**.
+  - Copy **ls** command to your chroot and make it work.
+  - A hard one: copy **vim** to your chroot and make it work.

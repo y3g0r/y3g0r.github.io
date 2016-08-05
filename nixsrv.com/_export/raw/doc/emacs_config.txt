@@ -1,0 +1,21 @@
+<code lisp>
+vim .emacs
+    (add-to-list 'load-path "~/.emacs.d/undo-tree")
+    (require 'undo-tree)
+    (global-undo-tree-mode)
+
+    (add-to-list 'load-path "~/.emacs.d/evil")
+    (require 'evil)
+    (evil-mode 1)
+
+    (custom-set-variables
+     '(custom-enabled-themes (quote (dichromacy)))
+     '(font-use-system-font t)
+     '(show-paren-mode t))
+    (custom-set-faces
+     '(default ((t (:family "Terminus (TTF)" :foundry "unknown" :slant normal :weight normal :height 120 :width normal)))))
+     
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
+    (require 'slime-autoloads)
+    (setq inferior-lisp-program "/usr/bin/sbcl")
+</code>

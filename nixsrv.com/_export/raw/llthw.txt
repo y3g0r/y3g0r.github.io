@@ -1,0 +1,119 @@
+====== Learn Linux The Hard Way (β version) ======
+
+===== Exercises ===== 
+
+  * [[llthw/ex0|Exercise 0. The setup]]
+  * [[llthw/ex1|Exercise 1. Text Editor, The: vim]]
+  * [[llthw/ex2|Exercise 2. Text Viewer, The: less is More]]
+  * [[llthw/ex3|Exercise 3. Bash: the shell, .profile, .bashrc, .bash_history]]
+  * [[llthw/ex4|Exercise 4. Bash: working with files, pwd, ls, cp, mv, rm]]
+  * [[llthw/ex5|Exercise 5. Bash: environment variables, set, export]]
+  * [[llthw/ex6|Exercise 6. Bash: language settings, LANG, dpkg-reconfigure locales]]
+  * [[llthw/ex7|Exercise 7. Bash: redirection, stdin, stdout, stderr, >, >>, |, tee, pv]]
+  * [[llthw/ex8|Exercise 8. Bash: more on redirection and filtering: grep, awk, sed]]
+  * [[llthw/ex9|Exercise 9. Bash: job control, jobs, fg]]
+  * [[llthw/ex10|Exercise 10. Bash: exit code or return status]]
+  * [[llthw/ex11|Exercise 11. Bash: wrapping up]]
+  * [[llthw/ex12|Exercise 12. Documentation: man, info]]
+  * [[llthw/ex13|Exercise 13. Documentation: Google]]
+  * [[llthw/ex14|Exercise 14. Package management: Debian package management utility aptitude]]
+  * [[llthw/ex15|Exercise 15. System boot: runlevels, /etc/init.d, rcconf, update-rc.d]]
+  * [[llthw/ex16|Exercise 16. Processes: working with proccesses, ps, kill]]
+  * [[llthw/ex17|Exercise 17. Job schedulers: cron, at]]
+  * [[llthw/ex18|Exercise 18. Logging, /var/log, rsyslog, logger]]
+  * [[llthw/ex19|Exercise 19. Filesystems: mounting, mount, /etc/fstab]]
+  * [[llthw/ex20|Exercise 20. Filesystems: creating and modifying filesystems, mkfs, tune2fs]]
+  * [[llthw/ex21|Exercise 21. Filesystems: changing root directory, chroot]]
+  * [[llthw/ex22|Exercise 22. Filesystems: moving data arount: tar, dd]]
+  * [[llthw/ex23|Exercise 23. Filesystems: security permissions, chown, chmod]]
+  * [[llthw/ex24|Exercise 24. Networking: interface configuration, ifconfig, netstat, iproute2, ss]]
+  * [[llthw/ex25|Exercise 25. Networking: configuration files, /etc/network/interfaces]]
+  * [[llthw/ex26|Exercise 26. Networking: packet filter configuration, iptables]]
+  * [[llthw/ex27|Exercise 27. Networking: secure shell, ssh, sshd, scp]]
+  * [[llthw/ex28|Exercise 28. Performance: getting performance stats, uptime, free, top]]
+  * [[llthw/ex29|Exercise 29. Kernel: kernel messages, dmesg]]
+  * [[llthw/ex30|Exercise 30. Lather, Rinse, Repeat: The Grand Rote Learning]]
+  * [[llthw/next|What to do next]]
+
+Down into the rabbit hole, diving straight in. Hello you, this is Linux:
+
+<html>
+<iframe src="/kitten/index.htm" width="680" height="559" frameborder="0"></iframe>
+<br />
+<span style="font-size:200%;">Say hello to it. Click into this window and type <b>hello</b>, then press <b>&lt;ENTER&gt;.</b></span></html>
+
+
+===== Introduction ===== 
+
+This is a simple guide written in "Learn X the hard way" style, author of which is [[http://learncodethehardway.org/|Zed A. Shaw]]. The purpose of it is to give you some experience in working with Unix-like system. There are many good UNIX-Like systems out there, for example FreeBSD, OpenBSD, OpenSolaris and even MAC OS X, just to name a few. When deciding which system to use in this guide I chose Linux mainly because it is most popular UNIX-like server operating system, which means what you have much bigger chance encountering it in the wild in comparsion to other UNIX derivatives. And Linux-related skills are relatively easy transferable to other UNIX-likes. 
+
+Now I want to tell you about the details. You will encounter many detailed tables containing lists of many fields. You may think you do not need most of this information, but what I am trying to do here is to teach you the right way to approach all this scary data. And this right way is to interpret this data as mathematical formulas, where every single symbol has its meaning.
+
+If you already have some experience with Linux you probably know a lot of commands, but do you know every field in those commands output? Let us take **ls** for example, which just lists all files in current directory.
+<code bash>
+user1@vm1:~$ ls -al
+total 32
+drwxr-xr-x 2 user1 user1 4096 Jul 20 08:33 .
+drwxr-xr-x 4 root  root  4096 Jul  2 06:19 ..
+-rw------- 1 user1 user1 4092 Jul 20 11:02 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jul  2 06:19 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jul  2 06:19 .bashrc
+-rw------- 1 user1 user1  295 Jul  2 11:34 .lesshst
+-rw-r--r-- 1 user1 user1  675 Jul  2 06:19 .profile
+-rw------- 1 user1 user1 1222 Jul 20 08:33 .viminfo
+</code>
+
+Do you know what everything here means? **total** at the top, **d** in **drwxr-xr-x**, numbers in the second column, numbers in the third column, what date means, what those dots **.** and **..** are and where there are they stored?
+
+Or you just shrug it off, thinks something like //Ok, this is list of files, that is all I need right now, and all those additional fields do not matter? I think I know that the date is just modification date, and **.** and **..** are just synonyms for this and parent directory, but I do not need other data, my brain is overflowed already.// This approach is okay if all you want to do is to surf the internet, but if you want to //understand// your system, this will not work. The thing is, UNIX is very logical, and by teaching yourself about what data there is you will also understand how the system works, all those nitty-gritty details about running programs, storing and accessing data and interconnecting via the network.
+
+The bottom line is, know your stuff. Pay attention to details. Understand that every piece of data on the screen has its meaning, and is called a //field// for a reason and do not dismiss something because finding what it does is hard. But do not go to the other extreme, then you become obsessed with all those little details and will not be able to see the big picture. If something does not make sense now and you already spent a decent amount of time researching it, sometimes it is better to write this down somewhere and return to this later, or just ask a guy who knows it, but try to understand what it does on your own first. Chances are, if you were studying even a little in the time being, you will understand that one hard part much easier. 
+
+To sum up my point about attention to details and knowing your stuff I will insert a picture about it here:
+
+**KNOW YOUR STUFF.**\\
+**DO. NOT. BE. LIKE. THIS.**\\
+{{:llthw:howtohackdb.png|}}\\
+© [[http://nedroid.com/2012/05/honk-the-databus/|Nedroid]]
+
+
+
+A little about purpose of this guide. This is sink-or-swim type of thing, the main point being is to familiarize yourself with Linux environment and lots and lots of concepts and commands. Actually, not just familiarize, but memorize! Yes, you will need to memorize stuff. Yes, it means that you must remember something to be able to recall it from your own memory at a later time. Yes, this is hard. Yes, you will need to do it by making yourself bunch cards with term on one side and explanation on another, and do this memorization before going to sleep each day. Yes, you need to make those cards yourself (only write things on them though, do not try to make paper). And yes, in the and it will pay off for you, the light will switch on in your head and it will be like //Bam! I now understand this!!//
+
+Finally, **if you do not understand something, ask questions right away**. There is a comment section at the bottom of each exercise just for this. Or you can write me to **sistemshik at yahoo.com**.
+
+=====Audience=====
+  - Aspiring system administrators who are interested in UNIX-like systems.
+  - Programmers, because a good programmer should know now to manage the system he is programming for.
+  - People who want to try something new and to understand what this "[[http://en.wikipedia.org/wiki/Unix_philosophy|UNIX way]]" is all about.
+
+=====Prerequisites=====
+  - Familiarity with command line interface is recommended. You can get familiar with it by completing [[http://cli.learncodethehardway.org/book/|The Command Line Crash Course]] by Zed A. Shaw.
+  - Basic knowledge about operating systems in general will be a plus. 
+  - Basic knowledge about networking will be a plus. 
+ 
+=====How to work with this guide=====
+  - Read introduction for each exercise. You may skip hard parts and return to them later.
+  - Type in exactly what is shown. //__**No copy-paste is allowed.**__//
+  - Compare your output with "What you should see" section.
+  - Read the explanation.
+  - Do the extra credit. Here you may skip hard parts and return to them later as well.
+  - Read manuals for commands you type. Reading descriptions will suffice.
+  - Do not rush! If you will try to complete this guide at once, it will not do you any good. One exercise a day is a perfectly reasonable pace.
+  
+=====To complete this tasks you need the following setup=====
+  - A computer with Internet connection.
+  - A bit of spare time.
+  - Patience.
+
+=====If I may be permitted ...====
+As this is a project on which I work in my spare time, if you will find my effort useful I ask you to show your appreciation by donating whatever amount of money you wish. If you will decide to support me, I will write more tutorials like this one.
+<html>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</html>

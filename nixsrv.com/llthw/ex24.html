@@ -1,0 +1,941 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex24 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:58 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex24 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex24"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex24decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex24.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex24.txt"/>
+<link rel="canonical" href="ex24.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex24","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_24_networkinginterface_configuration_ifconfig_netstat_iproute2_ss_route">Exercise 24. Networking: interface configuration, ifconfig, netstat, iproute2, ss, route</h1>
+<div class="level1">
+<p>
+This exercise is a big one in terms of info dumped on you, and if you are not familiar with networking this is gonna hurt. If you feel <em>absolutely</em> lost, skip to the <strong>Do This</strong> part right away and be done with it. To understand this part properly you should be at least superfluously familiar with the following basic concepts of networking:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Communications_protocol" class="urlextern" title="http://en.wikipedia.org/wiki/Communications_protocol" rel="nofollow">Communications protocol</a></strong> — a communications protocol which is a system of digital message formats and rules for exchanging those messages in or between computing systems and in telecommunications.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Ethernet" class="urlextern" title="http://en.wikipedia.org/wiki/Ethernet" rel="nofollow">Ethernet</a></strong> — family of computer networking technologies for local area networks (LANs). </div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/MAC_address" class="urlextern" title="http://en.wikipedia.org/wiki/MAC_address" rel="nofollow">MAC address</a></strong> — an unique identifier assigned to network interfaces for communications on the physical network segment. Example: <strong>08:00:27:d4:45:68</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Internet_protocol_suite" class="urlextern" title="http://en.wikipedia.org/wiki/Internet_protocol_suite" rel="nofollow">TCP/IP</a></strong> — the Internet protocol suite is the set of communications protocols used for the Internet and similar networks, and generally the most popular protocol stack for wide area networks. It is commonly known as TCP/IP, because of its most important protocols: Transmission Control Protocol (TCP) and Internet Protocol (IP)</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Internet_Protocol" class="urlextern" title="http://en.wikipedia.org/wiki/Internet_Protocol" rel="nofollow">IP</a></strong> — the Internet Protocol (IP) is the principal communications protocol used for relaying datagrams (also known as network packets) across an internetwork using the Internet Protocol Suite.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/IP_address" class="urlextern" title="http://en.wikipedia.org/wiki/IP_address" rel="nofollow">IP address</a></strong> — an Internet Protocol address. Example: <strong>10.0.2.15</strong></div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Port_(computer_networking)" class="urlextern" title="http://en.wikipedia.org/wiki/Port_(computer_networking)" rel="nofollow">Port</a></strong> — application-specific or process-specific software construct serving as a communications endpoint in a computer&#039;s host operating system. Example: <strong>22</strong></div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Network_socket" class="urlextern" title="http://en.wikipedia.org/wiki/Network_socket" rel="nofollow">Network socket</a></strong> — an endpoint of an inter-process communication flow across a computer network. Today, most communication between computers is based on the Internet Protocol; therefore most network sockets are Internet sockets.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Local socket address</strong> — local IP address and port number, example: <strong>10.0.2.15:22</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Remote socket address</strong> — remote IP address and port number, only for established TCP sockets. Example: <strong>10.0.2.2:52173</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Network_socket#Socket_pairs" class="urlextern" title="http://en.wikipedia.org/wiki/Network_socket#Socket_pairs" rel="nofollow">Socket pair</a></strong> — communicating local and remote sockets, only TCP protocol. Example: <strong>(10.0.2.15:22, 10.0.2.2:52173)</strong>. </div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Subnetwork" class="urlextern" title="http://en.wikipedia.org/wiki/Subnetwork" rel="nofollow">Subnet mask</a></strong> — logically visible subdivision of an IP network. Example: <strong>/24</strong> or, in another notation, <strong>255.255.255.0</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Routing" class="urlextern" title="http://en.wikipedia.org/wiki/Routing" rel="nofollow">Routing</a></strong> — the process of selecting paths in a network along which to send network traffic. </div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Default_gateway" class="urlextern" title="http://en.wikipedia.org/wiki/Default_gateway" rel="nofollow">Default gateway</a></strong> — in computer networking, a gateway is a node (a router) on a TCP/IP network that serves as an access point to another network. A default gateway is the node on the computer network that the network software uses when an IP address does not match any other routes in the routing table. Example: <strong>10.0.2.2</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Broadcast_address" class="urlextern" title="http://en.wikipedia.org/wiki/Broadcast_address" rel="nofollow">Broadcast address</a></strong> — logical address at which all devices connected to a multiple-access communications network are enabled to receive datagrams. A message sent to a broadcast address is typically received by all network-attached hosts, rather than by a specific host. Example: <strong>10.0.2.255</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://en.wikipedia.org/wiki/Internet_Control_Message_Protocol" class="urlextern" title="http://en.wikipedia.org/wiki/Internet_Control_Message_Protocol" rel="nofollow">ICMP</a> — Internet Control Message Protocol, example usage: <strong>ping 10.0.2.2</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Transmission_Control_Protocol" class="urlextern" title="http://en.wikipedia.org/wiki/Transmission_Control_Protocol" rel="nofollow">TCP</a></strong> — Transmission Control Protocol. Establishes connection before data can be exchanged, therefore reliable by design. Example users: <strong><abbr title="Secure Shell">SSH</abbr></strong>, <strong><abbr title="Hyper Text Transfer Protocol">HTTP</abbr></strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/User_Datagram_Protocol" class="urlextern" title="http://en.wikipedia.org/wiki/User_Datagram_Protocol" rel="nofollow">UDP</a></strong> — User Datagram Protocol. Transfers data without establishing connection, therefore unreliable by design. Example users: <strong><abbr title="Domain Name System">DNS</abbr></strong>.</div>
+</li>
+</ol>
+<p>
+If some of this concepts are not familiar to you, no worries.
+</p>
+<ol>
+<li class="level1"><div class="li"> Read corresponding Wikipedia articles until you achieve at least superfluous understanding (but good old hardcore grinding is of course better).</div>
+</li>
+<li class="level1"><div class="li"> Watch this videos from <a href="http://www.visualland.net.cn/" class="urlextern" title="http://www.visualland.net.cn/" rel="nofollow">http://www.visualland.net.cn/</a>:</div>
+<ol>
+<li class="level2"><div class="li"> Expand <strong>IP Address</strong> tree node in the left of the site and work you way through it. </div>
+</li>
+<li class="level2"><div class="li"> Expand <strong>TCP</strong> tree node and do the same.</div>
+</li>
+</ol>
+</li>
+<li class="level1"><div class="li"> Read Linux <a href="http://www.iptables.org/documentation/HOWTO//networking-concepts-HOWTO-3.html#ss3.1" class="urlextern" title="http://www.iptables.org/documentation/HOWTO//networking-concepts-HOWTO-3.html#ss3.1" rel="nofollow">networking concepts introduction</a>. This guide is good because it even acknowledges that <em>The Internet is for porn</em>.</div>
+</li>
+</ol>
+<p>
+Let us continue. This is list of Linux network-related commands:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>ifconfig</strong> — configure and view status of network interface.</div>
+</li>
+<li class="level1"><div class="li"> <strong>netstat</strong> — print network connections, routing tables, interface statistics, masquerade connections, and multicast memberships.</div>
+</li>
+<li class="level1"><div class="li"> <strong>ip</strong> — show / manipulate routing, devices, policy routing and tunnels.</div>
+</li>
+<li class="level1"><div class="li"> <strong>ss</strong> — another utility to investigate sockets.</div>
+</li>
+</ol>
+<p>
+Now let us examine what information each command can show us. We will start with <strong>ifconfig</strong>.
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ifconfig</span>
+&nbsp;
+eth0      Link encap:Ethernet  HWaddr 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>               <span class="co0"># (1), (2), (3)</span>
+          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0   <span class="co0"># (4), (5), (6), (7)</span>
+          inet6 addr: fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> Scope:Link          <span class="co0"># (8), (9), (10)</span>
+          UP BROADCAST RUNNING MULTICAST  MTU:<span class="nu0">1500</span>  Metric:<span class="nu0">1</span>          <span class="co0"># (11), (12), (13), (14), (15), (16)</span>
+          RX packets:<span class="nu0">35033</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> frame:<span class="nu0">0</span>      <span class="co0"># (17), (18), (19), (20), (21), (22)</span>
+          TX packets:<span class="nu0">28590</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> carrier:<span class="nu0">0</span>    <span class="co0"># (23), (24), (25), (26), (27), (28)</span>
+          collisions:<span class="nu0">0</span> txqueuelen:<span class="nu0">1000</span>                                <span class="co0"># (29), (30)</span>
+          RX bytes:<span class="nu0">6360747</span> <span class="br0">&#40;</span><span class="nu0">6.0</span> MiB<span class="br0">&#41;</span>  TX bytes:<span class="nu0">21721365</span> <span class="br0">&#40;</span><span class="nu0">20.7</span> MiB<span class="br0">&#41;</span>   <span class="co0"># (31), (32)</span>
+&nbsp;
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> Scope:Host
+          UP LOOPBACK RUNNING  MTU:<span class="nu0">16436</span>  Metric:<span class="nu0">1</span>
+          RX packets:<span class="nu0">8</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> frame:<span class="nu0">0</span>
+          TX packets:<span class="nu0">8</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> carrier:<span class="nu0">0</span>
+          collisions:<span class="nu0">0</span> txqueuelen:<span class="nu0">0</span>
+          RX bytes:<span class="nu0">560</span> <span class="br0">&#40;</span><span class="nu0">560.0</span> B<span class="br0">&#41;</span>  TX bytes:<span class="nu0">560</span> <span class="br0">&#40;</span><span class="nu0">560.0</span> B<span class="br0">&#41;</span></pre>
+<p>
+We can see that there are two network interfaces in <strong>vm1</strong>, <strong>eth0</strong> and <strong>lo</strong>. <strong>lo</strong> is a <em>loopback</em> interface, which is used to connect to client-server programs on the same machine.
+</p>
+<p>
+Let us see what information we have on <strong>eth0</strong>, which is a VirtualBox pseudo network interface:
+</p>
+<div class="table sectionedit2"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> Field </th><th class="col1 leftalign"> Description </th><th class="col2 leftalign"> Field </th><th class="col3 leftalign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"> <strong>(1) Link </strong> </td><td class="col1 leftalign"> Physical options </td><td class="col2"> <strong>(17) RX </strong> </td><td class="col3 leftalign"> Receive (abbreviation) </td>
+</tr>
+<tr class="row2">
+<td class="col0"> <strong>(2) encap </strong> </td><td class="col1 leftalign"> Encapsulation type </td><td class="col2"> <strong>(18) packets </strong> </td><td class="col3 leftalign"> Total number of packets </td>
+</tr>
+<tr class="row3">
+<td class="col0"> <strong>(3) Hwaddr </strong> </td><td class="col1 leftalign"> MAC-address </td><td class="col2"> <strong>(19) errors </strong> </td><td class="col3 leftalign"> Total number of packets with errors </td>
+</tr>
+<tr class="row4">
+<td class="col0"> <strong>(4) inet </strong> </td><td class="col1 leftalign"> Address family (IPv4) </td><td class="col2"> <strong>(20) dropped </strong> </td><td class="col3 leftalign"> Dropped packets (low system memory?) </td>
+</tr>
+<tr class="row5">
+<td class="col0"> <strong>(5) addr </strong> </td><td class="col1 leftalign"> IPv4 address </td><td class="col2"> <strong>(21) overruns </strong> </td><td class="col3"> Packets come faster than they can be processed </td>
+</tr>
+<tr class="row6">
+<td class="col0"> <strong>(6) Bcast </strong> </td><td class="col1 leftalign"> Broadcast address </td><td class="col2"> <strong>(22) frame </strong> </td><td class="col3 leftalign"> Invalid frames received </td>
+</tr>
+<tr class="row7">
+<td class="col0"> <strong>(7) Mask </strong> </td><td class="col1 leftalign"> Network mask </td><td class="col2"> <strong>(23) TX </strong> </td><td class="col3 leftalign"> Transmit (abbreviation) </td>
+</tr>
+<tr class="row8">
+<td class="col0"> <strong>(8) inet6 </strong> </td><td class="col1 leftalign"> Address family (IPv6) </td><td class="col2"> <strong>(24) packets </strong> </td><td class="col3 leftalign"> Total number of packets </td>
+</tr>
+<tr class="row9">
+<td class="col0"> <strong>(9) addr </strong> </td><td class="col1 leftalign"> IPv6 address </td><td class="col2"> <strong>(25) errors </strong> </td><td class="col3 leftalign"> Total number of packets with errors </td>
+</tr>
+<tr class="row10">
+<td class="col0"> <strong>(10) Scope </strong> </td><td class="col1 leftalign"> Address scope (host, link, global) </td><td class="col2"> <strong>(26) dropped </strong> </td><td class="col3 leftalign"> Dropped packets (low system memory?) </td>
+</tr>
+<tr class="row11">
+<td class="col0"> <strong>(11) UP </strong> </td><td class="col1 leftalign"> Interface is functioning </td><td class="col2"> <strong>(27) overruns </strong> </td><td class="col3"> An app sends packes very fast? (I am not sure) </td>
+</tr>
+<tr class="row12">
+<td class="col0"> <strong>(12) BROADCAST </strong> </td><td class="col1 leftalign"> It can send traffic to all hosts at once </td><td class="col2"> <strong>(28) carrier </strong> </td><td class="col3 leftalign"> Loss of link carrier wave </td>
+</tr>
+<tr class="row13">
+<td class="col0"> <strong>(13) RUNNING </strong> </td><td class="col1"> It is ready to accept data (I am not sure)</td><td class="col2"> <strong>(29) collisions </strong> </td><td class="col3 leftalign"> Packed collision did occur </td>
+</tr>
+<tr class="row14">
+<td class="col0"> <strong>(14) MULTICAST </strong> </td><td class="col1"> It can send and receive multicast packets </td><td class="col2"> <strong>(30) txqueuelen </strong> </td><td class="col3 leftalign"> Transmin queue length for outgoing packets </td>
+</tr>
+<tr class="row15">
+<td class="col0"> <strong>(15) MTU </strong> </td><td class="col1 leftalign"> Its Maximum transfer unit </td><td class="col2"> <strong>(31) RX bytes </strong> </td><td class="col3 leftalign"> Total received bytes </td>
+</tr>
+<tr class="row16">
+<td class="col0"> <strong>(16) Metric </strong> </td><td class="col1 leftalign"> Route cost (not used in Linux) </td><td class="col2"> <strong>(32) TX bytes </strong> </td><td class="col3 leftalign"> Total sent bytes </td>
+</tr>
+</table></div>
+<p>
+That sure is a lot. But then again, for now only important fields are:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>(5) addr</strong> — IPv4 address.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(6) Bcast</strong> — Broadcast address.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(7) Mask</strong> — Network mask.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(11) UP</strong> — Interface is functioning.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(13) RUNNING</strong> — It is ready to accept data.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(19) errors</strong> and <strong>(25) errors</strong> — if there is something different from zero here, we have problems.</div>
+</li>
+</ol>
+<p>
+Now let us see what <strong>netstat</strong> can show us.
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">netstat</span> <span class="re5">-ap</span>
+Active Internet connections <span class="br0">&#40;</span>servers and established<span class="br0">&#41;</span>
+<span class="co0">#(1)  (2)    (3)    (4)                     (5)                     (6)         (7)</span>
+Active Internet connections <span class="br0">&#40;</span>servers and established<span class="br0">&#41;</span>
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID<span class="sy0">/</span>Program name
+tcp        <span class="nu0">0</span>      <span class="nu0">0</span> <span class="sy0">*</span>:sunrpc                <span class="sy0">*</span>:<span class="sy0">*</span>                     LISTEN      <span class="nu0">580</span><span class="sy0">/</span>portmap
+tcp        <span class="nu0">0</span>      <span class="nu0">0</span> <span class="sy0">*</span>:ssh                   <span class="sy0">*</span>:<span class="sy0">*</span>                     LISTEN      <span class="nu0">900</span><span class="sy0">/</span>sshd
+tcp        <span class="nu0">0</span>      <span class="nu0">0</span> localhost:smtp          <span class="sy0">*</span>:<span class="sy0">*</span>                     LISTEN      <span class="nu0">1111</span><span class="sy0">/</span>exim4
+tcp        <span class="nu0">0</span>      <span class="nu0">0</span> <span class="sy0">*</span>:<span class="nu0">36286</span>                 <span class="sy0">*</span>:<span class="sy0">*</span>                     LISTEN      <span class="nu0">610</span><span class="sy0">/</span>rpc.statd
+tcp        <span class="nu0">0</span>      <span class="nu0">0</span> 10.0.2.15:ssh           10.0.2.2:<span class="nu0">52191</span>          ESTABLISHED <span class="nu0">12023</span><span class="sy0">/</span>sshd: user1 <span class="br0">&#91;</span>
+tcp        <span class="nu0">0</span>      <span class="nu0">0</span> 10.0.2.15:ssh           10.0.2.2:<span class="nu0">48663</span>          ESTABLISHED <span class="nu0">11792</span><span class="sy0">/</span>sshd: user1 <span class="br0">&#91;</span>
+tcp6       <span class="nu0">0</span>      <span class="nu0">0</span> <span class="br0">&#91;</span>::<span class="br0">&#93;</span>:ssh                <span class="br0">&#91;</span>::<span class="br0">&#93;</span>:<span class="sy0">*</span>                  LISTEN      <span class="nu0">900</span><span class="sy0">/</span>sshd
+tcp6       <span class="nu0">0</span>      <span class="nu0">0</span> ip6-localhost:smtp      <span class="br0">&#91;</span>::<span class="br0">&#93;</span>:<span class="sy0">*</span>                  LISTEN      <span class="nu0">1111</span><span class="sy0">/</span>exim4
+udp        <span class="nu0">0</span>      <span class="nu0">0</span> <span class="sy0">*</span>:bootpc                <span class="sy0">*</span>:<span class="sy0">*</span>                                 <span class="nu0">843</span><span class="sy0">/</span>dhclient
+udp        <span class="nu0">0</span>      <span class="nu0">0</span> <span class="sy0">*</span>:sunrpc                <span class="sy0">*</span>:<span class="sy0">*</span>                                 <span class="nu0">580</span><span class="sy0">/</span>portmap
+udp        <span class="nu0">0</span>      <span class="nu0">0</span> <span class="sy0">*</span>:<span class="nu0">52104</span>                 <span class="sy0">*</span>:<span class="sy0">*</span>                                 <span class="nu0">610</span><span class="sy0">/</span>rpc.statd
+udp        <span class="nu0">0</span>      <span class="nu0">0</span> <span class="sy0">*</span>:<span class="nu0">786</span>                   <span class="sy0">*</span>:<span class="sy0">*</span>                                 <span class="nu0">610</span><span class="sy0">/</span>rpc.statd
+<span class="co0">#(8)  (9)    (10)        (11)       (12)          (13)     (14)                (15)</span>
+Active UNIX domain sockets <span class="br0">&#40;</span>servers and established<span class="br0">&#41;</span>
+Proto RefCnt Flags       Type       State         I-Node   PID<span class="sy0">/</span>Program name    Path
+unix  <span class="nu0">2</span>      <span class="br0">&#91;</span> ACC <span class="br0">&#93;</span>     STREAM     LISTENING     <span class="nu0">3452</span>     <span class="nu0">786</span><span class="sy0">/</span>acpid           <span class="sy0">/</span>var<span class="sy0">/</span>run<span class="sy0">/</span>acpid.socket
+unix  <span class="nu0">6</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">3407</span>     <span class="nu0">751</span><span class="sy0">/</span>rsyslogd        <span class="sy0">/</span>dev<span class="sy0">/</span>log
+unix  <span class="nu0">2</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">1940</span>     <span class="nu0">214</span><span class="sy0">/</span>udevd           <span class="sy0">@/</span>org<span class="sy0">/</span>kernel<span class="sy0">/</span>udev<span class="sy0">/</span>udevd
+unix  <span class="nu0">2</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">88528</span>    <span class="nu0">30939</span><span class="sy0">/</span><span class="kw2">sudo</span>
+unix  <span class="nu0">3</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         STREAM     CONNECTED     <span class="nu0">68565</span>    <span class="nu0">12023</span><span class="sy0">/</span>sshd: user1 <span class="br0">&#91;</span>
+unix  <span class="nu0">3</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         STREAM     CONNECTED     <span class="nu0">68564</span>    <span class="nu0">12026</span><span class="sy0">/</span><span class="nu0">1</span>
+unix  <span class="nu0">2</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">68563</span>    <span class="nu0">12023</span><span class="sy0">/</span>sshd: user1 <span class="br0">&#91;</span>
+unix  <span class="nu0">3</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         STREAM     CONNECTED     <span class="nu0">66682</span>    <span class="nu0">11792</span><span class="sy0">/</span>sshd: user1 <span class="br0">&#91;</span>
+unix  <span class="nu0">3</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         STREAM     CONNECTED     <span class="nu0">66681</span>    <span class="nu0">11794</span><span class="sy0">/</span><span class="nu0">0</span>
+unix  <span class="nu0">2</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">66680</span>    <span class="nu0">11792</span><span class="sy0">/</span>sshd: user1 <span class="br0">&#91;</span>
+unix  <span class="nu0">2</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">3465</span>     <span class="nu0">843</span><span class="sy0">/</span>dhclient
+unix  <span class="nu0">2</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">3448</span>     <span class="nu0">786</span><span class="sy0">/</span>acpid
+unix  <span class="nu0">3</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">1945</span>     <span class="nu0">214</span><span class="sy0">/</span>udevd
+unix  <span class="nu0">3</span>      <span class="br0">&#91;</span> <span class="br0">&#93;</span>         DGRAM                    <span class="nu0">1944</span>     <span class="nu0">214</span><span class="sy0">/</span>udevd</pre>
+<p>
+I used two parameters to modify netstat output. <strong>-a</strong> parameter told <strong>netstat</strong> to show us all connections, both established, like your current ssh session through which your are typing, and listening, like <strong>sshd</strong> daemon waiting for new connections. <strong>-p</strong> told netstat to show which program owns each connection.
+</p>
+<div class="table sectionedit3"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0" colspan="2"> Active Internet Connections (servers and established) </th>
+</tr>
+<tr class="row1">
+<th class="col0 leftalign"> Field </th><th class="col1 leftalign"> Description </th>
+</tr>
+</thead>
+<tr class="row2">
+<td class="col0 leftalign"> <strong>(1) Proto</strong> </td><td class="col1 leftalign"> The protocol (tcp, udp, raw) used by the socket. </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <strong>(2) Recv-Q</strong> </td><td class="col1"> The count of bytes not copied by the user program connected to this socket. </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <strong>(3) Send-Q</strong> </td><td class="col1"> The count of bytes not acknowledged by the remote host. </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <strong>(4) Local Address</strong> </td><td class="col1"> Address and port number of the local end of the socket. </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <strong>(5) Foreign Address</strong> </td><td class="col1"> Address and port number of the remote end of the socket.</td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <strong>(6) State</strong> </td><td class="col1"> ESTABLISHED, SYN_SENT, SYN_RECV, FIN_WAIT1, FIN_WAIT2, TIME_WAIT, CLOSE, CLOSE_WAIT, LAST_ACK, LISTEN, CLOSING, UNKNOWN </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <strong>(7) PID</strong> </td><td class="col1"> Slash-separated pair of the process id (PID) and process name of the process that owns the socket. </td>
+</tr>
+<tr class="row9">
+<th class="col0" colspan="2"> Active UNIX domain sockets (servers and established) </th>
+</tr>
+<tr class="row10">
+<th class="col0 leftalign"> Field </th><th class="col1 leftalign"> Description </th>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> <strong>(8) Proto</strong> </td><td class="col1 leftalign"> The protocol (usually unix) used by the socket. </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> <strong>(9) RefCnt</strong> </td><td class="col1 leftalign"> The reference count (i.e. attached processes via this socket). </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign"> <strong>(10) Flags</strong> </td><td class="col1"> The flags displayed is SO_ACCEPTON (displayed as ACC), SO_WAITDATA (W) or SO_NOSPACE (N).</td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign"> <strong>(11) Type</strong> </td><td class="col1"> SOCK_DGRAM, SOCK_STREAM, SOCK_RAW, SOCK_RDM, SOCK_SEQPACKET, SOCK_PACKET, UNKNOWN. </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign"> <strong>(12) State</strong> </td><td class="col1 leftalign"> FREE, LISTENING, CONNECTING, CONNECTED, DISCONNECTING, (empty), UNKNOWN. </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign"> <strong>(13) I-Node</strong> </td><td class="col1"> I-Node of socket file.</td>
+</tr>
+<tr class="row17">
+<td class="col0 leftalign"> <strong>(14) PID</strong> </td><td class="col1"> Process ID (PID) and process name of the process that has the socket open. </td>
+</tr>
+<tr class="row18">
+<td class="col0 leftalign"> <strong>(15) Path</strong> </td><td class="col1"> This is the path name as which the corresponding processes attached to the socket. </td>
+</tr>
+</table></div>
+<p>
+Not all fields are actually important. Usually you have to look only in <strong>Active Internet Connections (servers and established)</strong> section, and use this fields:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>(1) Proto</strong> — The protocol (tcp, udp, raw) used by the socket.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(4) Local Address</strong> — address and port number of the local end of the socket.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(5) Foreign Address</strong> — address and port number of the remote end of the socket, only for socket pairs.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(6) State</strong> — for now you should know only two states: <strong>LISTEN</strong> and <strong>ESTABLISHED</strong>. First means that you may connect to this socket, second means that this socket already is connected, and in this cases netstat shows you <strong>socket pair</strong>.</div>
+</li>
+</ol>
+<p>
+<strong>ip</strong> is a program similar to <strong>ifconfig</strong> with extended capabilities. It is from <strong><a href="http://www.policyrouting.org/iproute2-toc.html" class="urlextern" title="http://www.policyrouting.org/iproute2-toc.html" rel="nofollow">iproute2</a></strong> suite which is intended to replace <strong>ifconfig</strong> some day. Example output:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ip addr</span> show
+<span class="nu0">1</span>: lo: <span class="sy0">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">16436</span> qdisc noqueue state UNKNOWN
+    link<span class="sy0">/</span>loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1<span class="sy0">/</span><span class="nu0">8</span> scope host lo
+    inet6 ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> scope host
+       valid_lft forever preferred_lft forever
+<span class="co0">#        (1)        (2)      (3) (4)       (5)      (6)              (8)      (9)</span>
+<span class="nu0">2</span>: eth0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UP qlen <span class="nu0">1000</span>
+    link<span class="sy0">/</span>ether 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span> brd ff:ff:ff:ff:ff:ff      <span class="co0"># (9),  (10), (11)</span>
+    inet 10.0.2.15<span class="sy0">/</span><span class="nu0">24</span> brd 10.0.2.255 scope global eth0      <span class="co0"># (12), (13), (14)</span>
+    inet6 fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>            <span class="co0"># (15), (16)</span>
+       valid_lft forever preferred_lft forever              <span class="co0"># (17), (18), (19)</span></pre>
+<p>
+Again, let us see what information we have on <strong>eth0</strong>:
+</p>
+<div class="table sectionedit4"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> Field </th><th class="col1 leftalign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <strong>(1) BROADCAST </strong> </td><td class="col1 leftalign"> It can send traffic to all hosts at once </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <strong>(2) MULTICAST </strong> </td><td class="col1"> It can send and receive multicast packets </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <strong>(3) UP </strong> </td><td class="col1 leftalign"> It is functioning, logical state </td>
+</tr>
+<tr class="row4">
+<td class="col0"> <strong>(4) LOWER_UP </strong> </td><td class="col1"> Driver signals L1 up (since Linux 2.6.17) </td>
+</tr>
+<tr class="row5">
+<td class="col0"> <strong>(5) MTU </strong> </td><td class="col1 leftalign"> Maximum transfer unit </td>
+</tr>
+<tr class="row6">
+<td class="col0"> <strong>(6) qdisc </strong> </td><td class="col1"> Queueing discipline, basically traffic scheduler policy</td>
+</tr>
+<tr class="row7">
+<td class="col0"> <strong>(8) State </strong> </td><td class="col1"> Physical state (carrier sense?) </td>
+</tr>
+<tr class="row8">
+<td class="col0"> <strong>(9) qlen </strong> </td><td class="col1"> Transmin queue length for outgoing packets</td>
+</tr>
+<tr class="row9">
+<td class="col0"> <strong>(10) link </strong> </td><td class="col1 leftalign"> Physical options </td>
+</tr>
+<tr class="row10">
+<td class="col0"> <strong>(11) ether </strong> </td><td class="col1 leftalign"> Encapsulation type, MAC-address </td>
+</tr>
+<tr class="row11">
+<td class="col0"> <strong>(12) brd </strong> </td><td class="col1"> Data Link Layer (physical) broadcast address </td>
+</tr>
+<tr class="row12">
+<td class="col0"> <strong>(13) inet </strong> </td><td class="col1 leftalign"> IPv4 address family address </td>
+</tr>
+<tr class="row13">
+<td class="col0"> <strong>(14) brd </strong> </td><td class="col1 leftalign"> IPv4 boradcast </td>
+</tr>
+<tr class="row14">
+<td class="col0"> <strong>(15) scope </strong> </td><td class="col1 leftalign"> IPv4 Address scope (host, link, global) </td>
+</tr>
+<tr class="row15">
+<td class="col0"> <strong>(16) inet6 </strong> </td><td class="col1 leftalign"> IPv6 address family address </td>
+</tr>
+<tr class="row16">
+<td class="col0"> <strong>(17) scope </strong> </td><td class="col1 leftalign"> IPv6 Address scope (host, link, global </td>
+</tr>
+<tr class="row17">
+<td class="col0"> <strong>(18) valid_lft </strong> </td><td class="col1 leftalign"> IPv6 source address selection policy </td>
+</tr>
+<tr class="row18">
+<td class="col0"> <strong>(19) preffered_lft</strong> </td><td class="col1 leftalign"> IPv6 source address selection policy </td>
+</tr>
+</table></div>
+<p>
+You already know which parameters are important (the same as in <strong>ifconfig</strong>).
+</p>
+<p>
+<strong>ss</strong> is basically contemporary netstat with extended capabilities. This is its example output, interpretation of which is left as exercise for you:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> ss <span class="re5">-ap</span> <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-c1-200</span>
+State      Recv-Q Send-Q    Local Address:Port      Peer Address:Port
+LISTEN     <span class="nu0">0</span>      <span class="nu0">128</span>                   <span class="sy0">*</span>:sunrpc               <span class="sy0">*</span>:<span class="sy0">*</span>        users:<span class="br0">&#40;</span><span class="br0">&#40;</span><span class="st0">&quot;portmap&quot;</span>,<span class="nu0">580</span>,<span class="nu0">5</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+LISTEN     <span class="nu0">0</span>      <span class="nu0">128</span>                  :::ssh                 :::<span class="sy0">*</span>        users:<span class="br0">&#40;</span><span class="br0">&#40;</span><span class="st0">&quot;sshd&quot;</span>,<span class="nu0">900</span>,<span class="nu0">4</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+LISTEN     <span class="nu0">0</span>      <span class="nu0">128</span>                   <span class="sy0">*</span>:ssh                  <span class="sy0">*</span>:<span class="sy0">*</span>        users:<span class="br0">&#40;</span><span class="br0">&#40;</span><span class="st0">&quot;sshd&quot;</span>,<span class="nu0">900</span>,<span class="nu0">3</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+LISTEN     <span class="nu0">0</span>      <span class="nu0">20</span>                  ::<span class="nu0">1</span>:smtp                :::<span class="sy0">*</span>        users:<span class="br0">&#40;</span><span class="br0">&#40;</span><span class="st0">&quot;exim4&quot;</span>,<span class="nu0">1111</span>,<span class="nu0">4</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+LISTEN     <span class="nu0">0</span>      <span class="nu0">20</span>            127.0.0.1:smtp                 <span class="sy0">*</span>:<span class="sy0">*</span>        users:<span class="br0">&#40;</span><span class="br0">&#40;</span><span class="st0">&quot;exim4&quot;</span>,<span class="nu0">1111</span>,<span class="nu0">3</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+LISTEN     <span class="nu0">0</span>      <span class="nu0">128</span>                   <span class="sy0">*</span>:<span class="nu0">36286</span>                <span class="sy0">*</span>:<span class="sy0">*</span>        users:<span class="br0">&#40;</span><span class="br0">&#40;</span><span class="st0">&quot;rpc.statd&quot;</span>,<span class="nu0">610</span>,<span class="nu0">7</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+ESTAB      <span class="nu0">0</span>      <span class="nu0">0</span>             10.0.2.15:ssh           10.0.2.2:<span class="nu0">52191</span>    users:<span class="br0">&#40;</span><span class="br0">&#40;</span><span class="st0">&quot;sshd&quot;</span>,<span class="nu0">12023</span>,<span class="nu0">3</span><span class="br0">&#41;</span>,<span class="br0">&#40;</span><span class="st0">&quot;sshd&quot;</span>,<span class="nu0">12026</span>,<span class="nu0">3</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+ESTAB      <span class="nu0">0</span>      <span class="nu0">0</span>             10.0.2.15:ssh           10.0.2.2:<span class="nu0">48663</span>    users:<span class="br0">&#40;</span><span class="br0">&#40;</span><span class="st0">&quot;sshd&quot;</span>,<span class="nu0">11792</span>,<span class="nu0">3</span><span class="br0">&#41;</span>,<span class="br0">&#40;</span><span class="st0">&quot;sshd&quot;</span>,<span class="nu0">11794</span>,<span class="nu0">3</span><span class="br0">&#41;</span><span class="br0">&#41;</span></pre>
+<p>
+This is for working with interface, connetctions and interface addresses. But what about network routes? You can get information about them using several commands as well:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> route <span class="re5">-n</span>
+Kernel IP routing table
+<span class="co0"># (1)           (2)             (3)             (4)   (5)    (6)    (7) (8)</span>
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+10.0.2.0        <span class="sy0">*</span>               255.255.255.0   U     <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> eth0
+default         10.0.2.2        0.0.0.0         UG    <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> eth0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">netstat</span> <span class="re5">-nr</span>
+Kernel IP routing table <span class="co0">#                                           (9)</span>
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+10.0.2.0        0.0.0.0         255.255.255.0   U         <span class="nu0">0</span> <span class="nu0">0</span>          <span class="nu0">0</span> eth0
+0.0.0.0         10.0.2.2        0.0.0.0         UG        <span class="nu0">0</span> <span class="nu0">0</span>          <span class="nu0">0</span> eth0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ip route</span> show
+<span class="co0"># (10)      (11)      (12)          (13)        (14)</span>
+10.0.2.0<span class="sy0">/</span><span class="nu0">24</span> dev eth0  proto kernel  scope <span class="kw2">link</span>  src 10.0.2.15
+<span class="co0">#(15)                (16)</span>
+default via 10.0.2.2 dev eth0</pre>
+<p>
+Let us work through fields onece more:
+</p>
+<div class="table sectionedit5"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> Field </th><th class="col1 leftalign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <strong>(1) Destination</strong> </td><td class="col1 leftalign">The destination network or destination host. </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <strong>(2) Gateway</strong> </td><td class="col1">The gateway address or &#039;*&#039; if none set. </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <strong>(3) Genmask</strong> </td><td class="col1">The netmask for the destination net; &#039;255.255.255.255&#039; for a host destination and &#039;0.0.0.0&#039; for the default route. </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <strong>(4) Flags</strong> </td><td class="col1"><strong>U</strong>p, <strong>H</strong>ost, <strong>G</strong>ateway, <strong>R</strong>einstate, <strong>D</strong>ynamically installed, <strong>M</strong>odified, <strong>A</strong>ddrconf, <strong>C</strong>ache entry, <strong>!</strong> reject. </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <strong>(5) Metric</strong> </td><td class="col1">The &#039;distance&#039; to the target (usually counted in hops). It is not used by recent kernels, but may be needed by routing daemons. </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <strong>(6) Ref</strong> </td><td class="col1"> Number of references to this route. (Not used in the Linux kernel.) </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <strong>(7) Use</strong> </td><td class="col1"> Count of lookups for the route. </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <strong>(8) Iface</strong> </td><td class="col1"> Interface to which packets for this route will be sent. </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> <strong>(9) irtt </strong> </td><td class="col1"> Initial RTT (Round Trip Time). The kernel uses this to guess about the best TCP protocol parameters<br/>
+without waiting on (possibly slow) answers.</td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> <strong>(10) Net/Mask</strong> </td><td class="col1"> The destination network or destination host. </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> <strong>(11) dev</strong> </td><td class="col1"> Interface to which packets for this route will be sent. </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> <strong>(12) proto</strong> </td><td class="col1"> <strong>man ip /RTPROTO</strong>: redirect, kernel, boot, static, ra </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign"> <strong>(13) scope</strong> </td><td class="col1"> <strong>man ip /SCOPE_WALUE</strong>: global, site, link, host </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign"> <strong>(14) src</strong> </td><td class="col1"> The source address to prefer when sending to the destinations covered by the route prefix. </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign"> <strong>(15) default</strong> </td><td class="col1"> Gateway address for all addresses without explicitly assigned gateways </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign"> <strong>(15) dev</strong> </td><td class="col1"> Interface to which packets for this route will be sent. </td>
+</tr>
+</table></div>
+<p>
+The important field for now:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>(1) Destination</strong> — The destination network or destination host. </div>
+</li>
+<li class="level1"><div class="li"> <strong>(2) Gateway</strong> — The gateway address or &#039;*&#039; if none set. Default means that packets will be sent via this gateway if there is no explicitly specified gateway for packet destination address.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(3) Genmask</strong> — The netmask for the destination net; &#039;255.255.255.255&#039; for a host destination and &#039;0.0.0.0&#039; for the default route.</div>
+</li>
+<li class="level1"><div class="li"> <strong>(8) Iface</strong> — Interface to which packets for this route will be sent. </div>
+</li>
+</ol>
+<p>
+Which field from <strong>netstat</strong> and <strong>route</strong> correspond to which from <strong>ip route show</strong> is left as an exercise for you once more. Well, that was awfully big! Take a deep breath and let us move to the practice.
+</p>
+<p>
+Now you will learn how to create pseudo-interface, assign address to it and change it state.
+</p>
+</div>
+<h2 class="sectionedit6" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="code">
+<span class="lno"> 1:</span> sudo aptitude install uml-utilities
+<span class="lno"> 2:</span> sudo tunctl -t tap0 -u user1
+<span class="lno"> 3:</span> ls -al /sys/devices/virtual/net/tap0
+<span class="lno"> 4:</span> sudo ifconfig tap0 10.1.1.1 netmask 255.255.255.0
+<span class="lno"> 5:</span> sudo ifconfig
+<span class="lno"> 6:</span> sudo route
+<span class="lno"> 7:</span> ping 10.1.1.1 -c 2
+<span class="lno"> 8:</span> sudo ifconfig tap0 down
+<span class="lno"> 9:</span> ping 10.1.1.1 -c 2
+<span class="lno">10:</span> sudo ifconfig tap0 up
+<span class="lno">11:</span> sudo ip a a 10.2.2.2/24 brd + dev tap0
+<span class="lno">12:</span> sudo ifconfig
+<span class="lno">13:</span> sudo route
+<span class="lno">14:</span> ip a s
+<span class="lno">15:</span> ip r s
+<span class="lno">16:</span> ping 10.2.2.2 -c 2
+<span class="lno">17:</span> sudo ip link set dev tap0 down
+<span class="lno">18:</span> ip a s
+<span class="lno">19:</span> ip r s
+<span class="lno">20:</span> ping 10.2.2.2 -c 2
+<span class="lno">21:</span> sudo tunctl -d tap0
+<span class="lno">22:</span> ip a s
+<span class="lno">23:</span> ls -al /sys/devices/virtual/net/tap0
+</pre>
+</div>
+<h1 class="sectionedit7" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">aptitude</span> <span class="kw2">install</span> uml-utilities
+The following NEW packages will be installed:
+  libfuse2<span class="br0">&#123;</span>a<span class="br0">&#125;</span> uml-utilities
+<span class="nu0">0</span> packages upgraded, <span class="nu0">2</span> newly installed, <span class="nu0">0</span> to remove and <span class="nu0">0</span> not upgraded.
+Need to get <span class="nu0">0</span> B<span class="sy0">/</span><span class="nu0">205</span> kB of archives. After unpacking <span class="nu0">737</span> kB will be used.
+Do you want to <span class="kw3">continue</span>? <span class="br0">&#91;</span>Y<span class="sy0">/</span>n<span class="sy0">/</span>?<span class="br0">&#93;</span>
+Selecting previously deselected package libfuse2.
+<span class="br0">&#40;</span>Reading database ... <span class="nu0">39616</span> files and directories currently installed.<span class="br0">&#41;</span>
+Unpacking libfuse2 <span class="br0">&#40;</span>from ...<span class="sy0">/</span>libfuse2_2.8.4-<span class="nu0">1.1</span>_amd64.deb<span class="br0">&#41;</span> ...
+Selecting previously deselected package uml-utilities.
+Unpacking uml-utilities <span class="br0">&#40;</span>from ...<span class="sy0">/</span>uml-utilities_20070815-<span class="nu0">1.1</span>_amd64.deb<span class="br0">&#41;</span> ...
+Processing triggers <span class="kw1">for</span> man-db ...
+Setting up libfuse2 <span class="br0">&#40;</span>2.8.4-<span class="nu0">1.1</span><span class="br0">&#41;</span> ...
+Setting up uml-utilities <span class="br0">&#40;</span><span class="nu0">20070815</span>-<span class="nu0">1.1</span><span class="br0">&#41;</span> ...
+Starting User-mode networking switch: uml_switch.
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> tunctl <span class="re5">-t</span> tap0 <span class="re5">-u</span> user1
+Set <span class="st_h">'tap0'</span> persistent and owned by uid <span class="nu0">1000</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>net<span class="sy0">/</span>tap0
+total <span class="nu0">0</span>
+drwxr-xr-x <span class="nu0">4</span> root root    <span class="nu0">0</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> .
+drwxr-xr-x <span class="nu0">4</span> root root    <span class="nu0">0</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> ..
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> address
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> addr_len
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> broadcast
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> carrier
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> dev_id
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> dormant
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> duplex
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> features
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> flags
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> group
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> ifalias
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> ifindex
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> iflink
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> link_mode
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> mtu
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> operstate
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> owner
+drwxr-xr-x <span class="nu0">2</span> root root    <span class="nu0">0</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> power
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> speed
+drwxr-xr-x <span class="nu0">2</span> root root    <span class="nu0">0</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> statistics
+lrwxrwxrwx <span class="nu0">1</span> root root    <span class="nu0">0</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> subsystem -<span class="sy0">&gt;</span> ..<span class="sy0">/</span>..<span class="sy0">/</span>..<span class="sy0">/</span>..<span class="sy0">/</span>class<span class="sy0">/</span>net
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> tun_flags
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> tx_queue_len
+<span class="re5">-r--r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> <span class="kw3">type</span>
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> root root <span class="nu0">4096</span> Jul <span class="nu0">11</span> 05:<span class="nu0">33</span> uevent
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ifconfig</span> tap0 10.1.1.1 netmask 255.255.255.0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ifconfig</span>
+eth0      Link encap:Ethernet  HWaddr 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>
+          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
+          inet6 addr: fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:<span class="nu0">1500</span>  Metric:<span class="nu0">1</span>
+          RX packets:<span class="nu0">64040</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> frame:<span class="nu0">0</span>
+          TX packets:<span class="nu0">44578</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> carrier:<span class="nu0">0</span>
+          collisions:<span class="nu0">0</span> txqueuelen:<span class="nu0">1000</span>
+          RX bytes:<span class="nu0">19663646</span> <span class="br0">&#40;</span><span class="nu0">18.7</span> MiB<span class="br0">&#41;</span>  TX bytes:<span class="nu0">25043918</span> <span class="br0">&#40;</span><span class="nu0">23.8</span> MiB<span class="br0">&#41;</span>
+&nbsp;
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> Scope:Host
+          UP LOOPBACK RUNNING  MTU:<span class="nu0">16436</span>  Metric:<span class="nu0">1</span>
+          RX packets:<span class="nu0">76</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> frame:<span class="nu0">0</span>
+          TX packets:<span class="nu0">76</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> carrier:<span class="nu0">0</span>
+          collisions:<span class="nu0">0</span> txqueuelen:<span class="nu0">0</span>
+          RX bytes:<span class="nu0">6272</span> <span class="br0">&#40;</span><span class="nu0">6.1</span> KiB<span class="br0">&#41;</span>  TX bytes:<span class="nu0">6272</span> <span class="br0">&#40;</span><span class="nu0">6.1</span> KiB<span class="br0">&#41;</span>
+&nbsp;
+tap0      Link encap:Ethernet  HWaddr ee:d8:2e:f6:bc:f1
+          inet addr:10.1.1.1  Bcast:10.1.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::ecd8:2eff:fef6:bcf1<span class="sy0">/</span><span class="nu0">64</span> Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:<span class="nu0">1500</span>  Metric:<span class="nu0">1</span>
+          RX packets:<span class="nu0">0</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> frame:<span class="nu0">0</span>
+          TX packets:<span class="nu0">0</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">1</span> overruns:<span class="nu0">0</span> carrier:<span class="nu0">0</span>
+          collisions:<span class="nu0">0</span> txqueuelen:<span class="nu0">500</span>
+          RX bytes:<span class="nu0">0</span> <span class="br0">&#40;</span><span class="nu0">0.0</span> B<span class="br0">&#41;</span>  TX bytes:<span class="nu0">0</span> <span class="br0">&#40;</span><span class="nu0">0.0</span> B<span class="br0">&#41;</span>
+&nbsp;
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+10.0.2.0        <span class="sy0">*</span>               255.255.255.0   U     <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> eth0
+10.1.1.0        <span class="sy0">*</span>               255.255.255.0   U     <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> tap0
+default         10.0.2.2        0.0.0.0         UG    <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> eth0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ping</span> 10.1.1.1 <span class="re5">-c</span> <span class="nu0">2</span>
+PING 10.1.1.1 <span class="br0">&#40;</span>10.1.1.1<span class="br0">&#41;</span> <span class="nu0">56</span><span class="br0">&#40;</span><span class="nu0">84</span><span class="br0">&#41;</span> bytes of data.
+<span class="nu0">64</span> bytes from 10.1.1.1: <span class="re2">icmp_req</span>=<span class="nu0">1</span> <span class="re2">ttl</span>=<span class="nu0">64</span> <span class="re2">time</span>=<span class="nu0">0.070</span> ms
+<span class="nu0">64</span> bytes from 10.1.1.1: <span class="re2">icmp_req</span>=<span class="nu0">2</span> <span class="re2">ttl</span>=<span class="nu0">64</span> <span class="re2">time</span>=<span class="nu0">0.027</span> ms
+&nbsp;
+<span class="re5">---</span> 10.1.1.1 <span class="kw2">ping</span> statistics <span class="re5">---</span>
+<span class="nu0">2</span> packets transmitted, <span class="nu0">2</span> received, <span class="nu0">0</span><span class="sy0">%</span> packet loss, <span class="kw1">time</span> 1001ms
+rtt min<span class="sy0">/</span>avg<span class="sy0">/</span>max<span class="sy0">/</span>mdev = <span class="nu0">0.027</span><span class="sy0">/</span><span class="nu0">0.048</span><span class="sy0">/</span><span class="nu0">0.070</span><span class="sy0">/</span><span class="nu0">0.022</span> ms
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ifconfig</span> tap0 down
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ping</span> 10.1.1.1 <span class="re5">-c</span> <span class="nu0">2</span>
+PING 10.1.1.1 <span class="br0">&#40;</span>10.1.1.1<span class="br0">&#41;</span> <span class="nu0">56</span><span class="br0">&#40;</span><span class="nu0">84</span><span class="br0">&#41;</span> bytes of data.
+<span class="nu0">64</span> bytes from 10.1.1.1: <span class="re2">icmp_req</span>=<span class="nu0">1</span> <span class="re2">ttl</span>=<span class="nu0">64</span> <span class="re2">time</span>=<span class="nu0">0.030</span> ms
+<span class="nu0">64</span> bytes from 10.1.1.1: <span class="re2">icmp_req</span>=<span class="nu0">2</span> <span class="re2">ttl</span>=<span class="nu0">64</span> <span class="re2">time</span>=<span class="nu0">0.024</span> ms
+&nbsp;
+<span class="re5">---</span> 10.1.1.1 <span class="kw2">ping</span> statistics <span class="re5">---</span>
+<span class="nu0">2</span> packets transmitted, <span class="nu0">2</span> received, <span class="nu0">0</span><span class="sy0">%</span> packet loss, <span class="kw1">time</span> 999ms
+rtt min<span class="sy0">/</span>avg<span class="sy0">/</span>max<span class="sy0">/</span>mdev = <span class="nu0">0.024</span><span class="sy0">/</span><span class="nu0">0.027</span><span class="sy0">/</span><span class="nu0">0.030</span><span class="sy0">/</span><span class="nu0">0.003</span> ms
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ifconfig</span> tap0 up
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ip</span> a a 10.2.2.2<span class="sy0">/</span><span class="nu0">24</span> brd + dev tap0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ifconfig</span>
+eth0      Link encap:Ethernet  HWaddr 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>
+          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
+          inet6 addr: fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:<span class="nu0">1500</span>  Metric:<span class="nu0">1</span>
+          RX packets:<span class="nu0">64088</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> frame:<span class="nu0">0</span>
+          TX packets:<span class="nu0">44609</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> carrier:<span class="nu0">0</span>
+          collisions:<span class="nu0">0</span> txqueuelen:<span class="nu0">1000</span>
+          RX bytes:<span class="nu0">19667480</span> <span class="br0">&#40;</span><span class="nu0">18.7</span> MiB<span class="br0">&#41;</span>  TX bytes:<span class="nu0">25049771</span> <span class="br0">&#40;</span><span class="nu0">23.8</span> MiB<span class="br0">&#41;</span>
+&nbsp;
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> Scope:Host
+          UP LOOPBACK RUNNING  MTU:<span class="nu0">16436</span>  Metric:<span class="nu0">1</span>
+          RX packets:<span class="nu0">84</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> frame:<span class="nu0">0</span>
+          TX packets:<span class="nu0">84</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> carrier:<span class="nu0">0</span>
+          collisions:<span class="nu0">0</span> txqueuelen:<span class="nu0">0</span>
+          RX bytes:<span class="nu0">6944</span> <span class="br0">&#40;</span><span class="nu0">6.7</span> KiB<span class="br0">&#41;</span>  TX bytes:<span class="nu0">6944</span> <span class="br0">&#40;</span><span class="nu0">6.7</span> KiB<span class="br0">&#41;</span>
+&nbsp;
+tap0      Link encap:Ethernet  HWaddr ee:d8:2e:f6:bc:f1
+          inet addr:10.1.1.1  Bcast:10.1.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::ecd8:2eff:fef6:bcf1<span class="sy0">/</span><span class="nu0">64</span> Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:<span class="nu0">1500</span>  Metric:<span class="nu0">1</span>
+          RX packets:<span class="nu0">0</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">0</span> overruns:<span class="nu0">0</span> frame:<span class="nu0">0</span>
+          TX packets:<span class="nu0">0</span> errors:<span class="nu0">0</span> dropped:<span class="nu0">9</span> overruns:<span class="nu0">0</span> carrier:<span class="nu0">0</span>
+          collisions:<span class="nu0">0</span> txqueuelen:<span class="nu0">500</span>
+          RX bytes:<span class="nu0">0</span> <span class="br0">&#40;</span><span class="nu0">0.0</span> B<span class="br0">&#41;</span>  TX bytes:<span class="nu0">0</span> <span class="br0">&#40;</span><span class="nu0">0.0</span> B<span class="br0">&#41;</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+10.2.2.0        <span class="sy0">*</span>               255.255.255.0   U     <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> tap0
+10.0.2.0        <span class="sy0">*</span>               255.255.255.0   U     <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> eth0
+10.1.1.0        <span class="sy0">*</span>               255.255.255.0   U     <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> tap0
+default         10.0.2.2        0.0.0.0         UG    <span class="nu0">0</span>      <span class="nu0">0</span>        <span class="nu0">0</span> eth0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ip</span> a s
+<span class="nu0">1</span>: lo: <span class="sy0">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">16436</span> qdisc noqueue state UNKNOWN
+    link<span class="sy0">/</span>loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1<span class="sy0">/</span><span class="nu0">8</span> scope host lo
+    inet6 ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> scope host
+       valid_lft forever preferred_lft forever
+<span class="nu0">2</span>: eth0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UP qlen <span class="nu0">1000</span>
+    link<span class="sy0">/</span>ether 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15<span class="sy0">/</span><span class="nu0">24</span> brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="nu0">12</span>: tap0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UNKNOWN qlen <span class="nu0">500</span>
+    link<span class="sy0">/</span>ether ee:d8:2e:f6:bc:f1 brd ff:ff:ff:ff:ff:ff
+    inet 10.1.1.1<span class="sy0">/</span><span class="nu0">24</span> brd 10.1.1.255 scope global tap0
+    inet 10.2.2.2<span class="sy0">/</span><span class="nu0">24</span> brd 10.2.2.255 scope global tap0
+    inet6 fe80::ecd8:2eff:fef6:bcf1<span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ip</span> r s
+10.2.2.0<span class="sy0">/</span><span class="nu0">24</span> dev tap0  proto kernel  scope <span class="kw2">link</span>  src 10.2.2.2
+10.0.2.0<span class="sy0">/</span><span class="nu0">24</span> dev eth0  proto kernel  scope <span class="kw2">link</span>  src 10.0.2.15
+10.1.1.0<span class="sy0">/</span><span class="nu0">24</span> dev tap0  proto kernel  scope <span class="kw2">link</span>  src 10.1.1.1
+default via 10.0.2.2 dev eth0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ping</span> 10.2.2.2 <span class="re5">-c</span> <span class="nu0">2</span>
+PING 10.2.2.2 <span class="br0">&#40;</span>10.2.2.2<span class="br0">&#41;</span> <span class="nu0">56</span><span class="br0">&#40;</span><span class="nu0">84</span><span class="br0">&#41;</span> bytes of data.
+<span class="nu0">64</span> bytes from 10.2.2.2: <span class="re2">icmp_req</span>=<span class="nu0">1</span> <span class="re2">ttl</span>=<span class="nu0">64</span> <span class="re2">time</span>=<span class="nu0">0.081</span> ms
+<span class="nu0">64</span> bytes from 10.2.2.2: <span class="re2">icmp_req</span>=<span class="nu0">2</span> <span class="re2">ttl</span>=<span class="nu0">64</span> <span class="re2">time</span>=<span class="nu0">0.025</span> ms
+&nbsp;
+<span class="re5">---</span> 10.2.2.2 <span class="kw2">ping</span> statistics <span class="re5">---</span>
+<span class="nu0">2</span> packets transmitted, <span class="nu0">2</span> received, <span class="nu0">0</span><span class="sy0">%</span> packet loss, <span class="kw1">time</span> 999ms
+rtt min<span class="sy0">/</span>avg<span class="sy0">/</span>max<span class="sy0">/</span>mdev = <span class="nu0">0.025</span><span class="sy0">/</span><span class="nu0">0.053</span><span class="sy0">/</span><span class="nu0">0.081</span><span class="sy0">/</span><span class="nu0">0.028</span> ms
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">ip link</span> <span class="kw1">set</span> dev tap0 down
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ip</span> a s
+<span class="nu0">1</span>: lo: <span class="sy0">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">16436</span> qdisc noqueue state UNKNOWN
+    link<span class="sy0">/</span>loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1<span class="sy0">/</span><span class="nu0">8</span> scope host lo
+    inet6 ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> scope host
+       valid_lft forever preferred_lft forever
+<span class="nu0">2</span>: eth0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UP qlen <span class="nu0">1000</span>
+    link<span class="sy0">/</span>ether 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15<span class="sy0">/</span><span class="nu0">24</span> brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="nu0">12</span>: tap0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state DOWN qlen <span class="nu0">500</span>
+    link<span class="sy0">/</span>ether ee:d8:2e:f6:bc:f1 brd ff:ff:ff:ff:ff:ff
+    inet 10.1.1.1<span class="sy0">/</span><span class="nu0">24</span> brd 10.1.1.255 scope global tap0
+    inet 10.2.2.2<span class="sy0">/</span><span class="nu0">24</span> brd 10.2.2.255 scope global tap0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ip</span> r s
+10.0.2.0<span class="sy0">/</span><span class="nu0">24</span> dev eth0  proto kernel  scope <span class="kw2">link</span>  src 10.0.2.15
+default via 10.0.2.2 dev eth0
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ping</span> 10.2.2.2 <span class="re5">-c</span> <span class="nu0">2</span>
+PING 10.2.2.2 <span class="br0">&#40;</span>10.2.2.2<span class="br0">&#41;</span> <span class="nu0">56</span><span class="br0">&#40;</span><span class="nu0">84</span><span class="br0">&#41;</span> bytes of data.
+<span class="nu0">64</span> bytes from 10.2.2.2: <span class="re2">icmp_req</span>=<span class="nu0">1</span> <span class="re2">ttl</span>=<span class="nu0">64</span> <span class="re2">time</span>=<span class="nu0">0.037</span> ms
+<span class="nu0">64</span> bytes from 10.2.2.2: <span class="re2">icmp_req</span>=<span class="nu0">2</span> <span class="re2">ttl</span>=<span class="nu0">64</span> <span class="re2">time</span>=<span class="nu0">0.024</span> ms
+&nbsp;
+<span class="re5">---</span> 10.2.2.2 <span class="kw2">ping</span> statistics <span class="re5">---</span>
+<span class="nu0">2</span> packets transmitted, <span class="nu0">2</span> received, <span class="nu0">0</span><span class="sy0">%</span> packet loss, <span class="kw1">time</span> 999ms
+rtt min<span class="sy0">/</span>avg<span class="sy0">/</span>max<span class="sy0">/</span>mdev = <span class="nu0">0.024</span><span class="sy0">/</span><span class="nu0">0.030</span><span class="sy0">/</span><span class="nu0">0.037</span><span class="sy0">/</span><span class="nu0">0.008</span> ms
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> tunctl <span class="re5">-d</span> tap0
+Set <span class="st_h">'tap0'</span> nonpersistent
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ip</span> a s
+<span class="nu0">1</span>: lo: <span class="sy0">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">16436</span> qdisc noqueue state UNKNOWN
+    link<span class="sy0">/</span>loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1<span class="sy0">/</span><span class="nu0">8</span> scope host lo
+    inet6 ::<span class="nu0">1</span><span class="sy0">/</span><span class="nu0">128</span> scope host
+       valid_lft forever preferred_lft forever
+<span class="nu0">2</span>: eth0: <span class="sy0">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="sy0">&gt;</span> mtu <span class="nu0">1500</span> qdisc pfifo_fast state UP qlen <span class="nu0">1000</span>
+    link<span class="sy0">/</span>ether 08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span> brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15<span class="sy0">/</span><span class="nu0">24</span> brd 10.0.2.255 scope global eth0
+    inet6 fe80::a00:27ff:fed4:<span class="nu0">4568</span><span class="sy0">/</span><span class="nu0">64</span> scope <span class="kw2">link</span>
+       valid_lft forever preferred_lft forever
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>net<span class="sy0">/</span>tap0
+ls: cannot access <span class="sy0">/</span>sys<span class="sy0">/</span>devices<span class="sy0">/</span>virtual<span class="sy0">/</span>net<span class="sy0">/</span>tap0: No such <span class="kw2">file</span> or directory
+<span class="co4">user1@vm1:~$</span></pre>
+</div>
+<h2 class="sectionedit8" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Install package for working with pseudo-(virtual)-interfaces.</div>
+</li>
+<li class="level1"><div class="li"> Create pseudo-interface tap0.</div>
+</li>
+<li class="level1"><div class="li"> Prints out contents of virtual directory created for this interfaces, containing its settings and statistics.</div>
+</li>
+<li class="level1"><div class="li"> Add to <strong>tap0</strong> an IP address <strong>10.1.1.1/24</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Print out current interface status.</div>
+</li>
+<li class="level1"><div class="li"> Print out current routing table entries. Notice that Linux automatically added new route for <strong>tap0</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Tests <strong>tap0</strong> by sending ICMP echo request packet to it.</div>
+</li>
+<li class="level1"><div class="li"> Brings <strong>tap0</strong> to <strong>DOWN</strong> state.</div>
+</li>
+<li class="level1"><div class="li"> Tests <strong>tap0</strong> by sending ICMP echo request packet to it again. There will be an <em>Extra credit</em> for you to explain why this still works despite intercase being down?</div>
+</li>
+<li class="level1"><div class="li"> Brings <strong>tap0</strong> to <strong>UP</strong> state.</div>
+</li>
+<li class="level1"><div class="li"> Adds additional IP address <strong>10.2.2.2/24</strong> to <strong>tap0</strong>. <strong>ip a a</strong> is abbreviated version of <strong>ip addr add</strong>. What this little <strong>+</strong> means you will find out on your own in <em>Extra credit</em>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out current interface status. Notice how <strong>ifconfig</strong> is unable to list new IP address added using <strong>ip</strong> utility. Why? More <em>Extra credit</em>.</div>
+</li>
+<li class="level1"><div class="li"> Print out current routing table. Notice that Linux automatically added one more route for <strong>tap0</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out current interface status using <strong>ip</strong> utility. You are able to see newly added address here.</div>
+</li>
+<li class="level1"><div class="li"> Prints our routing tables using <strong>ip</strong> utility.</div>
+</li>
+<li class="level1"><div class="li"> Tests net <strong>tap0</strong> IP address by sending ICMP echo request packet to it.</div>
+</li>
+<li class="level1"><div class="li"> Brings <strong>tap0</strong> to <strong>DOWN</strong> state.</div>
+</li>
+<li class="level1"><div class="li"> Prints out current interface status.</div>
+</li>
+<li class="level1"><div class="li"> Print out current routing table entries. Notice that <strong>tap0</strong> routes are remove automatically.</div>
+</li>
+<li class="level1"><div class="li"> Tests net <strong>tap0</strong> IP address by sending ICMP echo request packet to it. This works. Why?</div>
+</li>
+<li class="level1"><div class="li"> Removes pseudo-interface <strong>tap0</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out current interface status. <strong>tap0</strong> is absent.</div>
+</li>
+<li class="level1"><div class="li"> Shows us that <strong>tap0</strong> virtual directory is now gone as well.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit9" id="extra_credit">Extra Credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Familiarize yourself with <strong>man ifconfig</strong>, <strong>man ip</strong>, <strong>man netstat</strong>, <strong>man ss</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Why ping worked when <strong>tap0</strong> was is in down state?</div>
+</li>
+<li class="level1"><div class="li"> What <strong>brd +</strong> means?</div>
+</li>
+<li class="level1"><div class="li"> Why <strong>ifconfig</strong> is unable to list new address you added using <strong>ip</strong>?</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex24.html';
+var disqus_title   = 'Exercise 24. Networking: interface configuration, ifconfig, netstat, iproute2, ss, route';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex24.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex24.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHPwYJKoZIhvcNAQcEoIIHMDCCBywCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYByTD54uWvmVXFF4/ye/cSXblkaJBzuA70AO3hGD5eiT3YhPyNF7LyeoPOZiR4skW70CYjjq6vZjzPKvrDc6JacUsMRyxMrqbt0r2naKgZpaiG/OCq0oaQ176iT5ZV08cIJjesD9ttI1MvCwqi5s6RDBkcq4wAG/I3HSmqjJoc6+DELMAkGBSsOAwIaBQAwgbwGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQITtPc/6Bw4nGAgZhFFv7nh6EI5rVRN7KbJq/brSd2GDxt/tlwxMOkoWpCPUV3sb0zEeEDu7j6A81bi3A5JmsgClVSSApfLhIz1LKBfjzDVLFtHTYT+0EFRMaE5YX+8uL53tXScdKR4NWW0H+3QHIrfU9lKOAjjkzx7chzsBqjSurGOsprgmeT1PgAKJbOdmJgSecA18X5CtzW64IU3kiUKVDyYKCCA4cwggODMIIC7KADAgECAgEAMA0GCSqGSIb3DQEBBQUAMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTAeFw0wNDAyMTMxMDEzMTVaFw0zNTAyMTMxMDEzMTVaMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAwUdO3fxEzEtcnI7ZKZL412XvZPugoni7i7D7prCe0AtaHTc97CYgm7NsAtJyxNLixmhLV8pyIEaiHXWAh8fPKW+R017+EmXrr9EaquPmsVvTywAAE1PMNOKqo2kl4Gxiz9zZqIajOm1fZGWcGS0f5JQ2kBqNbvbg2/Za+GJ/qwUCAwEAAaOB7jCB6zAdBgNVHQ4EFgQUlp98u8ZvF71ZP1LXChvsENZklGswgbsGA1UdIwSBszCBsIAUlp98u8ZvF71ZP1LXChvsENZklGuhgZSkgZEwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEAgV86VpqAWuXvX6Oro4qJ1tYVIT5DgWpE692Ag422H7yRIr/9j/iKG4Thia/Oflx4TdL+IFJBAyPK9v6zZNZtBgPBynXb048hsP16l2vi0k5Q2JKiPDsEfBhGI+HnxLXEaUWAcVfCsQFvd2A1sxRr67ip5y2wwBelUecP3AjJ+YcxggGaMIIBlgIBATCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEyMDcwMjE3NTUwM1owIwYJKoZIhvcNAQkEMRYEFNxQpzsP6V2QYIZw83iK6s/ShwtlMA0GCSqGSIb3DQEBAQUABIGATYUTe/66EXsCdY90YYsDJJrwpX0lCRBexMqmS0QBCVSAYn6+i6wg6kXbMl0wG6RGjktQ6CvcgEoQlCcwQGqXrXv6SlJBYYlqzb4x5IjOHm2cXJzT/UvQY5nWRlKKdePpG0QC6WVfNRZeuKsJZ5qWNNrwrvDCouYZX04Ze7KQSt8=-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex24.txt</bdi> · Last modified: 2012/07/26 07:18 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer8710.gif?id=llthw%3Aex24&amp;1428742727" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex24 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:02 GMT -->
+</html>

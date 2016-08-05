@@ -1,0 +1,24 @@
+====== Thunderbird ======
+
+===== An error when configuring address book to an LDAP directroy =====
+
+There is an error when connecting to an LDAP directory which does not allow to connect to LDAP server. 
+
+==== The error: ====
+
+<code>TLS negotiation failure</code>
+
+==== Solution ====
+ 
+From https://apps.education.ucsb.edu/wiki/Mozilla_Thunderbird/setup:
+
+Thunderbird 3 has a bug when accessing our directory certificate. Follow these steps to get around it:
+Download certificate
+  - Click on Tools → Options (Thunderbird → Preferences on Mac) → Advanced → Certificates.
+  - Click on View Certificates.
+  - Click on the Servers tab.
+  - Click Import and select the certificate you downloaded in step 1.
+  - Click on the domain name (directory.education.ucsb.edu) of the newly imported certificate and click the Edit button.
+  - Change the radio button Trust the authenticity of this certificate.
+  - You should now have directory access.
+http://forums.mozillazine.org/viewtopic.php?f=39&t=1645605&start=0

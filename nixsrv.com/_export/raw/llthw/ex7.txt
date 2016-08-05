@@ -1,0 +1,127 @@
+====== Exercise 7. Bash: redirection, stdin, stdout, stderr, <, >, >>, |, tee, pv ======
+
+In Linux, everything is just a file. This means that, for console programs:
+  - Keyboard is represented as a file, from which Bash reads your input.
+  - Display is represented as a file, to which Bash writes its output.
+
+Let us say you have a program which counts lines in a file. You can call it by typing **wc -l**. Try this now. Nothing happened, right? It just hangs there. Wrong, it is waiting for your input. This is an outline of what it does:
+
+<code>
+line_counter = 0
+while end of file is not reached
+    read a line
+    add 1 to line_counter
+print line_counter
+</code>
+
+So **wc** currently reads lines from **/dev/tty**, which is in current context your keyboard. A line is given to **wc** each time you hit **Enter**. Type any several lines, and then hit **CTRL+D**, which will produce EOF character for **wc** to understand that [[http://en.wikipedia.org/wiki/End-of-file|end of file]] is reached. Now it will tell you how much lines you entered.
+
+But what if you want to count lines in existing file? Well, where is //redirection// for that! To feed an existing file on its input, type this: **wc -l < .bash_history**. You see, it works! And it really is that simple! [[http://en.wikipedia.org/wiki/Redirection_%28computing%29|redirection]] is a mechanism which allows you tell a program to redirect its input and/or output from keyboard and display to another file. To do this, you can use these special commands then starting a program: 
+  - **<** — replace standard input (for example keyboard) with a file.
+  - **>** — replace standard output (for example display) with a file. Warning! This command //overwrites// contents of file you specify, so be careful.
+  - **>****>** — same as above, but instead of //overwriting// a file it //writes to the end of it//, preserving already existing information in this file. Be careful not to confuse the two.
+  - **|** — Take an output from one program and connect it to the other. This will be elaborated on in next exercise.
+
+Now you will learn how to redirect input and output of programs to files or another programs.
+
+===== Do this =====
+
+<code bash 1>
+sudo aptitude install pv
+read foo < /dev/tty
+Hello World!
+echo $foo > foo.out
+cat foo.out
+echo $foo >> foo.out
+cat foo.out
+echo > foo.out
+cat foo.out
+ls -al | grep foo
+ls -al | tee ls.out
+dd if=/dev/zero of=~/test.img bs=1M count=10
+pv ~/test.img | dd if=/dev/stdin of=/dev/null bs=1
+rm -v foo.out
+rm -v test.img
+</code>
+
+====== What you should see ======
+
+<code bash>
+user1@vm1:~$ sudo aptitude install pv
+The following NEW packages will be installed:
+  pv
+0 packages upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 0 B/28.9 kB of archives. After unpacking 143 kB will be used.
+Selecting previously deselected package pv.
+(Reading database ... 39657 files and directories currently installed.)
+Unpacking pv (from .../archives/pv_1.1.4-1_amd64.deb) ...
+Processing triggers for man-db ...
+Setting up pv (1.1.4-1) ...
+
+user1@vm1:~$ read foo < /dev/tty
+Hello World!
+user1@vm1:~$ echo $foo > foo.out
+user1@vm1:~$ cat foo.out
+Hello World!
+user1@vm1:~$ echo $foo >> foo.out
+user1@vm1:~$ cat foo.out
+Hello World!
+Hello World!
+user1@vm1:~$ echo > foo.out
+user1@vm1:~$ cat foo.out
+
+user1@vm1:~$ ls -al | grep foo
+-rw-r--r-- 1 user1 user1    1 Jun 15 20:03 foo.out
+user1@vm1:~$ ls -al | tee ls.out
+total 44
+drwxr-xr-x 2 user1 user1 4096 Jun 15 20:01 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1 4865 Jun 15 19:34 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .bashrc
+-rw-r--r-- 1 user1 user1    1 Jun 15 20:03 foo.out
+-rw------- 1 user1 user1   50 Jun 15 18:41 .lesshst
+-rw-r--r-- 1 user1 user1    0 Jun 15 20:03 ls.out
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+-rw-r--r-- 1 user1 user1    0 Jun 15 20:02 test.img
+user1@vm1:~$ dd if=/dev/zero of=~/test.img bs=1M count=10
+10+0 records in
+10+0 records out
+10485760 bytes (10 MB) copied, 0.0130061 s, 806 MB/s
+user1@vm1:~$ pv ~/test.img | dd if=/dev/stdin of=/dev/null bs=1
+  10MB 0:00:03 [3.24MB/s] [=================================================================================>] 100%
+10485760+0 records in
+10485760+0 records out
+10485760 bytes (10 MB) copied, 3.10446 s, 3.4 MB/s
+user1@vm1:~$ rm -v foo.out
+removed `foo.out'
+user1@vm1:~$ rm -v test.img
+removed `test.img'
+user1@vm1:~$
+</code>
+
+===== Explanation =====
+
+  - Install **pv** (pipe viewer) program on your system which you will need later on.
+  - Reads your input to a variable **foo**. This is possible because display and keyboard are actually a teletype for the system. Yes, [[http://www.google.ru/search?rlz=1C1CHKZ_enRU438RU438&sugexp=chrome,mod%3D11&q=unix+filter&um=1&ie=UTF-8&hl=en&tbm=isch&source=og&sa=N&tab=wi&ei=QWDbT7LILsTi4QTJxNXWCg&biw=1116&bih=875&sei=Q2DbT93XOLLS4QTmst2ACg#um=1&hl=en&newwindow=1&rlz=1C1CHKZ_enRU438RU438&tbm=isch&sa=1&q=teletype&oq=teletype&aq=f&aqi=g10&aql=&gs_l=img.3..0l10.455489.456448.4.456736.8.6.0.2.2.0.144.567.4j2.6.0...0.0.Qa6W2PHvUWw&pbx=1&bav=on.2,or.r_gc.r_pw.r_qf.,cf.osb&fp=e87c07212bd9e2a6&biw=1116&bih=875|that]] teletype! Read more about **tty** online.
+  - This is what you type.
+  - Redirects contents of the **foo** variable to the **foo.out** file, creating the file in the process //or overwriting an existing file without warning removing all there was!!//
+  - Prints out **foo.out** contents.
+  - Redirects contents of the **foo** variable to the **foo.out** file, creating the file in the process or //appending// to an existing file. This is safe, but don not confuse the two, or great sorrow will fall upon you.
+  - Prints out **foo.out** contents again.
+  - Redirects nothing to the **foo.out**, emptying file in the process.
+  - Shows that the file is, indeed, empty.
+  - Lists your directory and //pipes// the output to **grep**. This works by taking all **ls -al** output and feeding it into **grep**. Again, this is called //piping//.
+  - Lists your directory to the screen //and// to the **ls.out**. Very useful!
+  - Creates a zeroed file with size of 10 Megabytes. Don't bother with how this works for now.
+  - Reads this file to **/dev/null**, which is an ultimate garbage can in your system, a void. Everything which is written into it goes nowhere. Notice how **pv** shows you a progress of reading the file, if you try to read it with another command instead you won't know how long it will take to complete.
+  - Removes **foo.out**. Always remember to clean up after yourself.
+  - Removes **test.img**.
+
+====== Extra credit =====
+
+  - Read about piping and redirection on [[http://stackoverflow.com/questions/5802879/difference-between-pipelining-and-redirection-in-linux|stackoverflow]], again on [[http://stackoverflow.com/questions/19122/bash-pipe-handling?rq=1|stackoverflow]] and on [[http://mywiki.wooledge.org/BashFAQ/024|Greg's Wiki]] which is very useful resource indeed, remember it.
+  - Open man page for **bash**, scroll down to //REDIRECTION// section and read it.
+  - Read descriptions from **man pv** and **man tee**. 

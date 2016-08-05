@@ -1,0 +1,4 @@
+====== Disable code vertical scroll ======
+<code>
+vim ./lib/plugins/code/style.css
+</code>

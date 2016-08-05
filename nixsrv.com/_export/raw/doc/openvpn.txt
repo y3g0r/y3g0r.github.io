@@ -1,0 +1,170 @@
+====== OpenVPN configuration examples ======
+<code bash>
+@OPENVPN
+    server.conf
+        ;local a.b.c.d
+        port 1194
+        ;proto tcp
+        proto udp
+        ;dev tap
+        dev tun-openvpn
+        dev-type tun
+        ;dev-node MyTap
+        ca ca.crt
+        cert openvpn-server.crt
+        key openvpn-server.key
+        dh dh2048.pem
+        server 10.13.0.0 255.255.255.0
+        ifconfig-pool-persist ipp.txt
+        ;server-bridge 10.8.0.4 255.255.255.0 10.8.0.50 10.8.0.100
+        ;server-bridge
+        push "route 192.168.1.0 255.255.255.0"
+        ;push "route 192.168.20.0 255.255.255.0"
+        ;client-config-dir ccd
+        ;route 192.168.40.128 255.255.255.248
+        ;client-config-dir ccd
+        ;route 10.9.0.0 255.255.255.252
+        ;learn-address ./script
+        ;push "redirect-gateway def1 bypass-dhcp"
+        ;push "dhcp-option DNS 208.67.222.222"
+        ;push "dhcp-option DNS 208.67.220.220"
+        ;client-to-client
+        ;duplicate-cn
+        tls-auth tls-auth.key
+        keepalive 10 120
+        comp-lzo
+        ;max-clients 100
+        ;user nobody
+        ;group nogroup
+        persist-key
+        persist-tun
+        ;status openvpn-status.log
+        ;log         /var/log/openvpn.log
+        ;log-append  openvpn.log
+        verb 3
+        ;mute 20
+        script-security 2
+        up script-up
+        down script-down
+    client.conf
+        client
+        ;dev tap
+        dev tun-openvpn
+        dev-type tun
+        ;dev-node tun-openvpn
+        ;proto tcp
+        proto udp
+        remote 85.93.131.214 11096
+        ;remote my-server-2 1194
+        ;remote-random
+        resolv-retry infinite
+        nobind
+        ;user nobody
+        ;group nogroup
+        persist-key
+        persist-tun
+        ;mute-replay-warnings
+        ca ca.crt
+        cert backup-server.crt
+        key backup-server.key
+        ns-cert-type server
+        tls-auth tls-auth.key
+        ;cipher x
+        comp-lzo
+        verb 3
+        ;mute 20
+    script-up
+        #!/bin/bash
+        set -x
+        sysctl net.ipv4.conf.all.forwarding=1
+        iptables -t nat -A POSTROUTING -s 10.13.0.0/24 -o eth0 -j MASQUERADE
+    script-down
+        sysctl net.ipv4.conf.all.forwarding=0
+        iptables -t nat -D POSTROUTING -s 10.13.0.0/24 -o eth0 -j MASQUERADE
+        iptables -t nat -D POSTROUTING -s 10.13.0.0/24 -o eth0 -j MASQUERADE
+@OPENVPN1
+    #openvpn
+        aptitude install openvpn easy-rsa
+        cd /etc/openvpn
+        cp -vr /usr/share/easy-rsa/ .
+        cd /etc ; git add . ; git commit -am 'installed openvpn prerequsites' ; cd -
+        cd /etc/openvpn/easy-rsa/
+        vim vars
+            export KEY_COUNTRY="US"
+            export KEY_PROVINCE="P"
+            export KEY_CITY="C"
+            export KEY_ORG="cnify"
+            export KEY_EMAIL="E"
+            export KEY_OU="portal"
+        source vars
+        ./clean-all
+        ./build-ca
+        ./build-dh
+        ./build-key-server cnify
+        ./build-key-server my1
+        cd /etc/openvpn/easy-rsa/keys
+        openvpn --genkey --secret tls-auth.key
+        cp ca.crt portal.crt portal.key dh2048.pem tls-auth.key /etc/openvpn
+        cd /etc/openvpn
+        mkdir /etc/openvpn/ccd
+        service openvpn restart ; tail /var/log/openvpn.log
+        #set up static ip for core server
+            openssl x509 -in /etc/openvpn/easy-rsa/keys/my1.crt -noout -subject | sed -e 's/.*CN=\(.*\)\/.*/\1/'
+            vim /etc/openvpn/ccd/my1
+                ifconfig-push 10.15.0.1 255.255.255.0 #use only valid subnets!! 
+    vim server.conf
+        #network
+            proto udp
+            port 11940
+            dev tun-ovpn
+            dev-type tun
+            topology subnet
+            server 10.15.0.0 255.255.255.0
+            ifconfig-pool-persist ipp.txt
+            keepalive 10 120
+            comp-lzo
+            ;push "route 192.168.1.0 255.255.255.0"
+            sndbuf 0
+            rcvbuf 0
+            ;push "sndbuf 393216"
+            ;push "rcvbuf 393216"
+        #certs and keys
+            ca ca.crt
+            cert monbak.crt
+            key monbak.key
+            dh dh2048.pem
+            tls-auth tls-auth.key
+            persist-key
+            persist-tun
+        #logs
+            log /var/log/openvpn.log
+            ;log-append  openvpn.log
+            ;status openvpn-status.log
+            verb 3
+        #clients
+            client-config-dir /etc/openvpn/ccd
+    vim client.conf
+        client
+        #network
+            remote 85.93.131.214 11096
+            dev tun-ovpn
+            dev tun
+            proto udp
+            remote 11940
+            resolv-retry infinite
+            nobind
+            comp-lzo
+            sndbuf 0
+            rcvbuf 0
+        #certs and keys
+            persist-key
+            persist-tun
+            ca ca.crt
+            cert backup-server.crt
+            key backup-server.key
+            ns-cert-type server
+            tls-auth tls-auth.key
+        #logs
+            verb 3
+            log /var/log/openvpn.log
+</code>

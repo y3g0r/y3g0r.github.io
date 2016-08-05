@@ -1,0 +1,104 @@
+====== GNU Screen ======
+<code bash>
+# when root screen is launched like this, it allows to use 256 colors in second screen somehow
+alias screen='TERM=xterm screen -O'
+# you need to go deeper! that is, launch screen inside a screen
+STY='' TERM=xterm screen -c /home/orl/hometemplate/.screenrc -O 
+</code>
+
+===== .screenrc of a root screen =====
+<code bash>
+# Scroll up using F12
+bindkey -k F2 eval "copy" "stuff ^b"
+bindkey -m -k F2 stuff ^b             # move up one page
+
+# Select windows
+bindkey "^[0" select 0
+bindkey "^[1" select 1
+bindkey "^[2" select 2
+bindkey "^[3" select 3
+bindkey "^[4" select 4
+bindkey "^[5" select 5
+bindkey "^[6" select 6
+bindkey "^[7" select 7
+bindkey "^[8" select 8
+bindkey "^[9" select 9
+
+# Create window
+bindkey "^[c" screen
+
+# Home kh stuff \033[1~
+# End kH stuff \033[4~
+
+startup_message off
+defscrollback 10000
+defmonitor on
+vbell off
+
+bind 'K' kill
+bind 'I' login on
+bind 'O' login off
+bind '}' history
+bind 's' resize
+
+shelltitle '>|'
+caption always "%{kK}%-w%-u%20>%{wg}%n-%t%{kK}%+u%+w%<%>"
+
+#caption always "%?%{ky}    %-Lw    %?%{kg}    %n*    %f%t%    %?%{ky}    %+Lw%? %{ky}"
+#caption always "%{kK}%-w%{wK}%n-%t%{kK}%+u%+w%<%>"
+#hardstatus alwayslastline "%{kd}%-w%-u%50>%{wb}%n-%t%{kd}%+u%+w%<%>"
+#sorendition = wb
+
+# terminfo and termcap for nice 256 color terminal
+# allow bold colors - necessary for some reason
+attrcolor b ".I"
+# tell screen how to set colors. AB = background, AF=foreground
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+# erase background with current bg color
+defbce "on"
+</code>
+===== screenrc of a screen inside a screen =====
+<code bash>
+# Navigation between buffers
+bindkey "^[i" prev
+bindkey "^[o" next
+
+# Open new buffer
+bindkey "^[v" screen
+
+# Set easy scrolling
+bindkey "^k" eval "copy" "stuff ^b"  # enter copy mode and move up one line
+bindkey -m "^k" stuff ^b             # move up one page
+bindkey -m "^j" stuff ^f             # move down one page
+
+startup_message off
+defscrollback 10000
+defmonitor on
+vbell off
+
+bind 'K' kill
+bind 'I' login on
+bind 'O' login off
+bind '}' history
+bind 's' resize
+
+#caption always "%?%{ky}    %-Lw    %?%{kg}    %n*    %f%t%    %?%{ky}    %+Lw%? %{ky}"
+shelltitle '>|'
+
+caption always "%{kK}%-w%-u%20>%{wb}%n-%t%{kK}%+u%+w%<%>"
+
+#caption always "%?%{kw}%-Lw%?%{kg}%n*%f%t%{kw}%+Lw%?%{kw}"
+#hardstatus alwayslastline "%?%{kw}%-Lw%?%{kg}%n*%f%t%{kw}%+Lw%?%{kw}"
+#caption always "%3n %-w %t "
+#caption always "%{kK}%-w%{wK}%n-%t%{kK}%+u%+w%<%>"
+#hardstatus alwayslastline "%{kd}%-w%-u%50>%{wb}%n-%t%{kd}%+u%+w%<%>"
+#sorendition = wb
+
+# terminfo and termcap for nice 256 color terminal
+# allow bold colors - necessary for some reason
+attrcolor b ".I"
+# tell screen how to set colors. AB = background, AF=foreground
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+# erase background with current bg color
+defbce "on"
+</code>

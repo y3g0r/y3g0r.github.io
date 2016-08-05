@@ -1,0 +1,12 @@
+====== sqlite cheatsheet ======
+<code bash>
+create table movies
+      (name, reviews, rating, dvds, earnings, boxoffice, date, month);
+.separator ,
+.import movies.csv movies
+select distinct count(*) from movies;
+select distinct * from movies order by rating;
+select distinct * from movies where month = 'Jan';  -- then Feb, etc.
+select distinct avg(reviews) from movies;
+select distinct sum(earnings) from movies order by earnings desc limit 20;
+</code>

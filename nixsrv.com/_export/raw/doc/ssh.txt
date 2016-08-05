@@ -1,0 +1,46 @@
+====== Secures Shell ======
+
+Cheat-sheet and config examples.
+
+===== Cheat-sheet =====
+<code bash>
+# Map remote port 10060 of foo.site to local 10050 port, can be abbreviated
+ssh -L 127.0.0.1:10060:localhost:10050 foo.site
+ssh -L 10060:localhost:10050 foo.site
+
+# Map local port 22 to 2200 port of foo.site, can be abbreviated
+ssh -R localhost:2200:localhost:22 foo.site
+ssh -R 2200:localhost:22 foo.site
+
+# Forward 2200 port of bar.site to 22 port of foo.side
+ssh -R localhost:2200:foo.site:22 bar.site
+</code>
+===== Using several ssh keys with the same host =====
+
+====~/.ssh/config====
+<code bash>
+# Use several identites for foo.site
+Host foo-hancock
+    User hancock
+    Port 22
+    Hostname foo.site
+    IdentityFile ~/.ssh/id_rsa_hancock
+    TCPKeepAlive yes
+    IdentitiesOnly yes
+
+# Some directives can be ommited if default
+Host foo-anotheruser
+    User anotheruser
+    HostName foo.site
+    IdentityFile ~/.ssh/id_rsa_anotheruser
+</code>    
+
+==== Usage ====
+<code bash>
+# Generate new keys, save as id_rsa_hancock and id_rsa_anotheruser
+ssh-keygen -c mymail@site
+
+# Enjoy
+ssh foo-hancock
+ssh foo-anotheruser
+</code>

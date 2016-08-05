@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex4 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:48 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex4 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex4"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex4decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex4.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex4.txt"/>
+<link rel="canonical" href="ex4.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex4","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_4_bashworking_with_files_pwd_ls_cp_mv_rm_touch">Exercise 4. Bash: working with files, pwd, ls, cp, mv, rm, touch</h1>
+<div class="level1">
+<p>
+In Linux everything is a file. But what is a file? For now it will suffice to say that it is an object which contains some information. It is usually <a href="http://en.wikipedia.org/wiki/Computer_file" class="urlextern" title="http://en.wikipedia.org/wiki/Computer_file" rel="nofollow">defined</a> like this:
+</p>
+<blockquote><div class="no">
+A computer file is a block of arbitrary information, or resource for storing information, which is available to a computer program and is usually based on some kind of durable storage. A file is durable in the sense that it remains available for programs to use after the current program has finished. Computer files can be considered as the modern counterpart of paper documents which traditionally are kept in offices&#039; and libraries&#039; files, and this is the source of the term.</div></blockquote>
+<p>
+But this definition is too general, so let us be more specific. <strong>man stat</strong> tells us that file is an object which has the following properties additionally to information it contains:
+</p>
+<pre class="c code c"><span class="kw4">struct</span> stat <span class="br0">&#123;</span>
+   dev_t     st_dev<span class="sy0">;</span>     <span class="coMULTI">/* ID of device containing file */</span>
+   ino_t     st_ino<span class="sy0">;</span>     <span class="coMULTI">/* inode number */</span>
+   mode_t    st_mode<span class="sy0">;</span>    <span class="coMULTI">/* protection */</span>
+   nlink_t   st_nlink<span class="sy0">;</span>   <span class="coMULTI">/* number of hard links */</span>
+   uid_t     st_uid<span class="sy0">;</span>     <span class="coMULTI">/* user ID of owner */</span>
+   gid_t     st_gid<span class="sy0">;</span>     <span class="coMULTI">/* group ID of owner */</span>
+   dev_t     st_rdev<span class="sy0">;</span>    <span class="coMULTI">/* device ID (if special file) */</span>
+   <span class="kw4">off_t</span>     st_size<span class="sy0">;</span>    <span class="coMULTI">/* total size, in bytes */</span>
+   blksize_t st_blksize<span class="sy0">;</span> <span class="coMULTI">/* blocksize for file system I/O */</span>
+   blkcnt_t  st_blocks<span class="sy0">;</span>  <span class="coMULTI">/* number of 512B blocks allocated */</span>
+   time_t    st_atime<span class="sy0">;</span>   <span class="coMULTI">/* time of last access */</span>
+   time_t    st_mtime<span class="sy0">;</span>   <span class="coMULTI">/* time of last modification */</span>
+   time_t    st_ctime<span class="sy0">;</span>   <span class="coMULTI">/* time of last status change */</span>
+<span class="br0">&#125;</span><span class="sy0">;</span></pre>
+<p>
+Don not be intimidated, just remember the following properties:
+</p>
+<ul>
+<li class="level1"><div class="li"> Size, which is exactly what is says on the tin.</div>
+</li>
+<li class="level1"><div class="li"> Time of last access, which is updated when you view a file.</div>
+</li>
+<li class="level1"><div class="li"> Time of last modification, which is updated when you change a file.</div>
+</li>
+</ul>
+<p>
+Now you will learn how to print out your current directory, files in your directory, copy and move files.
+</p>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno"> 1:</span> <span class="kw3">pwd</span>
+<span class="lno"> 2:</span> <span class="kw2">ls</span>
+<span class="lno"> 3:</span> <span class="kw2">ls</span> <span class="re5">-a</span>
+<span class="lno"> 4:</span> <span class="kw2">ls</span> <span class="re5">-al</span>
+<span class="lno"> 5:</span> <span class="kw2">ls</span> <span class="re5">-altr</span>
+<span class="lno"> 6:</span> <span class="kw2">cp</span> <span class="re5">-v</span> .bash_history<span class="br0">&#123;</span>,<span class="nu0">1</span><span class="br0">&#125;</span>
+<span class="lno"> 7:</span> <span class="kw2">cp</span> <span class="re5">-v</span> .bash_history1 .bash_history2
+<span class="lno"> 8:</span> <span class="kw2">mv</span> <span class="re5">-v</span> .bash_history1 .bash_history2
+<span class="lno"> 9:</span> <span class="kw2">rm</span> <span class="re5">-v</span> .bash_history2
+<span class="lno">10:</span> <span class="kw2">touch</span> .bashrc
+<span class="lno">11:</span> <span class="kw2">ls</span> <span class="re5">-al</span>
+<span class="lno">12:</span> <span class="kw2">ls</span> .<span class="sy0">*</span>
+</pre>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash">Hello, user1<span class="sy0">!</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">pwd</span>
+<span class="sy0">/</span>home<span class="sy0">/</span>user1
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-a</span>
+.  ..  .bash_history  .bash_history1  .bash_logout  .bashrc  .lesshst  .profile  .profile.bak  .profile.bak1
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-al</span>
+total <span class="nu0">40</span>
+drwxr-xr-x <span class="nu0">2</span> user1 user1 <span class="nu0">4096</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">30</span> .
+drwxr-xr-x <span class="nu0">3</span> root  root  <span class="nu0">4096</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">49</span> ..
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1  <span class="nu0">853</span> Jun  <span class="nu0">7</span> <span class="nu0">15</span>:03 .bash_history
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1  <span class="nu0">308</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">14</span> .bash_history1
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">220</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">48</span> .bash_logout
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1 <span class="nu0">3184</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">48</span> .bashrc
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1   <span class="nu0">45</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">31</span> .lesshst
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">697</span> Jun  <span class="nu0">7</span> <span class="nu0">12</span>:<span class="nu0">25</span> .profile
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">741</span> Jun  <span class="nu0">7</span> <span class="nu0">12</span>:<span class="nu0">19</span> .profile.bak
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">741</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">12</span> .profile.bak1
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-altr</span>
+total <span class="nu0">40</span>
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1 <span class="nu0">3184</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">48</span> .bashrc
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">220</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">48</span> .bash_logout
+drwxr-xr-x <span class="nu0">3</span> root  root  <span class="nu0">4096</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">49</span> ..
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">741</span> Jun  <span class="nu0">7</span> <span class="nu0">12</span>:<span class="nu0">19</span> .profile.bak
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">697</span> Jun  <span class="nu0">7</span> <span class="nu0">12</span>:<span class="nu0">25</span> .profile
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">741</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">12</span> .profile.bak1
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1  <span class="nu0">308</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">14</span> .bash_history1
+drwxr-xr-x <span class="nu0">2</span> user1 user1 <span class="nu0">4096</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">30</span> .
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1   <span class="nu0">45</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">31</span> .lesshst
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1  <span class="nu0">853</span> Jun  <span class="nu0">7</span> <span class="nu0">15</span>:03 .bash_history
+<span class="co4">user1@vm1:~$ </span><span class="kw2">cp</span> <span class="re5">-v</span> .bash_history<span class="br0">&#123;</span>,<span class="nu0">1</span><span class="br0">&#125;</span>
+<span class="sy0">`</span>.bash_history<span class="st_h">' -&gt; `.bash_history1'</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">cp</span> <span class="re5">-v</span> .bash_history1 .bash_history2
+<span class="sy0">`</span>.bash_history1<span class="st_h">' -&gt; `.bash_history2'</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">mv</span> <span class="re5">-v</span> .bash_history1 .bash_history2
+<span class="sy0">`</span>.bash_history1<span class="st_h">' -&gt; `.bash_history2'</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">rm</span> <span class="re5">-v</span> .bash_history2
+removed <span class="sy0">`</span>.bash_history2<span class="st_h">'
+user1@vm1:~$ touch .bashrc
+user1@vm1:~$ ls -al
+total 36
+drwxr-xr-x 2 user1 user1 4096 Jun 14 12:23 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1  853 Jun  7 15:03 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .bashrc
+-rw------- 1 user1 user1   45 Jun  7 13:31 .lesshst
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+user1@vm1:~$
+user1@vm1:~$ ls .*
+.bash_history  .bash_logout  .bashrc  .lesshst  .profile  .profile.bak  .profile.bak1
+&nbsp;
+.:
+ls.out
+&nbsp;
+..:
+user1</span></pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Prints out your current working directory, which is your home directory. Notice how this differs from <strong>~</strong> in <strong>user1@vm1:~</strong>, which also indicates that your are in your home directory. That is because <strong>~</strong> is a shortcut for your home directory.</div>
+</li>
+<li class="level1"><div class="li"> You get nothing here because there are only hidden files in your home directory. Remember, hidden files are ones which names start with a dot.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all files in your home directory, because <strong>-a</strong> parameter tells ls to show all files including hidden ones.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all files in your home directory in long format: <strong>permissions</strong>, <strong>owner</strong>, <strong>group</strong>, <strong>size</strong>, <strong>timestamp (normally modification time) and filename</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Notice how files are now arranged by date, newest files being last. <strong>-t</strong> tells ls to sort by time, and <strong>-r</strong> tells ls to reverse the sort.</div>
+</li>
+<li class="level1"><div class="li"> Copies <strong>.bash_history</strong> to <strong>.bash_history1</strong>. It may seem cryptic to you, but explanation is really simple. Bash has a feature called brace expansion, that it has a set of rules which define how constructs like <strong>something{1,2,3}</strong> are treated. In our case <strong>.bash_history{,1}</strong> expands into two arguments, namely <strong>.bash_history</strong> and <strong>.bash_history1</strong>. Bash just takes a parameter before the brace, <strong>.bash_history</strong> in our case, and adds everything which is in braces, separated by commas, to this parameter consequentially. First addition becomes just <strong>.bash_history</strong> because first argument in braces is void, there is no first argument. Next, Bash adds <strong>1</strong> because that&#039;s the second argument, and voila! Resulting arguments, which are passed to <strong>cp</strong> <em>after</em> expansion are <strong>-v .bash_history .bash_history1</strong>.</div>
+</li>
+<li class="level1"><div class="li"> This might be obvious for you now. Copies recently created <strong>.bash_history1</strong> to <strong>.bash_history2</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Moves <strong>.bash_history1</strong> to <strong>.bash_history2</strong>. Notice that it overwrites the destination file without asking, so there is no more <strong>.bash_history2</strong>, gone!</div>
+</li>
+<li class="level1"><div class="li"> Removes <strong>.bash_history2</strong>. Where is no warning, so beware. Also, always use <strong>-v</strong> key.</div>
+</li>
+<li class="level1"><div class="li"> Updates <strong>.bashrc</strong> timestamp to current date and time. This means that all <strong>.bashrc</strong> time attributes, <strong>st_atime</strong>, <strong>st_mtime</strong> and <strong>st_ctime</strong> are set to current date and time. You may become sure of this by typing in <strong>stat .bashrc</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all files in long format again. Notice how <strong>.bashrc</strong> timestamps changed.</div>
+</li>
+<li class="level1"><div class="li"> Prints out files in you home directory in short format. Notice that you get listing of not only of <strong>/home/user1</strong> directory, but also of <strong>/home</strong> directory itself. <span style="color:red;font-size:100%;">Do not use this construct with any command, especially <b>rm</b>, ever! Chances are, you will accidentally cripple your system by deleting wrong files or changes access right to them.</span></div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Play with bash brace expansion. Start with <strong>echo test{1,2,foo,bar}</strong>. Try typing in several separate parameters with braces. </div>
+</li>
+<li class="level1"><div class="li"> Google <strong>bash brace expansion</strong>, open “Bash Reference Manual” from the search results and read the appropriate section.</div>
+</li>
+<li class="level1"><div class="li"> Try to find out how and why <strong>ls .</strong>* works.</div>
+</li>
+<li class="level1"><div class="li"> Say to yourself 10 times: “I will always use verbose option. Verbose option is commonly accessible as <strong>-v</strong> parameter”.</div>
+</li>
+<li class="level1"><div class="li"> Say to yourself 10 times: “I will always use check any hazardous command with <strong>ls</strong>”.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex4.html';
+var disqus_title   = 'Exercise 4. Bash: working with files, pwd, ls, cp, mv, rm, touch';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex4.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex4.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex4.txt</bdi> · Last modified: 2012/12/27 19:26 (external edit)<br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerf3c8.gif?id=llthw%3Aex4&amp;1428742710" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex4 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:51 GMT -->
+</html>

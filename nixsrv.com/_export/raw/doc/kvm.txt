@@ -1,0 +1,56 @@
+====== KVM ======
+
+===== Quickly create a virtual machine with host-only network and access to the Internet via iptables =====
+<code bash>
+# Add a tun interface
+    tunctl -t tap0 -u root
+# Add a bridge
+    brctl addbr br0
+    brctl addif br0 tap0
+    ip a a 10.0.0.1/24 brd + dev br0
+# Create disk image 
+    qemu-img create -f qcow2 winxp.img 3G   
+# Install an OS
+    kvm -m 4096 -vnc '127.0.0.1:1' -cdrom /home/winxp.iso -boot d win2008r2 -net nic,vlan=1,macaddr=00:aa:00:60:00:01,model=e1000 -net tap,vlan=1,ifname=tap0,script=no
+# Launch KVM
+    kvm -rtc base=localtime -smp 4 -m 8192 -vnc '127.0.0.1:1' -boot c foobar.raw -net nic,vlan=1,macaddr=00:aa:00:60:00:01,model=e1000 -net tap,vlan=1,ifname=tap1,script=no
+# Forward a port
+    iptables -t nat -A PREROUTING -p tcp -i eth0 -d <real ip> --dport 3389 --sport 1024:65535 -j DNAT --to 10.0.0.2:5900
+    sysctl net.ipv4.ip_forward=1
+# Allow VM to the Internet
+    iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 10.0.0.2
+</code>
+
+===== Some usefull stuff =====
+
+<code bash>
+# Connect to QEMU monitor
+     socat - /var/run/qemu-server/foo.mon
+     
+# Forward a port usign kvm
+    # In the monitor...
+         hostfwd_add tcp::2201-:22
+         info usernet
+    # ...Or just from the console
+         echo hostfwd_add tcp::2203-:22 | socat - /var/run/qemu-server/103.mon
+
+# Map a loop device to the image file
+     losetup -f
+     losetup /dev/loop0 foo.img
+     kpartx -av /dev/loop0
+     ls -alF /dev/mapper
+     mount /dev/mapper/loop0p1 /mnt/debianvm
+     unmount /mnt/debianvm
+     kpartx -dv /dev/loop0
+     losetup -d /dev/loop0
+
+# Hot add disk image
+     # in quemu monitor
+         socat - /var/run/qemu-server/101.mon
+         pci_add auto storage file=/srv/foo.img,if=virtio
+         drive_del virtio0
+     # in guest system
+         modprobe acpiphp
+         modprobe pci_hotplug
+     
+</code>       

@@ -1,0 +1,87 @@
+====== Simple backup script with rsync ======
+
+<code bash>
+#!/bin/bash
+# ----------------------------------------------------------------------
+# mikes handy rotating-filesystem-snapshot utility
+# with heavy modifications by orl
+# ----------------------------------------------------------------------
+# this needs to be a lot more general, but the basic idea is it makes
+# rotating backup-snapshots of $bak whenever called
+# ----------------------------------------------------------------------
+set -x
+set -e
+
+unset PATH      # suggestion from H. Milz: avoid accidental use of $PATH
+
+# ------------- file locations -----------------------------------------
+
+bak=/bak;
+src=/srv/media;
+excludes=/etc/opt/backup-exclude.txt;
+
+# ------------- the script itself --------------------------------------
+
+# make sure we are running as bak
+if [[ $(/bin/whoami) != 'bak' ]]; then { echo "Sorry, must be 'bak'. Exiting..."; exit; } fi;
+
+# make sure we didn't do snapshot today already 
+if [[ $(/bin/stat /bak/daily.0 | /bin/grep Modify | /bin/cut -d' ' -f2) == $(/bin/date '+%Y-%m-%d') && $1 != "--force" ]] ; then
+        exit 2; 
+fi;
+
+# ------------- make mysql backup --------------------------------------
+
+mysql_pw='passwd';
+date_suffix=$(/bin/date '+%Y-%m-%d');
+/bin/mysqldump -uroot -p'passwd' zabbix | /bin/gzip -c > /bak/mysql/zabbix-$date_suffix.sql.gz;
+unset mysql_pw;
+
+openssl_pw='some-large-passphrase';
+/bin/openssl aes-256-cbc -in /bak/mysql/zabbix-${date_suffix}.sql.gz -out /bak/mysql/zabbix-${date_suffix}.sql.gz.enc -pass pass:openssl_pw;
+unset openssl_pw;
+
+/bin/rm /bak/mysql/zabbix-$date_suffix.sql.gz;
+
+total=$(/bin/find /bak/mysql -name 'zabbix*' | /bin/wc -l);
+old=$(/bin/find /bak/mysql -name 'zabbix*' -mtime +30 | /bin/wc -l);
+if (( total - old >= 30 )); then
+        /bin/find /bak/mysql -name 'zabbix*' -mtime +30 -delete;
+fi;
+
+# ------------- rotating snapshots -------------------------------------
+
+# step 1: delete the oldest snapshot, if it exists:
+if [ -d $bak/daily.9 ] ; then
+        /bin/rm -rf $bak/daily.9 ;
+fi;
+
+# step 2: shift the middle snapshots(s) back by one, if they exist
+# cp /bin/mv $bak/daily.8 $bak/daily.9 ; 
+# cp /bin/mv $bak/daily.7 $bak/daily.8 ; # etc
+for ((i=8;i>=1;i--)) ; do
+        if [ -d $bak/daily.$i ] ; then
+                /bin/mv $bak/daily.$i $bak/daily.$((i+1)) ;
+        fi;
+done;
+
+# step 3: make a hard-link-only (except for dirs) copy of the latest snapshot,
+# if that exists
+if [ -d $bak/daily.0 ] ; then
+        /bin/cp -al $bak/daily.0 $bak/daily.1 ;
+fi;
+
+# step 4: rsync from the system into the latest snapshot (notice that
+# rsync behaves like cp --remove-destination by default, so the destination
+# is unlinked first.  If it were not so, this would copy over the other
+# snapshot(s) too!
+/bin/rsync -va --delete --delete-excluded --exclude-from="$excludes" $src/ $bak/daily.0 |& >/dev/null ;
+
+# step 5: update the mtime of daily.0 to reflect the snapshot time
+/bin/touch $bak/daily.0 ;
+
+# step 6: send backups to a backup server
+/bin/lftp -c "set net:reconnect-interval-base 0; set ftp:ssl-force true; \
+             open -u user,password ftp://backup-site.com:21; \
+             mirror --verbose=3 -e -R -L -P 0 /bak/ /bak"
+</code>

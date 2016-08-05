@@ -1,0 +1,35 @@
+====== Oracle Cluster File System 2 ======
+
+===== Cheatsheet =====
+<code bash>
+# start
+    /etc/init.d/o2cb start
+# status
+    /etc/init.d/o2cb status
+# create fs
+    mkfs.ocfs2 /dev/drbd1
+# mount fs
+    mount.ocfs2 /dev/drbd1 /mnt    
+</code>
+
+===== Skeleton config for simplest cluster =====
+<code bash>
+# /etc/ocfs2/cluster.conf
+    node:
+        ip_port = 7777
+        ip_address = 10.0.0.1
+        number = 0
+        name = foo
+        cluster = ocfs2
+
+    node:
+        ip_port = 7777
+        ip_address = 10.0.0.2
+        number = 1
+        name = bar
+        cluster = ocfs2
+
+    cluster:
+        node_count = 2
+        name = ocfs2
+</code>

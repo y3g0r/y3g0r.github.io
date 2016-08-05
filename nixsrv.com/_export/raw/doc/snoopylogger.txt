@@ -1,0 +1,7 @@
+====== snoopylogger ======
+Handy tool which allows to log all executed commands. [[http://sourceforge.net/projects/snoopylogger/]]
+<code bash>
+Install under debian         
+    ./configure && make # don't do make install, it may break aptitude         
+    configure to write in auth.log     
+</code>

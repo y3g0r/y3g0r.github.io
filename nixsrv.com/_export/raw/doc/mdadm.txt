@@ -1,0 +1,19 @@
+<code bash>
+create raid 
+    parted /dev/sdb
+        mkpart srv ext2 34.9GB 1035GB
+        mkpart bak ext2 1035GB 3001GB
+    mdadm --create /dev/md5 --level=1 --raid-devices=2 /dev/sdb5 /dev/sdc5
+    mdadm --create /dev/md6 --level=1 --raid-devices=2 /dev/sdb6 /dev/sdc6
+    #repeat for sdc
+make raid autostart
+    mdadm --examine --scan
+    vim /etc/mdadm/mdadm.conf
+        ARRAY /dev/md/5 metadata=1.2 UUID=187d0aa0:d170df31:9c35a68f:75b2ac95 name=vbox:5
+        ARRAY /dev/md/6 metadata=1.2 UUID=e1f810c6:98e1b2e5:a606a2b0:9228850e name=vbox:6
+check mdadm status 
+    mdadm --detail /dev/md5
+add new disk to degraided array
+    sfdisk -d /dev/sda > part_table ; sfdisk /dev/sdb < part_table
+    mdadm --manage /dev/md1 --add /dev/sdb2
+</code>

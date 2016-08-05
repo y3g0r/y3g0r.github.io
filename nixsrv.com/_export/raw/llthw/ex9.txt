@@ -1,0 +1,114 @@
+====== Exercise 9. Bash: job control, jobs, fg ======
+
+Linux is a [[http://en.wikipedia.org/wiki/Computer_multitasking|multitasking]] operating system. This means that there are many programs running at the same time. From user perspective this means that you are able to run several programs simultaneously, and **bash** surely has tools to control multiple jobs execution for you. To be able to use this feature you need to learn the following commands:
+
+  - **<CTRL>+z** — place currently running program in the background.
+  - **jobs** — list all background programs.
+  - **fg** — bring a program to foreground. **fg** takes a number which can be obtained from **jobs** as an argument, or brings last suspended program to foreground if called without parameters.
+  - **<CTRL>+c** — stop execution of currently running programs at once. While I will not use it in this exercise, I must say that it may be very useful at times.
+
+Now you will learn how to control program execution by using tools built in bash.
+
+===== Do this =====
+<code bash 1>
+less -S .profile
+<CTRL+z>
+less -S .bashrc
+<CTRL+z>
+less -S .bash_history
+<CTRL+z>
+jobs
+fg
+q
+fg
+q
+fg
+q
+fg
+jobs
+</code>
+
+====== What you should see ======
+
+<code bash>
+user1@vm1:~$ less -S .profile
+# exists.
+# see /usr/share/doc/bash/examples/startup-files for
+# the files are located in the bash-doc package.
+
+# the default umask is set in /etc/profile; for setti
+# for ssh logins, install and configure the libpam-um
+#umask 022
+
+# if running bash
+if [ -n "$BASH_VERSION" ]; then
+    # include .bashrc if it exists
+    if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+
+[1]+  Stopped                 less -S .profile
+user1@vm1:~$ less -S .bashrc
+# for examples
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# don't put duplicate lines in the history. See bash(
+# don't overwrite GNU Midnight Commander's setting of
+HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
+# ... or force ignoredups and ignorespace
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+[2]+  Stopped                 less -S .bashrc
+user1@vm1:~$ less -S .bash_history
+echo Hello, $LOGNAME!
+echo 'echo Hello, $LOGNAME!' >> .profile
+cp .profile .profile.bak
+tail .profile
+ls -altr
+history -w
+ls -al
+cat .profile
+echo Hello, $LOGNAME!
+echo 'echo Hello, $LOGNAME!' >> .profile
+cp .profile .profile.bak
+tail .profile
+ls -altr
+
+[3]+  Stopped                 less -S .bash_history
+user1@vm1:~$ jobs
+[1]   Stopped                 less -S .profile
+[2]-  Stopped                 less -S .bashrc
+[3]+  Stopped                 less -S .bash_history
+user1@vm1:~$ fg
+user1@vm1:~$ fg
+user1@vm1:~$ fg
+user1@vm1:~$ fg
+-bash: fg: current: no such job
+user1@vm1:~$ jobs
+user1@vm1:~$ 
+</code>
+
+===== Explanation =====
+
+  - Opens .profile for viewing. Notice how I use **-S** parameter, which tells **less** to staring with **- -chop-long-lines** option enabled.
+  - Suspends **less**.
+  - Opens .bashrc for viewing.
+  - Suspends **less**.
+  - Opens .bash_history for viewing.
+  - Suspends **less**.
+  - Prints out list of suspended programs.
+  - Switches to last **less**.
+  - Quits it.
+  - Switches to second **less**.
+  - Quits it.
+  - Switches to first **less**.
+  - Quits it.
+  - Tries to switch to last program. There is no programs left, but you do this is to make sure there are indeed none.
+  - Prints out list of suspended programs. This is to make sure there are no background jobs by seeing that **jobs** prints out empty output. 
+====== Extra credit =====
+
+  - Open **man bash**, search for //JOB CONTROL// typing **/**, **JOB CONTROL**, **<ENTER>**, and read it.

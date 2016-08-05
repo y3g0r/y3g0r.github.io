@@ -1,0 +1,332 @@
+====== Manual Debian installation ======
+
+This section despite being verbose is not recommended for those not familiar with VirtualBox and Debian. Also it is is written for Windows, if you use another system I hope it will be fairly easy to make appropriate substitutions to this guide.
+
+First things first, download stuff you will need:
+  - Download and install [[https://www.virtualbox.org/wiki/Downloads|VirtualBox]].
+  - Download latest [[http://cdimage.debian.org/debian-cd/6.0.6/amd64/iso-cd/|Debian 6 Squeeze CD-image]]. You need 1st CD, for example **debian-6.0.5-amd64-CD-1.iso**.
+  - For Windows users, you need to download [[http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html|putty]]. You need this file: **putty.exe**. It does not require installation, you can run it just like this.
+
+===== Debian installation guide =====
+
+**1.** Launch VirtualBox.
+
+{{:llthw:ex0:1.png}}
+
+**2.** Create new Virtual Machine by pressing **New** button. Enter **vm1** into **Name** field, and select **Operating System: Linux**, **Version: Debian (64 bit)**, then press **Next >**.
+
+{{:llthw:ex0:2.png}}
+
+**3.** Select at least **512 MB** of memory. **1024 GB** will be okay if you have much RAM installed at your computer. Press **Next >**
+
+{{:llthw:ex0:4.png}}
+
+**4.** Just click **Next >** here.
+
+{{:llthw:ex0:5.png}}
+
+**5.** Select **VDI (VirtualBox Disk Image)** and click **Next >**.
+
+{{:llthw:ex0:6.png}}
+
+**6.** Select **Dynamically allocated** and press **Next >**.
+
+{{:llthw:ex0:7.png}}
+
+**7.** Enter **vm1** in Location, click **Next >**.
+
+{{:llthw:ex0:8.png}}
+
+**8.** Click **Create**.
+
+{{:llthw:ex0:9.png}}
+
+**9.** Select **vm1** and click **Start**.
+
+{{:llthw:ex0:10.png}}
+
+**10.** Click **Next >**.
+
+{{:llthw:ex0:11.png}}
+
+**11.** Click the **folder button**.
+
+{{:llthw:ex0:12.png}}
+
+**12.** Locate and select your **Debian 6 Squeeze CD-image**, click **Open**.
+
+{{:llthw:ex0:13.png}}
+
+**13.** Click **Next >**.
+
+{{:llthw:ex0:14.png}}
+
+**14.** Click **Start**.
+
+{{:llthw:ex0:15.png}}
+
+**15.** Close annoying VirtualBox windows, click inside VirtualBox window and press **<ENTER>**.
+
+{{:llthw:ex0:16.png}}
+
+**16.** Press **<ENTER>**.
+
+{{:llthw:ex0:17.png}}
+
+**17.** Press **<ENTER>**.
+
+{{:llthw:ex0:18.png}}
+
+**18.** Press **<ENTER>**.
+
+{{:llthw:ex0:19.png}}
+
+**19.** Press **<ENTER>**.
+
+{{:llthw:ex0:20.png}}
+
+**20.** Enter **vm1** and press **<ENTER>**.
+
+{{:llthw:ex0:21.png}}
+
+**21.** Enter **site** and press **<ENTER>**.
+
+{{:llthw:ex0:22.png}}
+
+**22.** Enter **123qwe** and press **<ENTER>**.
+
+{{:llthw:ex0:23.png}}
+
+**23.** Enter **123qwe** again and press **<ENTER>**.
+
+{{:llthw:ex0:24.png}}
+
+**24.** Enter **user1** and press **<ENTER>**.
+
+{{:llthw:ex0:25.png}}
+
+**25.** Just press **<ENTER>**.
+
+{{:llthw:ex0:26.png}}
+
+**26.** Enter **123qwe** and press **<ENTER>**.
+
+{{:llthw:ex0:27.png}}
+
+**27.** Enter **123qwe** again and press **<ENTER>**.
+
+{{:llthw:ex0:28.png}}
+
+**28.** If you don not know what to do here, just press **<ENTER>**.
+
+{{:llthw:ex0:29.png}}
+
+**29.** Select **Guided partitioning** and press **<ENTER>**.
+
+{{:llthw:ex0:30.png}}
+
+**30.** Select **Guided -- use entire disk** and press **<ENTER>**.
+
+{{:llthw:ex0:31.png}}
+
+**31.** Press **<ENTER>** once more.
+
+{{:llthw:ex0:32.png}}
+
+**32.** Select **Separate /home, /usr, /var, and /tmp partitions** and press **<ENTER>**.
+
+{{:llthw:ex0:33.png}}
+
+**33.** Select **Finish partitioning and write changes to disk** and press **<ENTER>**.
+
+{{:llthw:ex0:34.png}}
+
+**34.** Select **<Yes>** and press **<ENTER>**.
+
+{{:llthw:ex0:35.png}}
+
+**35.** Select **<No>** and press **<ENTER>**.
+
+{{:llthw:ex0:36.png}}
+
+**36.** Select **<Yes>** and press **<ENTER>**.
+
+{{:llthw:ex0:37.png}}
+
+**37.** Select **ftp.egr.msu.edu** and press **<ENTER>**. If an error will show up, select something different.
+
+{{:llthw:ex0:38.png}}
+
+**38.** **<ENTER>** again.
+
+{{:llthw:ex0:39.png}}
+
+**39.** Select **<No>** and press **<ENTER>**.
+
+{{:llthw:ex0:40.png}}
+
+**40.** Using **<SPACE>** select **SSH server** and **Standard system utilities**. Then, press **<ENTER>**.
+
+{{:llthw:ex0:41.png}}
+
+**41.** Select **<Yes>** and press **<ENTER>**.
+
+{{:llthw:ex0:42.png}}
+
+**42.** Select **<Continue>** and press **<ENTER>**. Your freshly installed Debian system will reboot.
+
+{{:llthw:ex0:43.png}}
+
+**43.** Click **Devices** and select **Network adapters**.
+
+{{:llthw:ex0:45.png}}
+
+**44.** Click **Port Forwarding**.
+
+{{:llthw:ex0:46.png}}
+
+**45.** Click **Plus** button.
+
+{{:llthw:ex0:47.png}}
+
+**46.** Type in **22** into **Host Port** and **22** into **Guest Port**. Click **Ok**.
+
+{{:llthw:ex0:48.png}}
+
+**47.** Click **OK** once more.
+
+{{:llthw:ex0:49.png}}
+
+**48.** Enjoy your running Debian system for a little bit.
+
+{{:llthw:ex0:50.png}}
+
+**49.** Launch **putty**. Type in **localhost** in **Host Name (or IP address)** and **22** in **Port** field. Click **Open**.
+
+{{:llthw:ex0:51.png}}
+
+**50.** Click **Yes**.
+
+{{:llthw:ex0:52.png}}
+
+**51.** Type in **user1**, press **<ENTER>**, type **123qwe** and press enter one more time to enjoy your handiwork for real.
+
+{{:llthw:ex0:53.png}}
+
+Well, you think this this is all? HA! Now type this into **putty**, finish each command by pressing **<ENTER>**:
+<code 1 bash>
+su
+123qwe
+sed -i '/^deb cdrom.*$/d' /etc/apt/sources.list
+aptitude update
+aptitude install vim sudo parted 
+</code>
+When asked, answer **y** and press **<ENTER>**.
+<code 6 bash>
+update-alternatives --config editor
+</code>
+When asked, answer **3** and press **<ENTER>**.
+<code 7 bash>
+sed -i 's/%sudo ALL=(ALL) ALL/%sudo ALL=(ALL) NOPASSWD:ALL/' /etc/sudoers
+usermod user1 -G sudo
+</code>
+
+Close **putty**, open it again and log into **vm1** as **user1** again. Type this:
+<code 9 bash>
+sudo -s
+</code>
+
+If you get **root@vm1:/home/user1#** you did everything OK and deserve a beer.
+====== What you should see ======
+<code bash>
+user1@vm1:~$ su
+Password:
+root@vm1:/home/user1# sed -i '/^deb cdrom.*$/d' /etc/apt/sources.list
+root@vm1:/home/user1# aptitude update
+Hit http://security.debian.org squeeze/updates Release.gpg
+Ign http://security.debian.org/ squeeze/updates/main Translation-en
+Ign http://security.debian.org/ squeeze/updates/main Translation-en_US
+Hit http://security.debian.org squeeze/updates Release
+Hit http://ftp.egr.msu.edu squeeze Release.gpg
+Hit http://security.debian.org squeeze/updates/main Sources
+Hit http://security.debian.org squeeze/updates/main amd64 Packages
+Ign http://ftp.egr.msu.edu/debian/ squeeze/main Translation-en
+Ign http://ftp.egr.msu.edu/debian/ squeeze/main Translation-en_US
+Hit http://ftp.egr.msu.edu squeeze-updates Release.gpg
+Ign http://ftp.egr.msu.edu/debian/ squeeze-updates/main Translation-en
+Ign http://ftp.egr.msu.edu/debian/ squeeze-updates/main Translation-en_US
+Hit http://ftp.egr.msu.edu squeeze Release
+Hit http://ftp.egr.msu.edu squeeze-updates Release
+Hit http://ftp.egr.msu.edu squeeze/main Sources
+Hit http://ftp.egr.msu.edu squeeze/main amd64 Packages
+Get:1 http://ftp.egr.msu.edu squeeze-updates/main Sources/DiffIndex [2,161 B]
+Hit http://ftp.egr.msu.edu squeeze-updates/main amd64 Packages/DiffIndex
+Hit http://ftp.egr.msu.edu squeeze-updates/main amd64 Packages
+Fetched 2,161 B in 3s (603 B/s)
+root@vm1:/home/user1# aptitude install vim sudo parted
+The following NEW packages will be installed:
+  libparted0debian1{a} parted sudo vim vim-runtime{a}
+0 packages upgraded, 5 newly installed, 0 to remove and 0 not upgraded.
+Need to get 8,231 kB of archives. After unpacking 29.8 MB will be used.
+Do you want to continue? [Y/n/?] y
+Get:1 http://security.debian.org/ squeeze/updates/main sudo amd64 1.7.4p4-2.squeeze.3 [610 kB]
+Get:2 http://ftp.egr.msu.edu/debian/ squeeze/main libparted0debian1 amd64 2.3-5 [341 kB]
+Get:3 http://ftp.egr.msu.edu/debian/ squeeze/main parted amd64 2.3-5 [156 kB]
+Get:4 http://ftp.egr.msu.edu/debian/ squeeze/main vim-runtime all 2:7.2.445+hg~cb94c42c0e1a-1 [6,207 kB]
+Get:5 http://ftp.egr.msu.edu/debian/ squeeze/main vim amd64 2:7.2.445+hg~cb94c42c0e1a-1 [915 kB]
+Fetched 8,231 kB in 1min 18s (105 kB/s)
+Selecting previously deselected package libparted0debian1.
+(Reading database ... 34745 files and directories currently installed.)
+Unpacking libparted0debian1 (from .../libparted0debian1_2.3-5_amd64.deb) ...
+Selecting previously deselected package parted.
+Unpacking parted (from .../parted_2.3-5_amd64.deb) ...
+Selecting previously deselected package sudo.
+Unpacking sudo (from .../sudo_1.7.4p4-2.squeeze.3_amd64.deb) ...
+Selecting previously deselected package vim-runtime.
+Unpacking vim-runtime (from .../vim-runtime_2%3a7.2.445+hg~cb94c42c0e1a-1_all.deb) ...
+Adding 'diversion of /usr/share/vim/vim72/doc/help.txt to /usr/share/vim/vim72/doc/help.txt.vim-tiny by vim-runtime'
+Adding 'diversion of /usr/share/vim/vim72/doc/tags to /usr/share/vim/vim72/doc/tags.vim-tiny by vim-runtime'
+Selecting previously deselected package vim.
+Unpacking vim (from .../vim_2%3a7.2.445+hg~cb94c42c0e1a-1_amd64.deb) ...
+Processing triggers for man-db ...
+Setting up libparted0debian1 (2.3-5) ...
+Setting up parted (2.3-5) ...
+Setting up sudo (1.7.4p4-2.squeeze.3) ...
+No /etc/sudoers found... creating one for you.
+Setting up vim-runtime (2:7.2.445+hg~cb94c42c0e1a-1) ...
+Processing /usr/share/vim/addons/doc
+Setting up vim (2:7.2.445+hg~cb94c42c0e1a-1) ...
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vim (vim) in auto mode.
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vimdiff (vimdiff) in auto mode.
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/rvim (rvim) in auto mode.
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/rview (rview) in auto mode.
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vi (vi) in auto mode.
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/view (view) in auto mode.
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/ex (ex) in auto mode.
+root@vm1:/home/user1# update-alternatives --config editor
+There are 3 choices for the alternative editor (providing /usr/bin/editor).
+
+  Selection    Path                Priority   Status
+------------------------------------------------------------
+* 0            /bin/nano            40        auto mode
+  1            /bin/nano            40        manual mode
+  2            /usr/bin/vim.basic   30        manual mode
+  3            /usr/bin/vim.tiny    10        manual mode
+
+Press enter to keep the current choice[*], or type selection number: 3
+update-alternatives: using /usr/bin/vim.tiny to provide /usr/bin/editor (editor) in manual mode.
+root@vm1:/home/user1# sed -i 's/%sudo ALL=(ALL) ALL/%sudo ALL=(ALL) NOPASSWD:ALL/' /etc/sudoers
+root@vm1:/home/user1# usermod user1 -G sudo
+root@vm1:/home/user1# 
+</code>
+
+=====Explanation=====
+  - Makes you become the **superuser**, or **root**.
+  - **root** password you typed earlier during installation.
+  - Modifies repositories file so Debian will attempt to install new software from Internet only.
+  - Update available software database.
+  - Installs **vim**, **sudo** and **parted** packages.
+  - Changes default system text editor to **vim**.
+  - Allows you to become the **superuser** without entering password by modifying **sudo** configuration file.
+  - Adds you to **sudo** group so you would be able to become root via **sudo**.
+  - Checks if you are able to become root. 

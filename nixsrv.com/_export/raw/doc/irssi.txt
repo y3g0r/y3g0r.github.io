@@ -1,0 +1,68 @@
+====== irssi irc client ======
+===== irssi cheatsheet =====
+<code bash>
+/ignore -channels #mwsf * JOINS PARTS QUITS NICKS
+</code>
+===== .irrssi =====
+<code perl>
+settings = {
+  core = {
+    real_name = "Unknown";
+    user_name = "name";
+    nick = "nick";
+  };
+  "fe-text" = { actlist_sort = "refnum"; };
+  "perl/core/scripts" = {
+    awl_columns = "1";
+    awl_placement = "top";
+    awl_height_adjust = "4";
+    awl_display_key_active = "$Q%K|$N%n $H%U$C%n$S";
+  };
+  "fe-common/core" = {
+    activity_hide_level = "parts joins quits nicks modes";
+  };
+};
+statusbar = {
+  default = {
+    awl_0 = {
+      placement = "top";
+      items = {
+        barstart = { priority = "100"; };
+        awl_0 = { };
+        barend = { priority = "100"; alignment = "right"; };
+      };
+    };
+  };
+};
+ignores = (
+  { mask = "JOINS"; level = "PARTS QUITS"; channels = ( "*" ); },
+  { mask = "JOINS"; level = "PARTS QUITS"; channels = ( "#*" ); },
+  { level = "JOINS PARTS QUITS"; channels = ( "*" ); },
+  { level = "JOINS PARTS QUITS MODES"; channels = ( "##linux" ); },
+  { level = "JOINS PARTS QUITS"; }
+);
+aliases = {
+  "hidelevels.set" = "set activity_hide_level parts joins quits nicks modes";
+};
+chatnets = {
+  freenode = {
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "4";
+    max_modes = "4";
+    max_whois = "1";
+  };
+};
+servers = (
+  {
+    address = "irc.freenode.net";
+    chatnet = "freenode";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_cert = "~/.irssi/nick.pem";
+    ssl_verify = "yes";
+    ssl_capath = "/etc/ssl/certs";
+    autoconnect = "yes";
+  }
+);
+</code>

@@ -1,0 +1,284 @@
+====== Exercise 30. Lather, Rinse, Repeat: The Grand Rote Learning ======
+
+Amount of information in this guide is pretty big. You cannot retain it without long enough practice and some hardcore grinding. So the only task left for you will be filling in this table, and imprinting this table in your memory every day until you know it.
+
+You may want to ask why do you need to memorize all this stuff if you can always look it up. Well, the short answer will be //because you can not//. What this means is that to look up things efficiently you already need what to look for, and to know what to look for, you need a solid foundation. Once you have this foundation, once you understand what is important and what is not, and how the system is organized, you will be able to efficiently look things up. 
+
+You may wonder why in my guide there are many detailed tables containing lists of many fields which contain information which you will almost never need. What you must understand, though, is that you should train yourself to look any console program this way. You should approach to this information not like to a fiction book, where you may not pay attention do details and still understand it pretty well. You should approach all those data as mathematical formulas, where every single symbol has its meaning, and even more so, if you do not understand what particular symbol means, you will not be able to go further.
+
+Sometimes it is perfectly okay to left something unexplained, but make yourself a present of going deeper, even if it will be every so often. Give yourself a present by making research about this particular utility, understand what it tells you and why. If you will do this, if you will look deep inside, your understanding of an Operating System (Linux in our case) will increase dramatically. 
+===== Documentation =====
+
+==== man, info ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>man</code>            |                             |
+| <code>info</code>           |                             |
+| <code>man 1</code>          |                             |
+| <code>man 2 </code>         |                             |
+| <code>man 3</code>          |                             |
+| <code>man 4</code>          |                             |
+| <code>man 5</code>          |                             |
+| <code>man 6</code>          |                             |
+| <code>man 7</code>          |                             |
+| <code>man 8</code>          |                             |
+| <code>man 9</code>          |                             |
+| <code>man -k</code>         |                             |
+| <code>man -wK</code>        |                             |
+| **bold text**</code>        |                             |
+| //italic text//</code>      |                             |
+| <code>[]</code>             |                             |
+| <code>-a | -b</code>        |                             |
+| <code>argument ...</code>    |                            |
+| <code>[expression] ...</code> |                           |
+
+==== Google and useful resources ====
+
+^ Search term/resource<html><font color="white">_______________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>(a|b) c</code>        |                             |
+| <code>site:foo.bar</code>   |                             |
+| <code>"a long query"</code> |                             |
+| http://en.wikipedia.org     |                             |
+| http://stackexchange.com/   |                             |
+| http://www.cyberciti.biz/   |                             |
+| http://tldp.org/            |                             |
+| programname.site            |                             |
+
+===== Package management: Debian package management utility aptitude ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>aptitude</code>                   |                              |
+| <code>aptitude search</code>            |                              |
+| <code>aptitude install</code>           |                              |
+| <code>dpkg -l</code>                    |                              |
+| <code>dpkg -L</code>                    |                              |
+| Desired action                          |                              |
+| Package status                          |                              |
+| http://www.debian.org/distrib/packages  |                              |
+
+===== System boot: runlevels, /etc/init.d, rcconf, update-rc.d =====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>rcconf</code>        |                              |
+| <code>update-rc.d</code>   |                              |
+| <code>sysv-rc-conf</code>  |                              |
+| runlevel                   |                              |
+| runlevel 1                 |                              |
+| runlevel 2                 |                              |
+| runlevel 6                 |                              |
+
+===== Processes: Working with proccesses, ps, kill =====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>ps</code>            |                              |
+| <code>kill</code>           |                              |
+| <code>ps ax</code>          |                              |
+| <code>ps axue</code>        |                              |
+| <code>ps axue --forest</code> |                             |
+| signal                     |                              |
+| HUP                        |                              |
+| TERM                       |                              |
+| KILL                       |                              |
+| Why KILL -9 is bad?        |                              |
+ 
+===== Job chedulers: cron, at =====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>crontab -l</code>    |                              |
+| <code>crontab -e</code>    |                              |
+| <code>crontab -r</code>    |                              |
+| <code>crontab /foo</code>  |                              |
+| <code>crontab > foo</code> |                              |
+| <code>* * * * *</code>     |                              |
+| <code>at</code>            |                              |
+| <code>atq</code>           |                              |
+| <code>atq</code>           |                              |
+| <code>atrm</code>          |                              |
+| <code>batch</code>         |                              |
+
+===== Logging, /var/log, rsyslog, logger =====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>logger</code>        |                              |
+| <code>grep -irl</code>     |                              |
+| <code>find . -mmin -5</code>  |                             |
+| <code>tail -f</code>       |                              |
+| <code>logrotate</code>     |                              |
+| logging daemon             |                              |
+| log level daemon             |                              |
+| log rotation               |                              |
+
+===== Filesystems =====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| Filesystem                   |                              |
+| File                         |                              |
+| Directory                    |                              |
+| Inode                        |                              |
+| Block                        |                              |
+| Mounting                     |                              |
+| UUID                         |                              |
+| Journal                      |                              |
+| MBR                          |                              |
+| Partition                    |                              |
+| Partition table              |                              |
+
+==== Mounting, mount, /etc/fstab ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>parted</code>        |                              |
+| <code>cfdisk</code>        |                              |
+| <code>fdisk</code>         |                              |
+| <code>mount</code>         |                              |
+| <code>umount</code>        |                              |
+| <code>mount -a</code>      |                              |
+| <code>/etc/fstab</code>    |                              |
+| <code>fsck</code>          |                              |
+| <code>blkid</code>         |                              |
+| logging daemon             |                              |
+| log rotation               |                              |
+
+==== Creating and modifying filesystems, mkfs, tune2fs ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>tune2fs</code>       |                              |
+| <code>mkfs</code>          |                              |
+| Block size                 |                              |
+| Reserverd block count      |                              |
+| Maximum mount count        |                              |
+| Check interval             |                              |
+
+==== Changing root directory, chroot ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>chroot</code>        |                              |
+| <code>ldd</code>           |                              |
+| Root directory             |                              |
+| Chroot                     |                              |
+| Dynamic Dependency         |                              |
+
+==== Moving data arount: tar, dd ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>tar</code>           |                              |
+| <code>dd</code>            |                              |
+| <code>losetup</code>       |                              |
+
+==== Security permissions, chown, chmod ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>chmod</code>         |                              |
+| <code>chown</code>         |                              |
+| <code>umask</code>         |                              |
+| Permission                 |                              |
+| Permission mode            |                              |
+| Permission class           |                              |
+| Umask mechanism            |                              |
+
+===== Networking =====
+
+^ Network conecept <html><font color="white">__________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| OSI model                    |                              |
+| DOD model                    |                              |
+| Communications protocol      |                              |
+| Ethernet                     |                              |
+| MAC address                  |                              |
+| Ethernet boradcast address   |                              |
+| TCP/IP                       |                              |
+| IP                           |                              |
+| IP packet                    |                              |
+| IP address                   |                              |
+| IP subnet                    |                              |
+| Port                         |                              |
+| Network socket               |                              |
+| Local socket address         |                              |
+| Remote socket address        |                              |
+| Socket pair                  |                              |
+| Routing                      |                              |
+| Default gateway              |                              |
+| IP boadcast address          |                              |
+| ICMP                         |                              |
+| TCP                          |                              |
+| TCP packet                   |                              |
+| UDP                          |                              |
+| UDP packet                   |                              |
+| Hostname                     |                              |
+
+==== Interface configuration, ifconfig, netstat, iproute2, ss ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>/etc/network/interfaces</code> |                              |
+| <code>auto</code>          |                              |
+| <code>allow-hotplug</code> |                              |
+| <code>/etc/hosts</code>    |                              |
+| <code>/etc/hostname</code> |                              |
+| localhost                  |                              |
+| loopback interface         |                              |
+| Pseudo-interface           |                              |
+
+==== Configuration files, /etc/network/interfaces =====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>/etc/network/interfaces</code> |                              |
+| <code>auto</code>          |                              |
+| <code>allow-hotplug</code> |                              |
+| <code>/etc/hosts</code>    |                              |
+| <code>/etc/hostname</code> |                              |
+| localhost                  |                              |
+| loopback interface         |                              |
+| Pseudo-interface           |                              |
+
+==== Packet filter configuration, iptables ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>iptables-save</code> |                              |
+| <code>iptables</code>      |                              |
+| <code>modprobe</code>      |                              |
+| <code>nc</code>            |                              |
+| <code>tcpdump</code>       |                              |
+| LINKTYPE_LINUX_SLL         |                              |
+| Ethernet frame header      |                              |
+| IPv4 header                |                              |
+| TCP segment                |                              |
+| netfilter                  |                              |
+| iptables                   |                              |
+| iptables tables            |                              |
+| iptables chains            |                              |
+| iptables target            |                              |
+
+==== Secure shell, ssh, sshd, scp ====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>ssh</code>           |                              |
+| <code>sshd</code>          |                              |
+| <code>scp</code>           |                              |
+| <code>ssh-keygen</code>    |                              |
+| Host keys                  |                              |
+| Auth keys                  |                              |
+| Data encryption ciphers    |                              |
+| Data integrity algorithms  |                              |
+| SSH session key            |                              |
+
+===== Performance: getting performance stats, uptime, free, top =====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>uptime</code>             |                              |
+| <code>free</code>              |                              |
+| <code>vmstat</code>            |                              |
+| <code>top</code>               |                              |
+| CPU usage (us,sy,id,wa)        |                              |
+| Memory (swpd, free, buff, cache, \\ inact, active)    |                              |
+| Slab allocation                |                              |
+| Disk (IOPS, read, write)       |                              |
+| Process (PR, NI, VIRT, \\ RES, SHR, Status)      |                              |
+
+===== Kernel: kernel messages, dmesg =====
+
+^ Command or concept <html><font color="white">________________________________</font></html> ^ Meaning <html><font color="white">______________________________________</font></html>^
+| <code>dmseg</code>             |                              |
+| <code>/var/log/dmesg</code>    |                              |
+| <code>/var/log/messages</code> |                              |
+| <code>/var/log/syslog</code>   |                              |
+| <code>/var/log/kern.log</code> |                              |
+| Kernel message buffer          |                              |
+

@@ -1,0 +1,1096 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex30 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:21 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex30 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex30"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex30decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex30.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex30.txt"/>
+<link rel="canonical" href="ex30.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex30","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+ 
+<div id="dw__toc">
+<h3 class="toggle">Table of Contents</h3>
+<div>
+<ul class="toc">
+<li class="level1"><div class="li"><a href="#exercise_30_lather_rinse_repeatthe_grand_rote_learning">Exercise 30. Lather, Rinse, Repeat: The Grand Rote Learning</a></div>
+<ul class="toc">
+<li class="level2"><div class="li"><a href="#documentation">Documentation</a></div>
+<ul class="toc">
+<li class="level3"><div class="li"><a href="#man_info">man, info</a></div></li>
+<li class="level3"><div class="li"><a href="#google_and_useful_resources">Google and useful resources</a></div></li>
+</ul>
+</li>
+<li class="level2"><div class="li"><a href="#package_managementdebian_package_management_utility_aptitude">Package management: Debian package management utility aptitude</a></div></li>
+<li class="level2"><div class="li"><a href="#system_bootrunlevelsetcinitd_rcconf_update-rcd">System boot: runlevels, /etc/init.d, rcconf, update-rc.d</a></div></li>
+<li class="level2"><div class="li"><a href="#processesworking_with_proccesses_ps_kill">Processes: Working with proccesses, ps, kill</a></div></li>
+<li class="level2"><div class="li"><a href="#job_chedulerscron_at">Job chedulers: cron, at</a></div></li>
+<li class="level2"><div class="li"><a href="#loggingvarlog_rsyslog_logger">Logging, /var/log, rsyslog, logger</a></div></li>
+<li class="level2"><div class="li"><a href="#filesystems">Filesystems</a></div>
+<ul class="toc">
+<li class="level3"><div class="li"><a href="#mounting_mountetcfstab">Mounting, mount, /etc/fstab</a></div></li>
+<li class="level3"><div class="li"><a href="#creating_and_modifying_filesystems_mkfs_tune2fs">Creating and modifying filesystems, mkfs, tune2fs</a></div></li>
+<li class="level3"><div class="li"><a href="#changing_root_directory_chroot">Changing root directory, chroot</a></div></li>
+<li class="level3"><div class="li"><a href="#moving_data_arounttar_dd">Moving data arount: tar, dd</a></div></li>
+<li class="level3"><div class="li"><a href="#security_permissions_chown_chmod">Security permissions, chown, chmod</a></div></li>
+</ul>
+</li>
+<li class="level2"><div class="li"><a href="#networking">Networking</a></div>
+<ul class="toc">
+<li class="level3"><div class="li"><a href="#interface_configuration_ifconfig_netstat_iproute2_ss">Interface configuration, ifconfig, netstat, iproute2, ss</a></div></li>
+<li class="level3"><div class="li"><a href="#configuration_filesetcnetworkinterfaces">Configuration files, /etc/network/interfaces</a></div></li>
+<li class="level3"><div class="li"><a href="#packet_filter_configuration_iptables">Packet filter configuration, iptables</a></div></li>
+<li class="level3"><div class="li"><a href="#secure_shell_ssh_sshd_scp">Secure shell, ssh, sshd, scp</a></div></li>
+</ul>
+</li>
+<li class="level2"><div class="li"><a href="#performancegetting_performance_stats_uptime_free_top">Performance: getting performance stats, uptime, free, top</a></div></li>
+<li class="level2"><div class="li"><a href="#kernelkernel_messages_dmesg">Kernel: kernel messages, dmesg</a></div></li>
+</ul></li>
+</ul>
+</div>
+</div>
+ 
+<h1 class="sectionedit1" id="exercise_30_lather_rinse_repeatthe_grand_rote_learning">Exercise 30. Lather, Rinse, Repeat: The Grand Rote Learning</h1>
+<div class="level1">
+<p>
+Amount of information in this guide is pretty big. You cannot retain it without long enough practice and some hardcore grinding. So the only task left for you will be filling in this table, and imprinting this table in your memory every day until you know it.
+</p>
+<p>
+You may want to ask why do you need to memorize all this stuff if you can always look it up. Well, the short answer will be <em>because you can not</em>. What this means is that to look up things efficiently you already need what to look for, and to know what to look for, you need a solid foundation. Once you have this foundation, once you understand what is important and what is not, and how the system is organized, you will be able to efficiently look things up.
+</p>
+<p>
+You may wonder why in my guide there are many detailed tables containing lists of many fields which contain information which you will almost never need. What you must understand, though, is that you should train yourself to look any console program this way. You should approach to this information not like to a fiction book, where you may not pay attention do details and still understand it pretty well. You should approach all those data as mathematical formulas, where every single symbol has its meaning, and even more so, if you do not understand what particular symbol means, you will not be able to go further.
+</p>
+<p>
+Sometimes it is perfectly okay to left something unexplained, but make yourself a present of going deeper, even if it will be every so often. Give yourself a present by making research about this particular utility, understand what it tells you and why. If you will do this, if you will look deep inside, your understanding of an Operating System (Linux in our case) will increase dramatically.
+</p>
+</div>
+<h2 class="sectionedit2" id="documentation">Documentation</h2>
+<div class="level2">
+</div>
+<h3 class="sectionedit3" id="man_info">man, info</h3>
+<div class="level3">
+<div class="table sectionedit4"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">man</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">info</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">man 1</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">man 2 </pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <pre class="code">man 3</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <pre class="code">man 4</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <pre class="code">man 5</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <pre class="code">man 6</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> <pre class="code">man 7</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> <pre class="code">man 8</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> <pre class="code">man 9</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> <pre class="code">man -k</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign"> <pre class="code">man -wK</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign"> <strong>bold text</strong>&lt;/code&gt; </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign"> <em>italic text</em>&lt;/code&gt; </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign"> <pre class="code">[]</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row17">
+<td class="col0 leftalign"> <pre class="code">-a | -b</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row18">
+<td class="col0 leftalign"> <pre class="code">argument ...</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row19">
+<td class="col0"> <pre class="code">[expression] ...</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit5" id="google_and_useful_resources">Google and useful resources</h3>
+<div class="level3">
+<div class="table sectionedit6"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Search term/resource<font color="white">_______________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">(a|b) c</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">site:foo.bar</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"> <pre class="code">&quot;a long query&quot;</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <a href="http://en.wikipedia.org/" class="urlextern" title="http://en.wikipedia.org" rel="nofollow">http://en.wikipedia.org</a> </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <a href="http://stackexchange.com/" class="urlextern" title="http://stackexchange.com/" rel="nofollow">http://stackexchange.com/</a> </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <a href="http://www.cyberciti.biz/" class="urlextern" title="http://www.cyberciti.biz/" rel="nofollow">http://www.cyberciti.biz/</a> </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <a href="http://tldp.org/" class="urlextern" title="http://tldp.org/" rel="nofollow">http://tldp.org/</a> </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> programname.site </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit7" id="package_managementdebian_package_management_utility_aptitude">Package management: Debian package management utility aptitude</h2>
+<div class="level2">
+<div class="table sectionedit8"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">aptitude</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">aptitude search</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">aptitude install</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">dpkg -l</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <pre class="code">dpkg -L</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> Desired action </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> Package status </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <a href="http://www.debian.org/distrib/packages" class="urlextern" title="http://www.debian.org/distrib/packages" rel="nofollow">http://www.debian.org/distrib/packages</a> </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit9" id="system_bootrunlevelsetcinitd_rcconf_update-rcd">System boot: runlevels, /etc/init.d, rcconf, update-rc.d</h2>
+<div class="level2">
+<div class="table sectionedit10"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">rcconf</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">update-rc.d</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">sysv-rc-conf</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> runlevel </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> runlevel 1 </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> runlevel 2 </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> runlevel 6 </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit11" id="processesworking_with_proccesses_ps_kill">Processes: Working with proccesses, ps, kill</h2>
+<div class="level2">
+<div class="table sectionedit12"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">ps</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">kill</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">ps ax</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">ps axue</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"> <pre class="code">ps axue --forest</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> signal </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> HUP </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> TERM </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> KILL </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> Why KILL -9 is bad? </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit13" id="job_chedulerscron_at">Job chedulers: cron, at</h2>
+<div class="level2">
+<div class="table sectionedit14"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">crontab -l</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">crontab -e</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">crontab -r</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">crontab /foo</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"> <pre class="code">crontab &gt; foo</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <pre class="code">* * * * *</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <pre class="code">at</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <pre class="code">atq</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> <pre class="code">atq</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> <pre class="code">atrm</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> <pre class="code">batch</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit15" id="loggingvarlog_rsyslog_logger">Logging, /var/log, rsyslog, logger</h2>
+<div class="level2">
+<div class="table sectionedit16"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">logger</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">grep -irl</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">find . -mmin -5</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">tail -f</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <pre class="code">logrotate</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> logging daemon </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> log level daemon </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> log rotation </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit17" id="filesystems">Filesystems</h2>
+<div class="level2">
+<div class="table sectionedit18"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> Filesystem </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> File </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> Directory </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> Inode </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> Block </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> Mounting </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> UUID </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> Journal </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> MBR </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> Partition </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> Partition table </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit19" id="mounting_mountetcfstab">Mounting, mount, /etc/fstab</h3>
+<div class="level3">
+<div class="table sectionedit20"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">parted</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">cfdisk</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">fdisk</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">mount</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <pre class="code">umount</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <pre class="code">mount -a</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <pre class="code">/etc/fstab</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <pre class="code">fsck</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> <pre class="code">blkid</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> logging daemon </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> log rotation </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit21" id="creating_and_modifying_filesystems_mkfs_tune2fs">Creating and modifying filesystems, mkfs, tune2fs</h3>
+<div class="level3">
+<div class="table sectionedit22"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">tune2fs</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">mkfs</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> Block size </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> Reserverd block count </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> Maximum mount count </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> Check interval </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit23" id="changing_root_directory_chroot">Changing root directory, chroot</h3>
+<div class="level3">
+<div class="table sectionedit24"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">chroot</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">ldd</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> Root directory </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> Chroot </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> Dynamic Dependency </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit25" id="moving_data_arounttar_dd">Moving data arount: tar, dd</h3>
+<div class="level3">
+<div class="table sectionedit26"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">tar</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">dd</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">losetup</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit27" id="security_permissions_chown_chmod">Security permissions, chown, chmod</h3>
+<div class="level3">
+<div class="table sectionedit28"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">chmod</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">chown</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">umask</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> Permission </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> Permission mode </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> Permission class </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> Umask mechanism </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit29" id="networking">Networking</h2>
+<div class="level2">
+<div class="table sectionedit30"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Network conecept <font color="white">__________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> OSI model </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> DOD model </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> Communications protocol </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> Ethernet </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> MAC address </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> Ethernet boradcast address </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> TCP/IP </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> IP </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> IP packet </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> IP address </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> IP subnet </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> Port </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign"> Network socket </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign"> Local socket address </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign"> Remote socket address </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign"> Socket pair </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row17">
+<td class="col0 leftalign"> Routing </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row18">
+<td class="col0 leftalign"> Default gateway </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row19">
+<td class="col0 leftalign"> IP boadcast address </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row20">
+<td class="col0 leftalign"> ICMP </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row21">
+<td class="col0 leftalign"> TCP </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row22">
+<td class="col0 leftalign"> TCP packet </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row23">
+<td class="col0 leftalign"> UDP </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row24">
+<td class="col0 leftalign"> UDP packet </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row25">
+<td class="col0 leftalign"> Hostname </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit31" id="interface_configuration_ifconfig_netstat_iproute2_ss">Interface configuration, ifconfig, netstat, iproute2, ss</h3>
+<div class="level3">
+<div class="table sectionedit32"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"> <pre class="code">/etc/network/interfaces</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">auto</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"> <pre class="code">allow-hotplug</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">/etc/hosts</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"> <pre class="code">/etc/hostname</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> localhost </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> loopback interface </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> Pseudo-interface </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit33" id="configuration_filesetcnetworkinterfaces">Configuration files, /etc/network/interfaces</h3>
+<div class="level3">
+<div class="table sectionedit34"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"> <pre class="code">/etc/network/interfaces</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">auto</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"> <pre class="code">allow-hotplug</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">/etc/hosts</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"> <pre class="code">/etc/hostname</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> localhost </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> loopback interface </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> Pseudo-interface </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit35" id="packet_filter_configuration_iptables">Packet filter configuration, iptables</h3>
+<div class="level3">
+<div class="table sectionedit36"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"> <pre class="code">iptables-save</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">iptables</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">modprobe</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">nc</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <pre class="code">tcpdump</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> LINKTYPE_LINUX_SLL </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> Ethernet frame header </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> IPv4 header </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> TCP segment </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> netfilter </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> iptables </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> iptables tables </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign"> iptables chains </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign"> iptables target </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h3 class="sectionedit37" id="secure_shell_ssh_sshd_scp">Secure shell, ssh, sshd, scp</h3>
+<div class="level3">
+<div class="table sectionedit38"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">ssh</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">sshd</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">scp</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">ssh-keygen</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> Host keys </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> Auth keys </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> Data encryption ciphers </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> Data integrity algorithms </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> <abbr title="Secure Shell">SSH</abbr> session key </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit39" id="performancegetting_performance_stats_uptime_free_top">Performance: getting performance stats, uptime, free, top</h2>
+<div class="level2">
+<div class="table sectionedit40"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">uptime</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">free</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <pre class="code">vmstat</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">top</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> CPU usage (us,sy,id,wa) </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> Memory (swpd, free, buff, cache, <br/>
+inact, active) </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> Slab allocation </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> Disk (IOPS, read, write) </td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> Process (PR, NI, VIRT, <br/>
+RES, SHR, Status) </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2 class="sectionedit41" id="kernelkernel_messages_dmesg">Kernel: kernel messages, dmesg</h2>
+<div class="level2">
+<div class="table sectionedit42"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Command or concept <font color="white">________________________________</font> </th><th class="col1"> Meaning <font color="white">______________________________________</font></th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <pre class="code">dmseg</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <pre class="code">/var/log/dmesg</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0"> <pre class="code">/var/log/messages</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <pre class="code">/var/log/syslog</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row5">
+<td class="col0"> <pre class="code">/var/log/kern.log</pre>
+</td><td class="col1 leftalign"> </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> Kernel message buffer </td><td class="col1 leftalign"> </td>
+</tr>
+</table></div>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex30.html';
+var disqus_title   = 'Exercise 30. Lather, Rinse, Repeat: The Grand Rote Learning';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex30.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex30.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex30.txt</bdi> · Last modified: 2012/09/20 21:40 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerb142.gif?id=llthw%3Aex30&amp;1428742734" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex30 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:24 GMT -->
+</html>

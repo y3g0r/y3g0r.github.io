@@ -1,0 +1,39 @@
+<code bash>
+#package installation
+    sudo apt-get update
+    sudo apt-get install libssh2-php
+#mysql-settings
+    define('DB_NAME', 'wordpress');
+    define('DB_USER', 'wordpress');
+    define('DB_PASSWORD', 'password');
+#make-backup
+    mysqldump -u wordpress -ppassword wordpress > /home/user/wodpress.sql
+    tar -czvf www.tgz /var/www/
+#update-setup
+    #wp-user
+        sudo adduser wp-user
+        cd /var/www
+        sudo chown -R wp-user:wp-user /var/www/
+    #ssh-keys
+        sudo su - wp-user
+        ssh-keygen -t rsa -b 4096 /home/wp-user/wp_rsa
+        exit
+        chown wp-user:www-data /home/wp-user/wp_rsa*
+        chmod 0640 /home/wp-user/wp_rsa*
+        mkdir /home/wp-user/.ssh
+        chown wp-user:wp-user /home/wp-user/.ssh/
+        chmod 0700 /home/wp-user/.ssh/
+    cp /home/wp-user/wp_rsa.pub /home/wp-user/.ssh/authorized_keys
+        chown wp-user:wp-user /home/wp-user/.ssh/authorized_keys
+        chmod 0644 /home/wp-user/.ssh/authorized_keys
+        vim /home/wp-user/.ssh/authorized_keys
+            from="127.0.0.1" ssh-rsa...
+    #wp-config
+        vim /var/www/wp-config.php
+            define('FTP_PUBKEY','/home/wp-user/wp_rsa.pub');
+            define('FTP_PRIKEY','/home/wp-user/wp_rsa');
+            define('FTP_USER','wp-user');
+            define('FTP_PASS','');
+            define('FTP_HOST','127.0.0.1:22');
+            define('FS_METHOD', 'ssh2'); # - important
+</code>

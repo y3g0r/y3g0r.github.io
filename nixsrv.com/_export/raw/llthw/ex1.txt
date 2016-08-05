@@ -1,0 +1,151 @@
+====== Exercise 1. Text Editor, The: vim ======
+
+
+In Linux, as in any Unix-like OS, everything is just a file. And Unix philosophy states that configuration files must be human readable and editable. In almost all cases, they are just plain text. So, first things first, you must learn how to edit a text file. 
+
+For this I strongly advise you to learn basics of vim, which is one of most powerful tools to work with texts in Linux. Vim is reimplementation of [[http://en.wikipedia.org/wiki/Vi|vi]], the editor written in 1976 by Bill Joy. Vi implemented a concept so successful that even Microsoft Visual Studio 2012 has a [[http://visualstudiogallery.msdn.microsoft.com/59ca71b3-a4a3-46ca-8fe1-0e90e3f79329/|plugin]], which provides a mode compatible with this more than 35 year old editor. You may play with right here (this is real Linux running in your browser). After you are done go and get get my virtual appliance at last.
+
+<html>
+<iframe src="/kitten/vi.htm" width="680" height="560" frameborder="0"></iframe> 
+</html>
+
+
+If I still did non succeed in persuading you, you may learn [[http://www.howtogeek.com/howto/42980/the-beginners-guide-to-nano-the-linux-command-line-text-editor/|nano]] instead, but at least give it a try.
+
+Now, log into vm1 and type:
+<code bash>
+vim hello.txt
+</code>
+
+You should see the following:
+<code>
+Hello, brave adventurer!
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+"hello.txt" [New File]      0,0-1         All
+</code>
+
+There is a joke that says that vim has 2 modes – "beep repeatedly" and "break everything". Well, if you do not know how to use vim, it is pretty much true, because vim is modal text editor. The modes are:
+  * **NORMAL** mode: moving your cursor around and doing operations with text like delete, copy and paste.
+  * **INSERT** mode: entering text.
+
+This greatly confuses newcomers because they try to avoid **NORMAL** mode as much as possible. Well, this is wrong, so now I will give you correct outline of working with vim:
+
+<code>
+start vim
+while editing is not finished, repeat
+    navigate to desired position in NORMAL mode
+    enter INSERT mode by pressing i
+        type text
+    exit INSERT mode by pressing <ESCAPE>
+when editing is finished, type :wq
+</code>
+
+What is the most important is that you stay in **NORMAL** mode almost all the time, entering **INSERT** mode for a short time to type something and then immediately exiting it. Looking this way, vim has only one mode, and that mode is **NORMAL** mode.
+
+Now, let us try it out. Remember, press **i** to enter **INSERT** mode and **<ESCAPE>** to return to **NORMAL** mode. Type the following (press **<ENTER>** at the end of each line):
+<code bash>
+iRoses are red
+Linux is scary
+<ESCAPE>
+</code>
+
+This is what you should see:
+<code>
+Roses are red
+Linux is scary
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+                            4,17          All
+</code>
+
+Now I'll give you list of commands to navigate the cursor in **NORMAL** mode:
+  * **h** — move left
+  * **j** — move down
+  * **k** — move up
+  * **l** — move right
+  * **i** — enter **INSERT** mode
+  * **o** — insert a line under cursor and enter **INSERT** mode
+  * **<ESCAPE>** — exit **INSERT** mode
+  * **x** — delete symbol under cursor
+  * **dd** — delete a line
+  * **:wq** – write changes to the file and exit. Yes, that's right, it is colon follower by **wq** and **<ENTER>**.
+  * **:q!** – do not write changes to the file and exit. 
+
+That will suffice. Now, place cursor on first line and type this:
+<code>
+oViolets are blue<ESCAPE>
+</code>
+
+After this, place cursor on the line "Linux is scary" and type this:
+<code>
+oBut I'm scary too<ESCAPE>
+</code>
+
+You should see this:
+<code>
+Roses are red
+Violets are blue
+Linux is scary
+But I'm scary too
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+                            4,17          All
+</code>
+
+Now type **:wq** to save the file and exit. You should see this:
+<code>
+Violets are blue
+Linux is scary
+But I'm scary too
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+"hello.txt" 4L, 64C written
+user1@vm1:~$
+</code>
+
+Well, you did it! You just edited a text file in //vim, the mighty and terrible!//
+
+====== Extra credit ======
+  - Start vim again by typing **vim hello.txt** and try some other commands I gave you.
+  - Play this game which will allow you to feel more comfortable in vim: http://vim-adventures.com/

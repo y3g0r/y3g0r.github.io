@@ -1,0 +1,985 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex26 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:05 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex26 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex26"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex26decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex26.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex26.txt"/>
+<link rel="canonical" href="ex26.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex26","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_26_networkingpacket_filter_configuration_iptables">Exercise 26. Networking: packet filter configuration, iptables</h1>
+<div class="level1">
+<p>
+Let me start with quoting Wikipedia on <a href="http://en.wikipedia.org/wiki/Iptables" class="urlextern" title="http://en.wikipedia.org/wiki/Iptables" rel="nofollow">iptables</a>:
+</p>
+<blockquote><div class="no">
+Iptables is a user space application program that allows a system administrator to configure the tables provided by the Linux kernel firewall (implemented as different Netfilter modules) and the chains and rules it stores. Different kernel modules and programs are currently used for different protocols; iptables applies to IPv4, ip6tables to IPv6, arptables to ARP, and ebtables to Ethernet frames.</div></blockquote>
+<p>
+To use it you must understand the following concepts:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong><a href="http://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html" class="urlextern" title="http://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html" rel="nofollow">LINKTYPE_LINUX_SLL</a></strong> — <strong>tcpdump</strong> pseudo link layer protocol.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Ethernet_frame#Header" class="urlextern" title="http://en.wikipedia.org/wiki/Ethernet_frame#Header" rel="nofollow">Ethernet frame header</a></strong> — A data packet on an Ethernet link is called an Ethernet frame. A frame begins with preamble and start frame delimiter. Following which, each Ethernet frame continues with an Ethernet header featuring destination and source MAC addresses. The middle section of the frame is payload data including any headers for other protocols (e.g. Internet Protocol) carried in the frame. The frame ends with a 32-bit cyclic redundancy check which is used to detect any corruption of data in transit. </div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/IPv4_header#IPv4 header" class="urlextern" title="http://en.wikipedia.org/wiki/IPv4_header#IPv4 header" rel="nofollow"> IPv4 header</a></strong> — An IP packet consists of a header section and a data section. The IPv4 packet header consists of 14 fields, of which 13 are required. The 14th field is optional and aptly named: options.</div>
+</li>
+<li class="level1"><div class="li"> <strong><a href="http://en.wikipedia.org/wiki/Transmission_Control_Protocol#TCP_segment_structure" class="urlextern" title="http://en.wikipedia.org/wiki/Transmission_Control_Protocol#TCP_segment_structure" rel="nofollow">TCP segment structure</a></strong> — Transmission Control Protocol accepts data from a data stream, segments it into chunks, and adds a TCP header creating a TCP segment. The TCP segment is then encapsulated into an Internet Protocol (IP) datagram. A TCP segment is “the packet of information that TCP uses to exchange data with its peers.”</div>
+</li>
+</ol>
+<p>
+I remind you about guides to get them:
+</p>
+<ol>
+<li class="level1"><div class="li"> Read corresponding Wikipedia articles until you achieve at least superficial understanding (but good old hardcore grinding is of course better).</div>
+</li>
+<li class="level1"><div class="li"> Watch this videos from <a href="http://www.visualland.net/" class="urlextern" title="http://www.visualland.net/" rel="nofollow">http://www.visualland.net/</a> (another link <a href="../www.visualland.net.cn/start.html" class="wikilink2" title="www.visualland.net.cn:start" rel="nofollow">www.visualland.net.cn</a>):</div>
+<ol>
+<li class="level2"><div class="li"> Expand <strong>IP Address</strong> tree node in the left of the site and work you way through it. </div>
+</li>
+<li class="level2"><div class="li"> Expand <strong>TCP</strong> tree node and do the same.</div>
+</li>
+</ol>
+</li>
+<li class="level1"><div class="li"> Read Linux <a href="http://www.iptables.org/documentation/HOWTO//networking-concepts-HOWTO-3.html#ss3.1" class="urlextern" title="http://www.iptables.org/documentation/HOWTO//networking-concepts-HOWTO-3.html#ss3.1" rel="nofollow">networking concepts introduction</a>. This guide is good because it even acknowledges that <em>The Internet is for porn</em>.</div>
+</li>
+</ol>
+<p>
+I am not able to describe iptables any better than <a href="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables" class="urlextern" title="http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables" rel="nofollow">Peter Harrison&#039;s excellent guide</a>. If you never used it, you should check this guide first.
+</p>
+<p>
+But what I will, however, put theory into practice and show what happens inside of <strong>iptalbes</strong> step-by-step in a very simple scenario of data exchange. First things first, main concepts:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>iptables</strong> — program which is used to set up, maintain, and inspect the tables of IPv4 packet filter rules in the Linux kernel. Several different tables may be defined. Each table contains a number of built-in chains and may also contain user-defined chains. </div>
+</li>
+<li class="level1"><div class="li"> <strong>ip6tables</strong> — same for IPv6.</div>
+</li>
+<li class="level1"><div class="li"> <strong>chain</strong> — list of rules which can match a set of packets. Each rule specifies what to do with a packet that matches. This is called a <strong>target</strong>, which may be a jump to a user-defined chain in the same table.</div>
+</li>
+<li class="level1"><div class="li"> <strong>target</strong> — A firewall rule specifies criteria for a packet and a target. If the packet does not match, the next rule in the chain is the examined; if it does match, then the next rule is specified by the value of the target, which can be the name of a user-defined chain or one of the special values:</div>
+<ol>
+<li class="level2"><div class="li"> <strong>ACCEPT</strong> — let the packet through.</div>
+</li>
+<li class="level2"><div class="li"> <strong>DROP</strong> — drop the packet on the floor.</div>
+</li>
+<li class="level2"><div class="li"> <strong>QUEUE</strong> — pass the packet to userspace.</div>
+</li>
+<li class="level2"><div class="li"> <strong>RETURN</strong> — stop traversing this chain and resume at the next rule in the previous (calling) chain. If the end of a built-in chain is reached or a rule in a built-in chain with target RETURN is matched, the target specified by the chain policy determines the fate of the packet.</div>
+</li>
+</ol>
+</li>
+</ol>
+<p>
+Now let us see what default tables and built-in chains there are:
+</p>
+<div class="table sectionedit2"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> Table name </th><th class="col1"> Built-in chains </th><th class="col2"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign" rowspan="3"> <strong>raw</strong> </td><td class="col1 leftalign"> </td><td class="col2"> This table is used mainly for configuring exemptions from connection tracking in combination with the NOTRACK target. It registers at the netfilter hooks with higher priority and is thus called before ip_conntrack, or any other IP tables. </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <strong>PREROUTING</strong> </td><td class="col1"> For packets arriving via any network interface. </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <strong>OUTPUT</strong> </td><td class="col1"> For packets generated by local processes. </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign" rowspan="6"> <strong>mangle</strong> </td><td class="col1 leftalign"> </td><td class="col2"> This table is used for specialized packet alteration. </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <strong>PREROUTING</strong> </td><td class="col1"> For altering incoming packets before routing. </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <strong>OUTPUT</strong> </td><td class="col1 leftalign"> For altering locally-generated packets before routing. </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <strong>INPUT</strong> </td><td class="col1"> For packets coming into the box itself. </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <strong>FORWARD</strong> </td><td class="col1"> For altering packets being routed through the box. </td>
+</tr>
+<tr class="row9">
+<td class="col0"> <strong>POSTROUTING</strong> </td><td class="col1"> For altering packets as they are about to go out. </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign" rowspan="4"> <strong>nat</strong> </td><td class="col1 leftalign"> </td><td class="col2"> This table is consulted when a packet that creates a new connection is encountered. </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> <strong>PREROUTING</strong> </td><td class="col1"> For altering packets as soon as they come in. </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> <strong>OUTPUT</strong> </td><td class="col1"> For altering locally-generated packets before routing. </td>
+</tr>
+<tr class="row13">
+<td class="col0"> <strong>POSTROUTING</strong> </td><td class="col1"> For altering packets as they are about to go out. </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign" rowspan="4"> <strong>filter</strong> </td><td class="col1 leftalign"> </td><td class="col2"> This is the default table (if no -t option is passed). </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign"> <strong>INPUT</strong> </td><td class="col1"> For packets destined to local sockets. </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign"> <strong>FORWARD</strong> </td><td class="col1"> For packets being routed through the box. </td>
+</tr>
+<tr class="row17">
+<td class="col0 leftalign"> <strong>OUTPUT</strong> </td><td class="col1"> For locally-generated packets. </td>
+</tr>
+</table></div>
+<p>
+Okay, we are ready to see how this works in real life. I will send a string <strong>Hello world!</strong> to <strong>vm1</strong> from my home computer using TCP protocol and <a href="http://en.wikipedia.org/wiki/Netcat" class="urlextern" title="http://en.wikipedia.org/wiki/Netcat" rel="nofollow">netcat</a> utility which is just like <strong>cat</strong>, but over the network. The setup:
+</p>
+<p>
+<strong>1.</strong> I forwarded another port, <strong>80</strong>, to my home PC running Linux so am able to connect like this:
+</p>
+<pre class="code">(My home PC) --&gt; vm1:80</pre>
+<p>
+<strong>2.</strong> I added this rules to iptables to log all what happens with network packets inside iptables:
+</p>
+<pre class="bash code bash"><span class="kw2">sudo</span> iptables <span class="re5">-t</span> raw <span class="re5">-A</span> PREROUTING <span class="re5">-p</span> tcp <span class="re5">-m</span> tcp <span class="re5">--dport</span> <span class="nu0">80</span> <span class="re5">-j</span> TRACE
+<span class="kw2">sudo</span> iptables <span class="re5">-t</span> raw <span class="re5">-A</span> INPUT <span class="re5">-p</span> tcp <span class="re5">-m</span> tcp <span class="re5">--sport</span> <span class="nu0">80</span> <span class="re5">-j</span> TRACE</pre>
+<p>
+This is my exact iptables ruleset on <strong>vm1</strong>:
+</p>
+<pre class="bash code bash">root<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># for i in raw mangle nat filter ; do echo -e &quot;\n-----&quot; TABLE: $i '-----' ; iptables -t $i -L ; done</span>
+&nbsp;
+<span class="re5">-----</span> TABLE: raw <span class="re5">-----</span>
+Chain PREROUTING <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>  target     prot opt <span class="kw3">source</span>               destination
+                                  TRACE      tcp  <span class="re5">--</span>  anywhere             anywhere            tcp dpt:www
+Chain OUTPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>      target     prot opt <span class="kw3">source</span>               destination
+                                  TRACE      tcp  <span class="re5">--</span>  anywhere             anywhere            tcp spt:www
+<span class="re5">-----</span> TABLE: mangle <span class="re5">-----</span>
+Chain PREROUTING <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>  target     prot opt <span class="kw3">source</span>               destination
+Chain INPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>       target     prot opt <span class="kw3">source</span>               destination
+Chain FORWARD <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>     target     prot opt <span class="kw3">source</span>               destination
+Chain OUTPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>      target     prot opt <span class="kw3">source</span>               destination
+Chain POSTROUTING <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span> target     prot opt <span class="kw3">source</span>               destination
+&nbsp;
+<span class="re5">-----</span> TABLE: nat <span class="re5">-----</span>
+Chain PREROUTING <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>  target     prot opt <span class="kw3">source</span>               destination
+Chain POSTROUTING <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span> target     prot opt <span class="kw3">source</span>               destination
+Chain OUTPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>      target     prot opt <span class="kw3">source</span>               destination
+&nbsp;
+<span class="re5">-----</span> TABLE: filter <span class="re5">-----</span>
+Chain INPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>       target     prot opt <span class="kw3">source</span>               destination
+Chain FORWARD <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>     target     prot opt <span class="kw3">source</span>               destination
+Chain OUTPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>      target     prot opt <span class="kw3">source</span>               destination</pre>
+<p>
+As you can see, there are no other rules. Another way to look at iptables rules is to use <strong>iptables-save</strong> utility:
+</p>
+<pre class="bash code bash">root<span class="sy0">@</span>vm1:<span class="sy0">/</span>home<span class="sy0">/</span>user1<span class="co0"># iptables-save</span>
+<span class="co0"># Generated by iptables-save v1.4.8 on Fri Jul 13 08:09:04 2012</span>
+<span class="co0">#(1)</span>
+<span class="sy0">*</span>mangle
+<span class="co0">#(2)        (3)     (4)   (5)</span>
+:PREROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">15662</span>:<span class="nu0">802240</span><span class="br0">&#93;</span>
+:INPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">15662</span>:<span class="nu0">802240</span><span class="br0">&#93;</span>
+:FORWARD ACCEPT <span class="br0">&#91;</span><span class="nu0">0</span>:<span class="nu0">0</span><span class="br0">&#93;</span>
+:OUTPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">12756</span>:<span class="nu0">3671974</span><span class="br0">&#93;</span>
+:POSTROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">12756</span>:<span class="nu0">3671974</span><span class="br0">&#93;</span>
+COMMIT
+<span class="co0"># Completed on Fri Jul 13 08:09:04 2012</span>
+<span class="co0"># Generated by iptables-save v1.4.8 on Fri Jul 13 08:09:04 2012</span>
+<span class="sy0">*</span>nat
+:PREROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">18</span>:<span class="nu0">792</span><span class="br0">&#93;</span>
+:POSTROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">42</span>:<span class="nu0">2660</span><span class="br0">&#93;</span>
+:OUTPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">42</span>:<span class="nu0">2660</span><span class="br0">&#93;</span>
+COMMIT
+<span class="co0"># Completed on Fri Jul 13 08:09:04 2012</span>
+<span class="co0"># Generated by iptables-save v1.4.8 on Fri Jul 13 08:09:04 2012</span>
+<span class="sy0">*</span>raw
+:PREROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">15854</span>:<span class="nu0">814892</span><span class="br0">&#93;</span>
+:OUTPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">12855</span>:<span class="nu0">3682054</span><span class="br0">&#93;</span>
+<span class="re5">-A</span> PREROUTING <span class="re5">-p</span> tcp <span class="re5">-m</span> tcp <span class="re5">--dport</span> <span class="nu0">80</span> <span class="re5">-j</span> TRACE
+<span class="re5">-A</span> OUTPUT <span class="re5">-p</span> tcp <span class="re5">-m</span> tcp <span class="re5">--sport</span> <span class="nu0">80</span> <span class="re5">-j</span> TRACE
+COMMIT
+<span class="co0"># Completed on Fri Jul 13 08:09:04 2012</span>
+<span class="co0"># Generated by iptables-save v1.4.8 on Fri Jul 13 08:09:04 2012</span>
+<span class="sy0">*</span>filter
+:INPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">35107</span>:<span class="nu0">2459066</span><span class="br0">&#93;</span>
+:FORWARD ACCEPT <span class="br0">&#91;</span><span class="nu0">0</span>:<span class="nu0">0</span><span class="br0">&#93;</span>
+:OUTPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">26433</span>:<span class="nu0">10670628</span><span class="br0">&#93;</span>
+COMMIT
+<span class="co0"># Completed on Fri Jul 13 08:09:04 2012</span></pre>
+<p>
+The iptables-save fiels are as follows:
+</p>
+<div class="table sectionedit3"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> Field </th><th class="col1 leftalign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <strong>(1)</strong> </td><td class="col1 leftalign"> Table name </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <strong>(2)</strong> </td><td class="col1 leftalign"> Chain name </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <strong>(3)</strong> </td><td class="col1 leftalign"> Chain policy </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <strong>(4)</strong> </td><td class="col1 leftalign"> Packet counter </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <strong>(5)</strong> </td><td class="col1 leftalign"> Byte counter </td>
+</tr>
+</table></div>
+<p>
+<strong>3.</strong> I set up <strong>nc</strong> to listen on port 80:
+</p>
+<pre class="code bash">nc <span class="re5">-l</span> <span class="nu0">80</span></pre>
+<p>
+<strong>4.</strong> I sent a string to <strong>vm1</strong> using nc:
+</p>
+<pre class="code bash"><span class="kw3">echo</span> <span class="st_h">'Hello, world!'</span> <span class="sy0">|</span> nc localhost <span class="nu0">80</span></pre>
+<p>
+The following exchange between my home pc and <strong>vm1</strong> happaned:
+</p>
+<pre class="bash code bash">08:00:<span class="nu0">05.655339</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>S<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">4164179969</span>, win <span class="nu0">65535</span>, options <span class="br0">&#91;</span>mss <span class="nu0">1460</span><span class="br0">&#93;</span>, length <span class="nu0">0</span>
+08:00:<span class="nu0">05.655653</span> IP 10.0.2.15.80 <span class="sy0">&gt;</span> 10.0.2.2.51534: Flags <span class="br0">&#91;</span>S.<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">4149908960</span>, ack <span class="nu0">4164179970</span>, win <span class="nu0">5840</span>, options <span class="br0">&#91;</span>mss <span class="nu0">1460</span><span class="br0">&#93;</span>, length <span class="nu0">0</span>
+08:00:<span class="nu0">05.655773</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>.<span class="br0">&#93;</span>, ack <span class="nu0">1</span>, win <span class="nu0">65535</span>, length <span class="nu0">0</span>
+08:00:<span class="nu0">05.655868</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>P.<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">1</span>:<span class="nu0">15</span>, ack <span class="nu0">1</span>, win <span class="nu0">65535</span>, length <span class="nu0">14</span>
+08:00:<span class="nu0">05.655978</span> IP 10.0.2.15.80 <span class="sy0">&gt;</span> 10.0.2.2.51534: Flags <span class="br0">&#91;</span>.<span class="br0">&#93;</span>, ack <span class="nu0">15</span>, win <span class="nu0">5840</span>, length <span class="nu0">0</span>
+08:00:<span class="nu0">10.037978</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>F.<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">15</span>, ack <span class="nu0">1</span>, win <span class="nu0">65535</span>, length <span class="nu0">0</span>
+08:00:<span class="nu0">10.038287</span> IP 10.0.2.15.80 <span class="sy0">&gt;</span> 10.0.2.2.51534: Flags <span class="br0">&#91;</span>F.<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">1</span>, ack <span class="nu0">16</span>, win <span class="nu0">5840</span>, length <span class="nu0">0</span>
+08:00:<span class="nu0">10.038993</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>.<span class="br0">&#93;</span>, ack <span class="nu0">2</span>, win <span class="nu0">65535</span>, length <span class="nu0">0</span></pre>
+<p>
+Let us remember how data is transfered. To do this, let us take apart first packet:
+</p>
+<pre class="code bash"><span class="co0">#                  (13)     (15)    (14)      (16)      (20)     (17)            (25)            </span>
+08:00:<span class="nu0">05.655339</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>S<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">4164179969</span>, win <span class="nu0">65535</span>, 
+<span class="co0">#        (8)        (9)</span>
+options <span class="br0">&#91;</span>mss <span class="nu0">1460</span><span class="br0">&#93;</span>, length <span class="nu0">0</span>
+<span class="co0">#                (1)  (2)  (3)  (4)                 (5)    </span>
+<span class="co0">#                ____ ____ ____ ___________________ ____</span>
+        0x0000:  0000 0001 0006 <span class="nu0">5254</span> 0012 <span class="nu0">3502</span> 0000 0800  ......RT..<span class="nu0">5</span>.....
+<span class="co0">#                (6)  (7)  (8)  (9)(10,11)(12)  (13)</span>
+<span class="co0">#                ____ ____ ____ ____ /\/\ ____ _________  </span>
+        0x0010:  <span class="nu0">4500</span> 002c a006 0000 <span class="nu0">4006</span> c2b5 0a00 0202  E..,....<span class="sy0">@</span>.......
+<span class="co0">#                (14)      (15) (16) (17)      (18)</span>
+<span class="co0">#                _________ ____ ____ _________ __________ </span>
+        0x0020:  0a00 020f c94e 0050 f834 <span class="nu0">5801</span> 0000 0000  .....N.P.4X.....
+<span class="co0">#              (19,20)(21) (22) (23) (24) (25)</span>
+<span class="co0">#                /\/\ ____ ____ ____ ____ ____ </span>
+        0x0030:  <span class="nu0">6002</span> ffff <span class="nu0">6641</span> 0000 0204 05b4 0000       <span class="sy0">`</span>...fA........
+<span class="sy0">`</span></pre>
+<p>
+Field and descriptions in our packet:
+</p>
+<div class="table sectionedit4"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> DOD model layer </th><th class="col1 leftalign"> OSI model layer </th><th class="col2 leftalign"> Field in </th><th class="col3 leftalign"> Field </th><th class="col4 leftalign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign" rowspan="5"> Link </td><td class="col1" rowspan="5"> Physical/Data link </td><td class="col2 leftalign" rowspan="5"> LINUX_SLL header </td><td class="col3 leftalign"> <strong>(1)</strong> </td><td class="col4 leftalign"> Packet type. </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <strong>(2)</strong> </td><td class="col1 leftalign"> ARPHRD_ type. </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <strong>(3)</strong> </td><td class="col1"> Link-layer (MAC) address length. </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <strong>(4)</strong> </td><td class="col1"> Linkk-layer (MAC) source address. </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <strong>(5)</strong> </td><td class="col1"> Protocol type (IP). </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign" rowspan="9"> Internet </td><td class="col1 leftalign" rowspan="9"> Network </td><td class="col2 leftalign" rowspan="9"> IPv4 header </td><td class="col3 leftalign"> <strong>(6)</strong> </td><td class="col4"> Version, Internet Header Length, Differentiated Services Code Point, Explicit Congestion Notification. </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <strong>(7)</strong> </td><td class="col1"> Total Length. </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <strong>(8)</strong> </td><td class="col1"> Identification, is primarily used for uniquely identifying fragments of an original IP datagram. </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> <strong>(9)</strong> </td><td class="col1 leftalign"> Flags, Fragment offset. </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> <strong>(10)</strong> </td><td class="col1"> Time to live (TTL). </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> <strong>(11)</strong> </td><td class="col1"> Protocol number. </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> <strong>(12)</strong> </td><td class="col1"> Header checksum. </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign"> <strong>(13)</strong> </td><td class="col1 leftalign"> Source IP address. </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign"> <strong>(14)</strong> </td><td class="col1 leftalign"> Destination IP address. </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign" rowspan="11"> Transport </td><td class="col1 leftalign" rowspan="11"> Transport </td><td class="col2 leftalign" rowspan="11"> TCP header </td><td class="col3 leftalign"> <strong>(15)</strong> </td><td class="col4"> Source TCP port. </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign"> <strong>(16)</strong> </td><td class="col1"> Destination TCP port. </td>
+</tr>
+<tr class="row17">
+<td class="col0 leftalign"> <strong>(17)</strong> </td><td class="col1"> TCP initial sequence number. </td>
+</tr>
+<tr class="row18">
+<td class="col0 leftalign"> <strong>(18)</strong> </td><td class="col1"> ACK number field (empty because it is first packet). </td>
+</tr>
+<tr class="row19">
+<td class="col0 leftalign"> <strong>(19)</strong> </td><td class="col1"> </td>
+</tr>
+<tr class="row20">
+<td class="col0 leftalign"> <strong>(20)</strong> </td><td class="col1"> SYN TCP flag. </td>
+</tr>
+<tr class="row21">
+<td class="col0 leftalign"> <strong>(21)</strong> </td><td class="col1"> TCP window size. </td>
+</tr>
+<tr class="row22">
+<td class="col0 leftalign"> <strong>(22)</strong> </td><td class="col1"> TCP checksum. </td>
+</tr>
+<tr class="row23">
+<td class="col0 leftalign"> <strong>(23)</strong> </td><td class="col1"> Urgent pointer. </td>
+</tr>
+<tr class="row24">
+<td class="col0 leftalign"> <strong>(24)</strong> </td><td class="col1"> Options field start </td>
+</tr>
+<tr class="row25">
+<td class="col0 leftalign"> <strong>(25)</strong> </td><td class="col1"> TCP maximum segment size (maximum transfer unit - 40 bytes). </td>
+</tr>
+</table></div>
+<p>
+And now let us see what happens to this packet in iptables:
+</p>
+<pre class="bash code bash"><span class="co0">#(1)(2)        (3)    (4)   (5)     (6)  (7) (8)               (9)               (10)  (11)         (12)</span>
+raw:PREROUTING:policy:<span class="nu0">2</span>     <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+<span class="co0">#                           (13)   (14)     (15)      (16)   (17)     (18)      (19)      (20)</span>
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+<span class="co0">#                           (21)           (22)  (23)         (24)     (25)(26)   (27)</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+mangle:PREROUTING:policy:<span class="nu0">1</span>  <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+nat:PREROUTING:policy:<span class="nu0">1</span>     <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+mangle:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+filter:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span></pre>
+<p>
+Fields and descrptions of iptables log:
+</p>
+<div class="table sectionedit5"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> Field </th><th class="col1 leftalign"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> <strong>(1)</strong> </td><td class="col1 leftalign"> Table name. </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> <strong>(2)</strong> </td><td class="col1 leftalign"> Chain name. </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> <strong>(3)</strong> </td><td class="col1 leftalign"> Type (<strong>policy</strong> for the policy of the built in chains. </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> <strong>(4)</strong> </td><td class="col1 leftalign"> Rule number. </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> <strong>(5)</strong> </td><td class="col1 leftalign"> Intput interface. </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <strong>(6)</strong> </td><td class="col1"> Output interface (empty, because packet is destinied for vm1 itself) </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> <strong>(7)</strong> </td><td class="col1 leftalign"> MAC addresses </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> <strong>(8)</strong> </td><td class="col1 leftalign"> Destination (vm1) MAC </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> <strong>(9)</strong> </td><td class="col1 leftalign"> Source MAC </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign"> <strong>(10)</strong> </td><td class="col1 leftalign"> Protocol type IP. </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign"> <strong>(11)</strong> </td><td class="col1 leftalign"> Source IP address </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign"> <strong>(12)</strong> </td><td class="col1 leftalign"> Destination IP address </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign"> <strong>(13)</strong> </td><td class="col1 leftalign"> IP packet length in bytes (excluding Link Layer header) </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign"> <strong>(14)</strong> </td><td class="col1 leftalign"> IP type of Service. </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign"> <strong>(15)</strong> </td><td class="col1 leftalign"> IP precedence. </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign"> <strong>(16)</strong> </td><td class="col1 leftalign"> IP time to live. </td>
+</tr>
+<tr class="row17">
+<td class="col0 leftalign"> <strong>(17)</strong> </td><td class="col1 leftalign"> IP packet ID. </td>
+</tr>
+<tr class="row18">
+<td class="col0 leftalign"> <strong>(18)</strong> </td><td class="col1 leftalign"> Protocol type TCP. </td>
+</tr>
+<tr class="row19">
+<td class="col0 leftalign"> <strong>(19)</strong> </td><td class="col1 leftalign"> TCP source port. </td>
+</tr>
+<tr class="row20">
+<td class="col0 leftalign"> <strong>(20)</strong> </td><td class="col1 leftalign"> TCP destination port. </td>
+</tr>
+<tr class="row21">
+<td class="col0 leftalign"> <strong>(21)</strong> </td><td class="col1 leftalign"> TCP sequence number. </td>
+</tr>
+<tr class="row22">
+<td class="col0 leftalign"> <strong>(22)</strong> </td><td class="col1 leftalign"> TCP acknoledgement number. </td>
+</tr>
+<tr class="row23">
+<td class="col0 leftalign"> <strong>(23)</strong> </td><td class="col1 leftalign"> TCP window size. </td>
+</tr>
+<tr class="row24">
+<td class="col0 leftalign"> <strong>(24)</strong> </td><td class="col1 leftalign"> TCP reserved bits. </td>
+</tr>
+<tr class="row25">
+<td class="col0 leftalign"> <strong>(25)</strong> </td><td class="col1 leftalign"> TCP SYN flag is set. </td>
+</tr>
+<tr class="row26">
+<td class="col0 leftalign"> <strong>(25)</strong> </td><td class="col1 leftalign"> TCP urgent pointer is not set. </td>
+</tr>
+<tr class="row27">
+<td class="col0 leftalign"> <strong>(25)</strong> </td><td class="col1 leftalign"> TCP options. </td>
+</tr>
+</table></div>
+<p>
+Now I will show you this exchange side-by-side (more like paragraph by paragraph) using tcpdump output and iptables log. You task will be to go through this exchange line by line and understand what happens. I recommend you to print this exchange and work through it using pen and paper, you can print it from <a href="ex26/log.html" class="wikilink1" title="llthw:ex26:log">special page</a>. The questions you need to answer are this:
+</p>
+<ol>
+<li class="level1"><div class="li"> What does each field mean? Take a pencil and connect field from <strong>tcpdump</strong> trace to raw packet data in hex to <strong>iptables</strong> log.</div>
+</li>
+<li class="level1"><div class="li"> In what order packets are processed? Which table first, which last, why?</div>
+</li>
+<li class="level1"><div class="li"> Why only first packet is processed through <strong>nat</strong> table?</div>
+</li>
+</ol>
+<p>
+This is the output, behold:
+</p>
+<pre class="bash code bash">08:00:<span class="nu0">05.655339</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>S<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">4164179969</span>, win <span class="nu0">65535</span>, options <span class="br0">&#91;</span>mss <span class="nu0">1460</span><span class="br0">&#93;</span>, length <span class="nu0">0</span>
+        0x0000:  0000 0001 0006 <span class="nu0">5254</span> 0012 <span class="nu0">3502</span> 0000 0800  ......RT..<span class="nu0">5</span>.....
+        0x0010:  <span class="nu0">4500</span> 002c a006 0000 <span class="nu0">4006</span> c2b5 0a00 0202  E..,....<span class="sy0">@</span>.......
+        0x0020:  0a00 020f c94e 0050 f834 <span class="nu0">5801</span> 0000 0000  .....N.P.4X.....
+        0x0030:  <span class="nu0">6002</span> ffff <span class="nu0">6641</span> 0000 0204 05b4 0000       <span class="sy0">`</span>...fA........
+<span class="sy0">`</span>
+raw:PREROUTING:policy:<span class="nu0">2</span>     <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+mangle:PREROUTING:policy:<span class="nu0">1</span>  <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+nat:PREROUTING:policy:<span class="nu0">1</span>     <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+mangle:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+filter:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40966</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179969</span> <span class="re2">ACK</span>=<span class="nu0">0</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span>
+&nbsp;
+08:00:<span class="nu0">05.655653</span> IP 10.0.2.15.80 <span class="sy0">&gt;</span> 10.0.2.2.51534: Flags <span class="br0">&#91;</span>S.<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">4149908960</span>, ack <span class="nu0">4164179970</span>, win <span class="nu0">5840</span>, options <span class="br0">&#91;</span>mss <span class="nu0">1460</span><span class="br0">&#93;</span>, length <span class="nu0">0</span>
+        0x0000:  0004 0001 0006 0800 27d4 <span class="nu0">4568</span> 0000 0800  ........<span class="st_h">'.Eh....
+        0x0010:  4500 002c 0000 4000 4006 22bc 0a00 020f  E..,..@.@.&quot;.....
+        0x0020:  0a00 0202 0050 c94e f75a 95e0 f834 5802  .....P.N.Z...4X.
+        0x0030:  6012 16d0 c224 0000 0204 05b4            `....$......
+'</span>
+raw:OUTPUT:policy:<span class="nu0">2</span>         <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">0</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908960</span> <span class="re2">ACK</span>=<span class="nu0">4164179970</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span> <span class="re2">UID</span>=<span class="nu0">0</span> <span class="re2">GID</span>=<span class="nu0">0</span>
+mangle:OUTPUT:policy:<span class="nu0">1</span>      <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">0</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908960</span> <span class="re2">ACK</span>=<span class="nu0">4164179970</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span> <span class="re2">UID</span>=<span class="nu0">0</span> <span class="re2">GID</span>=<span class="nu0">0</span>
+filter:OUTPUT:policy:<span class="nu0">1</span>      <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">0</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908960</span> <span class="re2">ACK</span>=<span class="nu0">4164179970</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span> <span class="re2">UID</span>=<span class="nu0">0</span> <span class="re2">GID</span>=<span class="nu0">0</span>
+mangle:POSTROUTING:policy:<span class="nu0">1</span> <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">44</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">0</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908960</span> <span class="re2">ACK</span>=<span class="nu0">4164179970</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK SYN <span class="re2">URGP</span>=<span class="nu0">0</span> OPT <span class="br0">&#40;</span>020405B4<span class="br0">&#41;</span> <span class="re2">UID</span>=<span class="nu0">0</span> <span class="re2">GID</span>=<span class="nu0">0</span>
+&nbsp;
+08:00:<span class="nu0">05.655773</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>.<span class="br0">&#93;</span>, ack <span class="nu0">1</span>, win <span class="nu0">65535</span>, length <span class="nu0">0</span>
+        0x0000:  0000 0001 0006 <span class="nu0">5254</span> 0012 <span class="nu0">3502</span> 0000 0800  ......RT..<span class="nu0">5</span>.....
+        0x0010:  <span class="nu0">4500</span> 0028 a007 0000 <span class="nu0">4006</span> c2b8 0a00 0202  E..<span class="br0">&#40;</span>....<span class="sy0">@</span>.......
+        0x0020:  0a00 020f c94e 0050 f834 <span class="nu0">5802</span> f75a 95e1  .....N.P.4X..Z..
+        0x0030:  <span class="nu0">5010</span> ffff f0b1 0000 0000 0000 0000       P.............
+&nbsp;
+raw:PREROUTING:policy:<span class="nu0">2</span>     <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40967</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179970</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:PREROUTING:policy:<span class="nu0">1</span>  <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40967</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179970</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40967</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179970</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+filter:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40967</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179970</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+&nbsp;
+08:00:<span class="nu0">05.655868</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>P.<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">1</span>:<span class="nu0">15</span>, ack <span class="nu0">1</span>, win <span class="nu0">65535</span>, length <span class="nu0">14</span>
+        0x0000:  0000 0001 0006 <span class="nu0">5254</span> 0012 <span class="nu0">3502</span> 0000 0800  ......RT..<span class="nu0">5</span>.....
+        0x0010:  <span class="nu0">4500</span> 0036 a008 0000 <span class="nu0">4006</span> c2a9 0a00 0202  E..<span class="nu0">6</span>....<span class="sy0">@</span>.......
+        0x0020:  0a00 020f c94e 0050 f834 <span class="nu0">5802</span> f75a 95e1  .....N.P.4X..Z..
+        0x0030:  <span class="nu0">5018</span> ffff af45 0000 <span class="nu0">4865</span> 6c6c 6f2c <span class="nu0">2077</span>  P....E..Hello,.w
+        0x0040:  6f72 6c64 210a                           orld<span class="sy0">!</span>.
+&nbsp;
+raw:PREROUTING:policy:<span class="nu0">2</span>     <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">54</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40968</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179970</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK PSH <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:PREROUTING:policy:<span class="nu0">1</span>  <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">54</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40968</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179970</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK PSH <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">54</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40968</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179970</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK PSH <span class="re2">URGP</span>=<span class="nu0">0</span>
+filter:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">54</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40968</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179970</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK PSH <span class="re2">URGP</span>=<span class="nu0">0</span>
+&nbsp;
+08:00:<span class="nu0">05.655978</span> IP 10.0.2.15.80 <span class="sy0">&gt;</span> 10.0.2.2.51534: Flags <span class="br0">&#91;</span>.<span class="br0">&#93;</span>, ack <span class="nu0">15</span>, win <span class="nu0">5840</span>, length <span class="nu0">0</span>
+        0x0000:  0004 0001 0006 0800 27d4 <span class="nu0">4568</span> 0000 0800  ........<span class="st_h">'.Eh....
+        0x0010:  4500 0028 377c 4000 4006 eb43 0a00 020f  E..(7|@.@..C....
+        0x0020:  0a00 0202 0050 c94e f75a 95e1 f834 5810  .....P.N.Z...4X.
+        0x0030:  5010 16d0 d9d3 0000                      P.......
+'</span>
+raw:OUTPUT:policy:<span class="nu0">2</span>         <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">14204</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908961</span> <span class="re2">ACK</span>=<span class="nu0">4164179984</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:OUTPUT:policy:<span class="nu0">1</span>      <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">14204</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908961</span> <span class="re2">ACK</span>=<span class="nu0">4164179984</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+filter:OUTPUT:policy:<span class="nu0">1</span>      <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">14204</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908961</span> <span class="re2">ACK</span>=<span class="nu0">4164179984</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:POSTROUTING:policy:<span class="nu0">1</span> <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">14204</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908961</span> <span class="re2">ACK</span>=<span class="nu0">4164179984</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+&nbsp;
+08:00:<span class="nu0">10.037978</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>F.<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">15</span>, ack <span class="nu0">1</span>, win <span class="nu0">65535</span>, length <span class="nu0">0</span>
+        0x0000:  0000 0001 0006 <span class="nu0">5254</span> 0012 <span class="nu0">3502</span> 0000 0800  ......RT..<span class="nu0">5</span>.....
+        0x0010:  <span class="nu0">4500</span> 0028 a00e 0000 <span class="nu0">4006</span> c2b1 0a00 0202  E..<span class="br0">&#40;</span>....<span class="sy0">@</span>.......
+        0x0020:  0a00 020f c94e 0050 f834 <span class="nu0">5810</span> f75a 95e1  .....N.P.4X..Z..
+        0x0030:  <span class="nu0">5011</span> ffff f0a2 0000 0000 0000 0000       P.............
+&nbsp;
+raw:PREROUTING:policy:<span class="nu0">2</span>     <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40974</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179984</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK FIN <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:PREROUTING:policy:<span class="nu0">1</span>  <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40974</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179984</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK FIN <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40974</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179984</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK FIN <span class="re2">URGP</span>=<span class="nu0">0</span>
+filter:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40974</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179984</span> <span class="re2">ACK</span>=<span class="nu0">4149908961</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK FIN <span class="re2">URGP</span>=<span class="nu0">0</span>
+&nbsp;
+08:00:<span class="nu0">10.038287</span> IP 10.0.2.15.80 <span class="sy0">&gt;</span> 10.0.2.2.51534: Flags <span class="br0">&#91;</span>F.<span class="br0">&#93;</span>, <span class="kw2">seq</span> <span class="nu0">1</span>, ack <span class="nu0">16</span>, win <span class="nu0">5840</span>, length <span class="nu0">0</span>
+        0x0000:  0004 0001 0006 0800 27d4 <span class="nu0">4568</span> 0000 0800  ........<span class="st_h">'.Eh....
+        0x0010:  4500 0028 377d 4000 4006 eb42 0a00 020f  E..(7}@.@..B....
+        0x0020:  0a00 0202 0050 c94e f75a 95e1 f834 5811  .....P.N.Z...4X.
+        0x0030:  5011 16d0 d9d1 0000                      P.......
+'</span>
+raw:OUTPUT:policy:<span class="nu0">2</span>         <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">14205</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908961</span> <span class="re2">ACK</span>=<span class="nu0">4164179985</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK FIN <span class="re2">URGP</span>=<span class="nu0">0</span> <span class="re2">UID</span>=<span class="nu0">0</span> <span class="re2">GID</span>=<span class="nu0">0</span>
+mangle:OUTPUT:policy:<span class="nu0">1</span>      <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">14205</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908961</span> <span class="re2">ACK</span>=<span class="nu0">4164179985</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK FIN <span class="re2">URGP</span>=<span class="nu0">0</span> <span class="re2">UID</span>=<span class="nu0">0</span> <span class="re2">GID</span>=<span class="nu0">0</span>
+filter:OUTPUT:policy:<span class="nu0">1</span>      <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">14205</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908961</span> <span class="re2">ACK</span>=<span class="nu0">4164179985</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK FIN <span class="re2">URGP</span>=<span class="nu0">0</span> <span class="re2">UID</span>=<span class="nu0">0</span> <span class="re2">GID</span>=<span class="nu0">0</span>
+mangle:POSTROUTING:policy:<span class="nu0">1</span> <span class="re2">IN</span>= <span class="re2">OUT</span>=eth0 <span class="re2">SRC</span>=10.0.2.15 <span class="re2">DST</span>=10.0.2.2
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">14205</span> DF <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">80</span> <span class="re2">DPT</span>=<span class="nu0">51534</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4149908961</span> <span class="re2">ACK</span>=<span class="nu0">4164179985</span> <span class="re2">WINDOW</span>=<span class="nu0">5840</span> <span class="re2">RES</span>=0x00 ACK FIN <span class="re2">URGP</span>=<span class="nu0">0</span> <span class="re2">UID</span>=<span class="nu0">0</span> <span class="re2">GID</span>=<span class="nu0">0</span>
+&nbsp;
+08:00:<span class="nu0">10.038993</span> IP 10.0.2.2.51534 <span class="sy0">&gt;</span> 10.0.2.15.80: Flags <span class="br0">&#91;</span>.<span class="br0">&#93;</span>, ack <span class="nu0">2</span>, win <span class="nu0">65535</span>, length <span class="nu0">0</span>
+        0x0000:  0000 0001 0006 <span class="nu0">5254</span> 0012 <span class="nu0">3502</span> 0000 0800  ......RT..<span class="nu0">5</span>.....
+        0x0010:  <span class="nu0">4500</span> 0028 a00f 0000 <span class="nu0">4006</span> c2b0 0a00 0202  E..<span class="br0">&#40;</span>....<span class="sy0">@</span>.......
+        0x0020:  0a00 020f c94e 0050 f834 <span class="nu0">5811</span> f75a 95e2  .....N.P.4X..Z..
+        0x0030:  <span class="nu0">5010</span> ffff f0a1 0000 0000 0000 0000       P.............
+&nbsp;
+raw:PREROUTING:policy:<span class="nu0">2</span>     <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40975</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179985</span> <span class="re2">ACK</span>=<span class="nu0">4149908962</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:PREROUTING:policy:<span class="nu0">1</span>  <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40975</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179985</span> <span class="re2">ACK</span>=<span class="nu0">4149908962</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+mangle:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40975</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179985</span> <span class="re2">ACK</span>=<span class="nu0">4149908962</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span>
+filter:INPUT:policy:<span class="nu0">1</span>       <span class="re2">IN</span>=eth0 <span class="re2">OUT</span>= <span class="re2">MAC</span>=08:00:<span class="nu0">27</span>:d4:<span class="nu0">45</span>:<span class="nu0">68</span>:<span class="nu0">52</span>:<span class="nu0">54</span>:00:<span class="nu0">12</span>:<span class="nu0">35</span>:02:08:00 <span class="re2">SRC</span>=10.0.2.2 <span class="re2">DST</span>=10.0.2.15
+                            <span class="re2">LEN</span>=<span class="nu0">40</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">40975</span> <span class="re2">PROTO</span>=TCP <span class="re2">SPT</span>=<span class="nu0">51534</span> <span class="re2">DPT</span>=<span class="nu0">80</span>
+                            <span class="re2">SEQ</span>=<span class="nu0">4164179985</span> <span class="re2">ACK</span>=<span class="nu0">4149908962</span> <span class="re2">WINDOW</span>=<span class="nu0">65535</span> <span class="re2">RES</span>=0x00 ACK <span class="re2">URGP</span>=<span class="nu0">0</span></pre>
+<p>
+Now you will learn how to set up basic iptables rules and enable iptables logging.
+</p>
+</div>
+<h2 class="sectionedit6" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno"> 1:</span> <span class="kw2">sudo</span> iptables-save
+<span class="lno"> 2:</span> <span class="kw2">sudo</span> iptables <span class="re5">-t</span> filter <span class="re5">-A</span> INPUT <span class="re5">-i</span> lo <span class="re5">-j</span> ACCEPT
+<span class="lno"> 3:</span> <span class="kw2">sudo</span> iptables <span class="re5">-t</span> filter <span class="re5">-A</span> INPUT <span class="re5">-p</span> tcp <span class="re5">-m</span> tcp <span class="re5">--dport</span> <span class="nu0">22</span> <span class="re5">-j</span> ACCEPT
+<span class="lno"> 4:</span> <span class="kw2">sudo</span> iptables <span class="re5">-t</span> filter <span class="re5">-P</span> INPUT DROP
+<span class="lno"> 5:</span> <span class="kw2">sudo</span> iptables <span class="re5">-nt</span> filter <span class="re5">-L</span> <span class="re5">--line-numbers</span>
+<span class="lno"> 6:</span> <span class="kw2">ping</span> <span class="re5">-c</span> <span class="nu0">2</span> <span class="re5">-W</span> <span class="nu0">1</span> 10.0.2.2
+<span class="lno"> 7:</span> <span class="kw2">sudo</span> iptables <span class="re5">-t</span> filter <span class="re5">-A</span> INPUT <span class="re5">--match</span> state <span class="re5">--state</span> ESTABLISHED <span class="re5">-j</span> ACCEPT
+<span class="lno"> 8:</span> <span class="kw2">sudo</span> iptables <span class="re5">-nt</span> filter <span class="re5">-L</span> <span class="re5">--line-numbers</span>
+<span class="lno"> 9:</span> <span class="kw2">ping</span> <span class="re5">-c</span> <span class="nu0">2</span> <span class="re5">-W</span> <span class="nu0">1</span> 10.0.2.2
+<span class="lno">10:</span> <span class="kw2">sudo</span> modprobe ipt_LOG
+<span class="lno">11:</span> <span class="kw2">sudo</span> iptables <span class="re5">-nt</span> raw <span class="re5">-L</span> <span class="re5">--line-numbers</span>
+<span class="lno">12:</span> <span class="kw2">sudo</span> iptables <span class="re5">-t</span> raw <span class="re5">-A</span> PREROUTING <span class="re5">-p</span> udp <span class="re5">-m</span> udp <span class="re5">--dport</span> <span class="nu0">1024</span> <span class="re5">-j</span> TRACE
+<span class="lno">13:</span> <span class="kw2">sudo</span> iptables <span class="re5">-t</span> raw <span class="re5">-A</span> OUTPUT <span class="re5">-p</span> udp <span class="re5">-m</span> udp <span class="re5">--sport</span> <span class="nu0">1024</span> <span class="re5">-j</span> TRACE
+<span class="lno">14:</span> <span class="kw2">sudo</span> <span class="kw2">tail</span> <span class="re5">-n0</span> <span class="re5">-f</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>kern.log <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-c52-300</span> <span class="sy0">&amp;</span>
+<span class="lno">15:</span> nc <span class="re5">-ulp</span> <span class="nu0">1024</span> <span class="sy0">&amp;</span>
+<span class="lno">16:</span> <span class="kw3">echo</span> <span class="st_h">'Hello there!'</span> <span class="sy0">|</span> nc <span class="re5">-u</span> localhost <span class="nu0">1000</span>
+<span class="lno">17:</span> <span class="sy0">&lt;</span>CTRL+C<span class="sy0">&gt;</span>
+<span class="lno">18:</span> <span class="kw3">fg</span>
+<span class="lno">19:</span> <span class="sy0">&lt;</span>CTRL+C<span class="sy0">&gt;</span>
+<span class="lno">20:</span> <span class="kw3">fg</span>
+<span class="lno">21:</span> <span class="sy0">&lt;</span>CTRL+C<span class="sy0">&gt;</span>
+</pre>
+</div>
+<h1 class="sectionedit7" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables-save
+<span class="co0"># Generated by iptables-save v1.4.8 on Mon Jul 16 09:01:32 2012</span>
+<span class="sy0">*</span>mangle
+:PREROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">45783</span>:<span class="nu0">3411367</span><span class="br0">&#93;</span>
+:INPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">45783</span>:<span class="nu0">3411367</span><span class="br0">&#93;</span>
+:FORWARD ACCEPT <span class="br0">&#91;</span><span class="nu0">0</span>:<span class="nu0">0</span><span class="br0">&#93;</span>
+:OUTPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">30409</span>:<span class="nu0">9552110</span><span class="br0">&#93;</span>
+:POSTROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">30331</span>:<span class="nu0">9543294</span><span class="br0">&#93;</span>
+COMMIT
+<span class="co0"># Completed on Mon Jul 16 09:01:32 2012</span>
+<span class="co0"># Generated by iptables-save v1.4.8 on Mon Jul 16 09:01:32 2012</span>
+<span class="sy0">*</span>nat
+:PREROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">24</span>:<span class="nu0">1056</span><span class="br0">&#93;</span>
+:POSTROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">755</span>:<span class="nu0">41247</span><span class="br0">&#93;</span>
+:OUTPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">817</span>:<span class="nu0">45207</span><span class="br0">&#93;</span>
+COMMIT
+<span class="co0"># Completed on Mon Jul 16 09:01:32 2012</span>
+<span class="co0"># Generated by iptables-save v1.4.8 on Mon Jul 16 09:01:32 2012</span>
+<span class="sy0">*</span>raw
+:PREROUTING ACCEPT <span class="br0">&#91;</span><span class="nu0">3171</span>:<span class="nu0">197900</span><span class="br0">&#93;</span>
+:OUTPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">1991</span>:<span class="nu0">1294054</span><span class="br0">&#93;</span>
+<span class="re5">-A</span> PREROUTING <span class="re5">-p</span> udp <span class="re5">-m</span> udp <span class="re5">--dport</span> <span class="nu0">80</span> <span class="re5">-j</span> TRACE
+<span class="re5">-A</span> OUTPUT <span class="re5">-p</span> udp <span class="re5">-m</span> udp <span class="re5">--sport</span> <span class="nu0">80</span> <span class="re5">-j</span> TRACE
+COMMIT
+<span class="co0"># Completed on Mon Jul 16 09:01:32 2012</span>
+<span class="co0"># Generated by iptables-save v1.4.8 on Mon Jul 16 09:01:32 2012</span>
+<span class="sy0">*</span>filter
+:INPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">54</span>:<span class="nu0">3564</span><span class="br0">&#93;</span>
+:FORWARD ACCEPT <span class="br0">&#91;</span><span class="nu0">0</span>:<span class="nu0">0</span><span class="br0">&#93;</span>
+:OUTPUT ACCEPT <span class="br0">&#91;</span><span class="nu0">28</span>:<span class="nu0">2540</span><span class="br0">&#93;</span>
+COMMIT
+<span class="co0"># Completed on Mon Jul 16 09:01:32 2012</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-t</span> filter <span class="re5">-A</span> INPUT <span class="re5">-i</span> lo <span class="re5">-j</span> ACCEPT
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-t</span> filter <span class="re5">-A</span> INPUT <span class="re5">-p</span> tcp <span class="re5">-m</span> tcp <span class="re5">--dport</span> <span class="nu0">22</span> <span class="re5">-j</span> ACCEPT
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-t</span> filter <span class="re5">-P</span> INPUT DROP
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-nt</span> filter <span class="re5">-L</span> <span class="re5">--line-numbers</span>
+Chain INPUT <span class="br0">&#40;</span>policy DROP<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+<span class="nu0">1</span>    ACCEPT     all  <span class="re5">--</span>  0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>            0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>
+<span class="nu0">2</span>    ACCEPT     tcp  <span class="re5">--</span>  0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>            0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>           tcp dpt:<span class="nu0">22</span>
+&nbsp;
+Chain FORWARD <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+&nbsp;
+Chain OUTPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+&nbsp;
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ping</span> <span class="re5">-c</span> <span class="nu0">2</span> <span class="re5">-W</span> <span class="nu0">1</span> 10.0.2.2
+PING 10.0.2.2 <span class="br0">&#40;</span>10.0.2.2<span class="br0">&#41;</span> <span class="nu0">56</span><span class="br0">&#40;</span><span class="nu0">84</span><span class="br0">&#41;</span> bytes of data.
+&nbsp;
+<span class="re5">---</span> 10.0.2.2 <span class="kw2">ping</span> statistics <span class="re5">---</span>
+<span class="nu0">2</span> packets transmitted, <span class="nu0">0</span> received, <span class="nu0">100</span><span class="sy0">%</span> packet loss, <span class="kw1">time</span> 1008ms
+&nbsp;
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-t</span> filter <span class="re5">-A</span> INPUT <span class="re5">--match</span> state <span class="re5">--state</span> ESTABLISHED <span class="re5">-j</span> ACCEPT
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-nt</span> filter <span class="re5">-L</span> <span class="re5">--line-numbers</span>
+Chain INPUT <span class="br0">&#40;</span>policy DROP<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+<span class="nu0">1</span>    ACCEPT     all  <span class="re5">--</span>  0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>            0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>
+<span class="nu0">2</span>    ACCEPT     tcp  <span class="re5">--</span>  0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>            0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>           tcp dpt:<span class="nu0">22</span>
+<span class="nu0">3</span>    ACCEPT     all  <span class="re5">--</span>  0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>            0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>           state ESTABLISHED
+&nbsp;
+Chain FORWARD <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+&nbsp;
+Chain OUTPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+&nbsp;
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ping</span> <span class="re5">-c</span> <span class="nu0">2</span> <span class="re5">-W</span> <span class="nu0">1</span> 10.0.2.2
+PING 10.0.2.2 <span class="br0">&#40;</span>10.0.2.2<span class="br0">&#41;</span> <span class="nu0">56</span><span class="br0">&#40;</span><span class="nu0">84</span><span class="br0">&#41;</span> bytes of data.
+<span class="nu0">64</span> bytes from 10.0.2.2: <span class="re2">icmp_req</span>=<span class="nu0">1</span> <span class="re2">ttl</span>=<span class="nu0">63</span> <span class="re2">time</span>=<span class="nu0">0.385</span> ms
+<span class="nu0">64</span> bytes from 10.0.2.2: <span class="re2">icmp_req</span>=<span class="nu0">2</span> <span class="re2">ttl</span>=<span class="nu0">63</span> <span class="re2">time</span>=<span class="nu0">0.142</span> ms
+&nbsp;
+<span class="re5">---</span> 10.0.2.2 <span class="kw2">ping</span> statistics <span class="re5">---</span>
+<span class="nu0">2</span> packets transmitted, <span class="nu0">2</span> received, <span class="nu0">0</span><span class="sy0">%</span> packet loss, <span class="kw1">time</span> 999ms
+rtt min<span class="sy0">/</span>avg<span class="sy0">/</span>max<span class="sy0">/</span>mdev = <span class="nu0">0.142</span><span class="sy0">/</span><span class="nu0">0.263</span><span class="sy0">/</span><span class="nu0">0.385</span><span class="sy0">/</span><span class="nu0">0.122</span> ms
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-nt</span> raw <span class="re5">-L</span> <span class="re5">--line-numbers</span>
+Chain PREROUTING <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+&nbsp;
+Chain OUTPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-t</span> raw <span class="re5">-A</span> PREROUTING <span class="re5">-p</span> udp <span class="re5">-m</span> udp <span class="re5">--dport</span> <span class="nu0">1024</span> <span class="re5">-j</span> TRACE
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-t</span> raw <span class="re5">-A</span> OUTPUT <span class="re5">-p</span> udp <span class="re5">-m</span> udp <span class="re5">--sport</span> <span class="nu0">1024</span> <span class="re5">-j</span> TRACE
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> iptables <span class="re5">-nt</span> raw <span class="re5">-L</span> <span class="re5">--line-numbers</span>
+Chain PREROUTING <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+<span class="nu0">1</span>    TRACE      udp  <span class="re5">--</span>  0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>            0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>           udp dpt:<span class="nu0">1024</span>
+&nbsp;
+Chain OUTPUT <span class="br0">&#40;</span>policy ACCEPT<span class="br0">&#41;</span>
+num  target     prot opt <span class="kw3">source</span>               destination
+<span class="nu0">1</span>    TRACE      udp  <span class="re5">--</span>  0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>            0.0.0.0<span class="sy0">/</span><span class="nu0">0</span>           udp spt:<span class="nu0">1024</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">tail</span> <span class="re5">-n0</span> <span class="re5">-f</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>kern.log <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-c52-300</span> <span class="sy0">&amp;</span>
+<span class="br0">&#91;</span><span class="nu0">1</span><span class="br0">&#93;</span> <span class="nu0">10249</span>
+<span class="co4">user1@vm1:~$ </span>nc <span class="re5">-ulp</span> <span class="nu0">1024</span> <span class="sy0">&amp;</span>
+<span class="br0">&#91;</span><span class="nu0">2</span><span class="br0">&#93;</span> <span class="nu0">10251</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="st_h">'Hello there!'</span> <span class="sy0">|</span> nc <span class="re5">-u</span> localhost <span class="nu0">1024</span>
+Hello there<span class="sy0">!</span>
+raw:PREROUTING:policy:<span class="nu0">2</span> <span class="re2">IN</span>=lo <span class="re2">OUT</span>= <span class="re2">MAC</span>=00:00:00:00:00:00:00:00:00:00:00:00:08:00 <span class="re2">SRC</span>=127.0.0.1 <span class="re2">DST</span>=127.0.0.1 <span class="re2">LEN</span>=<span class="nu0">41</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">57898</span> DF <span class="re2">PROTO</span>=UDP <span class="re2">SPT</span>=<span class="nu0">50407</span> <span class="re2">DPT</span>=<span class="nu0">1024</span> <span class="re2">LEN</span>=<span class="nu0">21</span>
+mangle:PREROUTING:policy:<span class="nu0">1</span> <span class="re2">IN</span>=lo <span class="re2">OUT</span>= <span class="re2">MAC</span>=00:00:00:00:00:00:00:00:00:00:00:00:08:00 <span class="re2">SRC</span>=127.0.0.1 <span class="re2">DST</span>=127.0.0.1 <span class="re2">LEN</span>=<span class="nu0">41</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">57898</span> DF <span class="re2">PROTO</span>=UDP <span class="re2">SPT</span>=<span class="nu0">50407</span> <span class="re2">DPT</span>=<span class="nu0">1024</span> <span class="re2">LEN</span>=<span class="nu0">21</span>
+mangle:INPUT:policy:<span class="nu0">1</span> <span class="re2">IN</span>=lo <span class="re2">OUT</span>= <span class="re2">MAC</span>=00:00:00:00:00:00:00:00:00:00:00:00:08:00 <span class="re2">SRC</span>=127.0.0.1 <span class="re2">DST</span>=127.0.0.1 <span class="re2">LEN</span>=<span class="nu0">41</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">57898</span> DF <span class="re2">PROTO</span>=UDP <span class="re2">SPT</span>=<span class="nu0">50407</span> <span class="re2">DPT</span>=<span class="nu0">1024</span> <span class="re2">LEN</span>=<span class="nu0">21</span>
+filter:INPUT:rule:<span class="nu0">1</span> <span class="re2">IN</span>=lo <span class="re2">OUT</span>= <span class="re2">MAC</span>=00:00:00:00:00:00:00:00:00:00:00:00:08:00 <span class="re2">SRC</span>=127.0.0.1 <span class="re2">DST</span>=127.0.0.1 <span class="re2">LEN</span>=<span class="nu0">41</span> <span class="re2">TOS</span>=0x00 <span class="re2">PREC</span>=0x00 <span class="re2">TTL</span>=<span class="nu0">64</span> <span class="re2">ID</span>=<span class="nu0">57898</span> DF <span class="re2">PROTO</span>=UDP <span class="re2">SPT</span>=<span class="nu0">50407</span> <span class="re2">DPT</span>=<span class="nu0">1024</span> <span class="re2">LEN</span>=<span class="nu0">21</span>
+&nbsp;
+^C
+<span class="br0">&#91;</span><span class="nu0">2</span><span class="br0">&#93;</span>+  Stopped                 nc <span class="re5">-ulp</span> <span class="nu0">1024</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">fg</span>
+nc <span class="re5">-ulp</span> <span class="nu0">1024</span>
+^C
+<span class="co4">user1@vm1:~$ </span><span class="kw3">fg</span>
+<span class="kw2">sudo</span> <span class="kw2">tail</span> <span class="re5">-n0</span> <span class="re5">-f</span> <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>kern.log <span class="sy0">|</span> <span class="kw2">cut</span> <span class="re5">-c52-300</span>
+^C
+<span class="co4">user1@vm1:~$</span></pre>
+</div>
+<h2 class="sectionedit8" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Prints out all <strong>iptables</strong> rules from all tables. You can see that there are none.</div>
+</li>
+<li class="level1"><div class="li"> Allows all incoming traffic on <strong>lo</strong> (<a href="http://en.wikipedia.org/wiki/Localhost" class="urlextern" title="http://en.wikipedia.org/wiki/Localhost" rel="nofollow">loopback</a>) interface.</div>
+</li>
+<li class="level1"><div class="li"> Allows all incoming traffic to TCP port 22, which is ssh. </div>
+</li>
+<li class="level1"><div class="li"> Changes default <strong>INPUT</strong> policy to <strong>DROP</strong>, forbidding all incoming connections except explicitly allowed to TCP port 22. If you loss connection to <strong>vm1</strong> here, it means you did something wrong, reboot it in VirtualBox and try again.</div>
+</li>
+<li class="level1"><div class="li"> Lists current filter rules. Note: you can delete rules by number, like this: <strong>sudo iptables -t filter -D INPUT 2</strong>. Notice how policy is totally not the same as rule.</div>
+</li>
+<li class="level1"><div class="li"> Tries to ping your default gateway, failing to do this. Why it is so if outgoing connections are allowed (<strong>Chain OUTPUT (policy ACCEPT)</strong>)? Well, outgoing packets are being sent to gateway, but reply from gateway is not able to get in.</div>
+</li>
+<li class="level1"><div class="li"> Adds a rule telling iptables to allow all packets which belong to already established connections, for example to all connections originating from <strong>vm1</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Lists current filter rules. You are able to see our new rule.</div>
+</li>
+<li class="level1"><div class="li"> Pings <strong>vm1</strong> default gateway, this time successfully.</div>
+</li>
+<li class="level1"><div class="li"> Loads Linux kernel module which allows to use packet filter logging facility.</div>
+</li>
+<li class="level1"><div class="li"> Adds rule to log all incoming packets which are destined to UDP port 1024 of any interface of <strong>vm1</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Adds rule to log all outgoing packets which originate from UDP port 1024 of any interface of <strong>vm1</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Lists <strong>raw</strong> table rules.</div>
+</li>
+<li class="level1"><div class="li"> Starts <strong>tail</strong> in the background which will print all new lines written to <strong>/var/log/kern.log</strong>. <strong>cut</strong> will remove unnecessary prefix of log entries in the beginning. Notice how background process is able to write to your terminal.</div>
+</li>
+<li class="level1"><div class="li"> Starts <strong>nc</strong> in server mode, listening on UDP port 1024 on all interfaces of <strong>vm1</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Starts <strong>nc</strong> in client mode, sending string <strong>Hello there!</strong> to our server mode <strong>nc</strong>. <strong>tail</strong> prints out all new lines in <strong>kern.log</strong> and you are able to see how our single UDP packet goes from table to table inside of Linux kernel packet filter. There is no reply, so only one single packet is being sent and processed.</div>
+</li>
+<li class="level1"><div class="li"> Kills client mode <strong>nc</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Brings server mode <strong>nc</strong> to foreground.</div>
+</li>
+<li class="level1"><div class="li"> Kills server mode <strong>nc</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Bring <strong>sudo tail -n0 -f /var/log/kern.log | cut -c52-300 &amp;</strong> to foreground.</div>
+</li>
+<li class="level1"><div class="li"> Kills it.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit9" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> This was big by itself. Just print out this log and work through it using pencil until you really understand what is going on in every field of every line. If you will stuck, ask away here. <a href="ex26/log.html" class="urlextern" title="http://nixsrv.com/llthw/ex26/log" rel="nofollow">http://nixsrv.com/llthw/ex26/log</a></div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex26.html';
+var disqus_title   = 'Exercise 26. Networking: packet filter configuration, iptables';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex26.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex26.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHPwYJKoZIhvcNAQcEoIIHMDCCBywCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYByTD54uWvmVXFF4/ye/cSXblkaJBzuA70AO3hGD5eiT3YhPyNF7LyeoPOZiR4skW70CYjjq6vZjzPKvrDc6JacUsMRyxMrqbt0r2naKgZpaiG/OCq0oaQ176iT5ZV08cIJjesD9ttI1MvCwqi5s6RDBkcq4wAG/I3HSmqjJoc6+DELMAkGBSsOAwIaBQAwgbwGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQITtPc/6Bw4nGAgZhFFv7nh6EI5rVRN7KbJq/brSd2GDxt/tlwxMOkoWpCPUV3sb0zEeEDu7j6A81bi3A5JmsgClVSSApfLhIz1LKBfjzDVLFtHTYT+0EFRMaE5YX+8uL53tXScdKR4NWW0H+3QHIrfU9lKOAjjkzx7chzsBqjSurGOsprgmeT1PgAKJbOdmJgSecA18X5CtzW64IU3kiUKVDyYKCCA4cwggODMIIC7KADAgECAgEAMA0GCSqGSIb3DQEBBQUAMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTAeFw0wNDAyMTMxMDEzMTVaFw0zNTAyMTMxMDEzMTVaMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAwUdO3fxEzEtcnI7ZKZL412XvZPugoni7i7D7prCe0AtaHTc97CYgm7NsAtJyxNLixmhLV8pyIEaiHXWAh8fPKW+R017+EmXrr9EaquPmsVvTywAAE1PMNOKqo2kl4Gxiz9zZqIajOm1fZGWcGS0f5JQ2kBqNbvbg2/Za+GJ/qwUCAwEAAaOB7jCB6zAdBgNVHQ4EFgQUlp98u8ZvF71ZP1LXChvsENZklGswgbsGA1UdIwSBszCBsIAUlp98u8ZvF71ZP1LXChvsENZklGuhgZSkgZEwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEAgV86VpqAWuXvX6Oro4qJ1tYVIT5DgWpE692Ag422H7yRIr/9j/iKG4Thia/Oflx4TdL+IFJBAyPK9v6zZNZtBgPBynXb048hsP16l2vi0k5Q2JKiPDsEfBhGI+HnxLXEaUWAcVfCsQFvd2A1sxRr67ip5y2wwBelUecP3AjJ+YcxggGaMIIBlgIBATCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEyMDcwMjE3NTUwM1owIwYJKoZIhvcNAQkEMRYEFNxQpzsP6V2QYIZw83iK6s/ShwtlMA0GCSqGSIb3DQEBAQUABIGATYUTe/66EXsCdY90YYsDJJrwpX0lCRBexMqmS0QBCVSAYn6+i6wg6kXbMl0wG6RGjktQ6CvcgEoQlCcwQGqXrXv6SlJBYYlqzb4x5IjOHm2cXJzT/UvQY5nWRlKKdePpG0QC6WVfNRZeuKsJZ5qWNNrwrvDCouYZX04Ze7KQSt8=-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex26.txt</bdi> · Last modified: 2013/08/25 07:17 (external edit)<br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer8bda.gif?id=llthw%3Aex26&amp;1428742730" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex26 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:09 GMT -->
+</html>

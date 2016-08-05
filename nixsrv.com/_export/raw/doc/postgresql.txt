@@ -1,0 +1,53 @@
+====== PostgreSQL ======
+
+===== Create new DB with russian locale =====
+
+<code bash>
+root> mkdir /data/dir
+root> chmod 0700 /data/dir
+postgres$ su -l postgres
+postgres$ export LANG=ru_RU.UTF-8
+postgres$ locale
+postgres$ initdb -E UTF8 -D /data/dir
+postgres$ exit
+root> psql -U postgres
+postgres=> create role foo superuser login;
+postgres=> \du
+</code>
+
+===== Performance counters ======
+
+==== Structure of pg_stat_database ====
+<code sql>
+SELECT
+    d.oid AS datid,
+    d.datname,    
+    pg_stat_get_db_numbackends(d.oid) AS numbackends,
+    pg_stat_get_db_xact_commit(d.oid) AS xact_commit,
+    pg_stat_get_db_xact_rollback(d.oid) AS xact_rollback,
+    (pg_stat_get_db_blocks_fetched(d.oid) - pg_stat_get_db_blocks_hit(d.oid)) AS blks_read,
+    pg_stat_get_db_blocks_hit(d.oid) AS blks_hit,                      
+    pg_stat_get_db_tuples_returned(d.oid) AS tup_returned,
+    pg_stat_get_db_tuples_fetched(d.oid) AS tup_fetched,                                
+    pg_stat_get_db_tuples_inserted(d.oid) AS tup_inserted, 
+    pg_stat_get_db_tuples_updated(d.oid) AS tup_updated,              
+    pg_stat_get_db_tuples_deleted(d.oid) AS tup_deleted 
+FROM pg_database d;
+</code>
+
+==== All transactions ====
+<code bash>
+watch 'psql -U postgres -t -c "select sum(xact_commit) from pg_stat_database"'
+</code>
+
+==== Transactions per database ====
+<code bash>
+watch 'psql -U postgres -t -c "SELECT datname, xact_commit, xact_rollback, tup_returned, tup_fetched, tup_inserted, tup_updated, tup_deleted FROM pg_stat_database"'
+</code>
+
+==== Cheatsheet =====
+<code bash>
+create role foo password 'bar' login superuser;
+create database foo with owner = foo;
+alter role foo password 'hancock';
+</code>

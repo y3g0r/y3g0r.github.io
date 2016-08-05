@@ -1,0 +1,36 @@
+====== main() ======
+<code python>
+def main():
+    """Main function, calls all other ones"""
+
+    if len(sys.argv) < 2:
+        sys.exit('Usage: %s <action> (check|restore)' % sys.argv[0])
+
+    action = sys.argv[1]
+
+    print "Executing action: %r" % action
+
+    if action == "check":
+        try:
+            conf=read_conf()
+            check_conf(conf)
+            do_stuff(conf)
+        except Exception, e:
+            cleanup(conf)
+            sys.exit("Exception: %r" % e)
+    elif action == "restore":
+        try:
+            conf=read_conf()
+            check_conf(conf)
+        except Exception, e:
+            cleanup(conf)
+            sys.exit("Exception: %r" % e)
+    elif action == "test":
+        try:
+            conf=read_conf()
+            check_conf(conf)
+        except Exception, e:
+            sys.exit("Exception: %r" % e)
+
+main()
+</code>

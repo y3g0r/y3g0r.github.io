@@ -1,0 +1,12 @@
+====== Git ======
+<code bash>
+    git log #show revisions
+    git diff master~1:./sshd_config ./sshd_config #diff with last revision
+    git log -p -1 filename #diff within git
+    git diff stash@{0} master
+    git show --name-only 18868173c
+    git log -Spassword
+    git diff-tree --no-commit-id --name-only -r bd61ad98
+    git show --pretty="format:" --name-only bd61ad98
+    git diff HEAD^^..HEAD -- main.c
+</code>

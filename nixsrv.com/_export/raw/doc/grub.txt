@@ -1,0 +1,19 @@
+====== GRand Unified Bootloader ======
+
+Tips and config examples.
+===== Recue shell ======
+<code bash>
+#Inspect the current prefix (and other preset variables):
+    set
+# Set to the correct value, which might be something like this:
+    set prefix=(hd0,1)/grub
+    set root=(hd0,1)
+    insmod normal
+    normal
+</code>
+
+===== Config =====
+<code bash>
+# enable serial console
+    GRUB_CMDLINE_LINUX_DEFAULT="console=ttyS0,9600n8 console=tty0 quiet"
+</code>

@@ -1,0 +1,61 @@
+====== Documentation example ======
+
+<code bash>
+#General configuration description
+    #running services
+        tcp 0.0.0.0:22          1672/sshd                   # ssh server, server access and file transfer
+        tcp 127.0.0.1:25        8965/master                 # postfix mail server, sends mail from Google Apps
+        tcp 0.0.0.0:80          17314/nginx: master         # nginx http, redirects everything to https
+        tcp 0.0.0.0:443         17314/nginx: master         # nginx webserver and cache, https
+        tcp 127.0.0.1:3306      2134/mysqld                 # mysql database
+        tcp 127.0.0.1:8080      1341/httpd                  # apache webserver, serving actual content
+        tcp 127.0.0.1:10050     11489/zabbix_agentd         # zabbix monitoring agent, performs system checks
+        tcp 127.0.0.1:10051     1453/zabbix_server          # zabbix server, stores and acts on system checks
+        udp 0.0.0.0:123         18716/ntpd                  # ntp, synchronises system time
+    #webserver configuration 
+        # all incoming requests are first processed by cloudflare
+            # some information like static images is cached by cloudflare 
+            # and is not requested from server on each page view 
+        # then requests are forwarded to nginx 
+            # which will is used for additional caching, so some some data will be just served from memory
+            # also, it's very fast and is good at serving lots of connection
+        # then requests are forwarded to apache
+            # which loads actual php engine, executes expression engine scripts and returns data 
+        # this is the scheme in the nutshell:
+        ------------     ---------------------     ----------------     ---------------
+        | INTERNET | ==> | CLOUDFLARE:80,443 | ==> | NGINX:80,443 | ==> | APACHE:8080 | 
+        ------------     ---------------------     ----------------     ---------------
+    #backups
+        # backups are performed nighly automatically
+        # zabbix checks backups status and sends email in case of any error
+        # file, like images, are stored in /media
+        # mysql database is dumped, encrypted and backed up as well
+        # backups are performed using deduplication, so only changed files are using space
+        # backups are uploaded to your-backup.de using enrypted ftp protool
+        # this is the scheme of backup directory:
+        /bak
+            daily.0 # copy of /media from today
+            daily.1 # copy of /media from yesterday
+            daily.2 # ...
+            daily.3
+            daily.4
+            daily.5
+            daily.6
+            daily.7
+            daily.8
+            daily.9 # last directory is automatically deleted and replaced with newer one
+            mysql   # mysql backups, they are mysql dumps compressed and encrypted 
+        # the same directory is on web01 and on backup site-backup.com
+        # on web01 this directory is deduplicated and takes about the same space as on the same data on server
+        # on your-backup.de this directory is not deduplicated, and taked basically 10x data as on the server
+            # as it is, it's not possible to make simple deduplication happen on site-backup.com
+    #server hardedning
+        # iptables firewall is set up, and allow incoming traffic ONLY on ports 22, 80 and 443
+        # fail2ban in installed, which automatically bans ssh users on several failed attempts
+    #email 
+        # all email from the server is being sent using postfix
+    #monitoring
+        # server load checks and server health checks are being performed
+        # email is being sent in case of a problem 
+        # also we have lots of performance data
+</code>

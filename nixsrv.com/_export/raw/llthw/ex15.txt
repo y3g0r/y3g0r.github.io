@@ -1,0 +1,255 @@
+====== Exercise 15. System boot: runlevels, /etc/init.d, rcconf, update-rc.d ======
+
+Firstly I will give an outline of typical system boot process:
+<code>
+YOU
+    Press power switch (or start a virtual machine)
+    Now computer has the control
+    This control is passed to BIOS
+BIOS 
+    Performs hardware-specific tasks
+    Makes POST, Power-On Self-Test, which tests your hardware
+    Detects installed hardware, such as hard disks, memory type and amount, ...
+    Initializes hardware by writing initial values into their memory
+    Finds a boot device, which is usually a hard disk
+    Read and executes MBR (Main Boot Record) located at the beginning of this disk
+    Control is now passed to MBR
+MBR 
+    MBR finds and executes GRUB (Grand Unified Bootloader)
+    Control is now passed to GRUB
+GRUB 
+    Finds available filesystems
+    Finds and reads its configuration file, to find out:
+        Where system is located 
+        What system to boot
+        What other actions perform
+    Executes Linux Kernel, main part of Linux OS
+    Control is now passed to Linux Kernel
+Linux Kernel
+    Finds and loads initrd, which is initial ram disk
+        initrd contains necessary drivers which allow to access and mount real filesystems 
+    Mounts the root file system, which is specified in GRUB config file
+    Executes /sbin/init, a special program which starts all the others
+    Control is now passed to init
+init
+    Looks at the /etc/inittab to determine desired runlevel
+    Loads all programs appropriate for this runlevel
+        All programs from /etc/rc.d/rc2.d/ are loaded, because 2 is default Debian runlevel
+        SSH and TTY are started so you are able to connect to your computer
+    Booting up is now finished
+YOU 
+    Connect to your computer using SSH
+    SSH daemon executes bash shell for you
+    You can now type stuff
+    You are in control once again
+</code>
+
+For now we are interested only in "init" and "runlevel" stages, so I will give you a general overview of how the system starts up and automatically starts some programs. First, a little terminology:
+  - Daemon — a program which runs in background all the time. This means that it does not care if you are logged into the system, and usually you do not need to start it manually, because daemond are started automatically when computer boots up.
+  - Runlevel — a mode of system operation. Basically, this is just numbers which are fed to **init** program, which knows which daemons are associated with each number, and startd and stops those daemons as needed.
+
+In Debian there are the following runlevels:
+^ ID    ^  Description                  ^
+|S 	|This executed then system is powered on. |
+|0 	|Halt, this defines which actions are executed when system is shutting down. |
+|1 	|Single-User mode, this is a special mode for troubleshooting. In this mode most daemons are not automatically started. |
+|2-5 	|Full Multi-User, configured daemon start in this mode. |
+|6 	|Reboot. Like halt, but instead of powering down system reboots. |
+
+But how does init know? Well, where are special directories for this:
+<code bash>
+user1@vm1:/etc$ find /etc -type d -name 'rc*' 2>/dev/null | sort
+/etc/rc0.d
+/etc/rc1.d
+/etc/rc2.d
+/etc/rc3.d
+/etc/rc4.d
+/etc/rc5.d
+/etc/rc6.d
+/etc/rcS.d
+</code>
+
+As you might guess, each number and **S** corresponds to a run level from this table. Let us list one of those directories, which start all needed daemons on normal boot:
+<code bash>
+user1@vm1:/etc$ ls -al /etc/rc2.d | awk '{printf "%-15.15s %-3.3s %s\n",$9,$10,$11}'
+.
+..
+README
+S14portmap      ->  ../init.d/portmap
+S15nfs-common   ->  ../init.d/nfs-common
+S17rsyslog      ->  ../init.d/rsyslog
+S17sudo         ->  ../init.d/sudo
+S18acpid        ->  ../init.d/acpid
+S18atd          ->  ../init.d/atd
+S18cron         ->  ../init.d/cron
+S18exim4        ->  ../init.d/exim4
+S18ssh          ->  ../init.d/ssh
+S20bootlogs     ->  ../init.d/bootlogs
+S21rc.local     ->  ../init.d/rc.local
+S21rmnologin    ->  ../init.d/rmnologin
+S21stop-bootlog ->  ../init.d/stop-bootlogd
+</code>
+
+As you can see, files in this directory are just symbolic links to actual startup scripts. Let us look at one of this link more closely: **S18ssh          ->  ../init.d/ssh**. Here is what we are able to say about this file:
+  - It is a link to the file **./init.d/ssh**
+  - It starts with **S** which means //start//. Each script used in Debian start-up system has at least 2 parameters, //start// and //stop//. Now we can say that when our system switches to runlevel 2 this script is executed with action //start//.
+  - It has a number **18**. Scripts in rc directories are executed in alphabetical order, so now we understand that before starting **ssh**, system starts **portmap**, **nfs-common**, **rsyslog**, and **sudo**. **rsyslog** is a system loggin daemon, and ssh in particular want to log who and when accessed the system, so it needs **rsyslog** to be running before starting up.
+
+Now you will learn how to list enabled services (daemons), and enable and disable services (daemons).
+
+===== Do this =====
+
+<code 1 bash>
+sudo aptitude install rcconf
+ls -al /etc/rc2.d
+sudo rcconf --list
+sudo update-rc.d exim4 disable
+ls -al /etc/rc2.d
+sudo rcconf --list
+sudo update-rc.d exim4 enable
+ls -al /etc/rc2.d
+sudo rcconf --list
+</code>
+
+====== What you should see ======
+<code bash>
+user1@vm1:/var/log$ sudo aptitude install rcconf
+The following NEW packages will be installed:
+  rcconf
+0 packages upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 0 B/23.9 kB of archives. After unpacking 135 kB will be used.
+Selecting previously deselected package rcconf.
+(Reading database ... 24239 files and directories currently installed.)
+Unpacking rcconf (from .../archives/rcconf_2.5_all.deb) ...
+Processing triggers for man-db ...
+Setting up rcconf (2.5) ...
+
+user1@vm1:/etc$ ls -al /etc/rc2.d
+total 12
+drwxr-xr-x  2 root root 4096 Jun 27 11:42 .
+drwxr-xr-x 68 root root 4096 Jun 25 18:43 ..
+-rw-r--r--  1 root root  677 Mar 27 05:50 README
+lrwxrwxrwx  1 root root   17 Jun  4 11:53 S14portmap -> ../init.d/portmap
+lrwxrwxrwx  1 root root   20 Jun  4 11:53 S15nfs-common -> ../init.d/nfs-common
+lrwxrwxrwx  1 root root   17 Jun  4 11:53 S17rsyslog -> ../init.d/rsyslog
+lrwxrwxrwx  1 root root   14 Jun 15 19:02 S17sudo -> ../init.d/sudo
+lrwxrwxrwx  1 root root   15 Jun  4 11:53 S18acpid -> ../init.d/acpid
+lrwxrwxrwx  1 root root   13 Jun  4 11:53 S18atd -> ../init.d/atd
+lrwxrwxrwx  1 root root   14 Jun  4 11:53 S18cron -> ../init.d/cron
+lrwxrwxrwx  1 root root   15 Jun 27 11:42 S18exim4 -> ../init.d/exim4
+lrwxrwxrwx  1 root root   13 Jun  4 11:53 S18ssh -> ../init.d/ssh
+lrwxrwxrwx  1 root root   18 Jun  4 11:53 S20bootlogs -> ../init.d/bootlogs
+lrwxrwxrwx  1 root root   18 Jun  4 11:53 S21rc.local -> ../init.d/rc.local
+lrwxrwxrwx  1 root root   19 Jun  4 11:53 S21rmnologin -> ../init.d/rmnologin
+lrwxrwxrwx  1 root root   23 Jun  4 11:53 S21stop-bootlogd -> ../init.d/stop-bootlogd
+user1@vm1:/etc$ sudo rcconf --list
+rsyslog on
+ssh on
+bootlogs on
+portmap on
+sudo on
+nfs-common on
+udev on
+console-setup on
+kbd on
+exim4 on
+keyboard-setup on
+acpid on
+cron on
+atd on
+procps on
+module-init-tools on
+user1@vm1:/etc$ sudo update-rc.d exim4 disable
+update-rc.d: using dependency based boot sequencing
+insserv: warning: current start runlevel(s) (empty) of script `exim4' overwrites defaults (2 3 4 5).
+insserv: warning: current stop runlevel(s) (0 1 2 3 4 5 6) of script `exim4' overwrites defaults (0 1 6).
+user1@vm1:/etc$ ls -al /etc/rc2.d
+total 12
+drwxr-xr-x  2 root root 4096 Jun 27 11:43 .
+drwxr-xr-x 68 root root 4096 Jun 25 18:43 ..
+lrwxrwxrwx  1 root root   15 Jun 27 11:43 K01exim4 -> ../init.d/exim4
+-rw-r--r--  1 root root  677 Mar 27 05:50 README
+lrwxrwxrwx  1 root root   17 Jun  4 11:53 S14portmap -> ../init.d/portmap
+lrwxrwxrwx  1 root root   20 Jun  4 11:53 S15nfs-common -> ../init.d/nfs-common
+lrwxrwxrwx  1 root root   17 Jun  4 11:53 S17rsyslog -> ../init.d/rsyslog
+lrwxrwxrwx  1 root root   14 Jun 15 19:02 S17sudo -> ../init.d/sudo
+lrwxrwxrwx  1 root root   15 Jun  4 11:53 S18acpid -> ../init.d/acpid
+lrwxrwxrwx  1 root root   13 Jun  4 11:53 S18atd -> ../init.d/atd
+lrwxrwxrwx  1 root root   14 Jun  4 11:53 S18cron -> ../init.d/cron
+lrwxrwxrwx  1 root root   13 Jun  4 11:53 S18ssh -> ../init.d/ssh
+lrwxrwxrwx  1 root root   18 Jun  4 11:53 S20bootlogs -> ../init.d/bootlogs
+lrwxrwxrwx  1 root root   18 Jun  4 11:53 S21rc.local -> ../init.d/rc.local
+lrwxrwxrwx  1 root root   19 Jun  4 11:53 S21rmnologin -> ../init.d/rmnologin
+lrwxrwxrwx  1 root root   23 Jun  4 11:53 S21stop-bootlogd -> ../init.d/stop-bootlogd
+user1@vm1:/etc$ sudo rcconf --list
+rsyslog on
+ssh on
+bootlogs on
+portmap on
+sudo on
+nfs-common on
+udev on
+console-setup on
+kbd on
+keyboard-setup on
+acpid on
+cron on
+atd on
+procps on
+module-init-tools on
+exim4 off
+user1@vm1:/etc$ sudo update-rc.d exim4 enable
+update-rc.d: using dependency based boot sequencing
+user1@vm1:/etc$ ls -al /etc/rc2.d
+total 12
+drwxr-xr-x  2 root root 4096 Jun 27 11:43 .
+drwxr-xr-x 68 root root 4096 Jun 25 18:43 ..
+-rw-r--r--  1 root root  677 Mar 27 05:50 README
+lrwxrwxrwx  1 root root   17 Jun  4 11:53 S14portmap -> ../init.d/portmap
+lrwxrwxrwx  1 root root   20 Jun  4 11:53 S15nfs-common -> ../init.d/nfs-common
+lrwxrwxrwx  1 root root   17 Jun  4 11:53 S17rsyslog -> ../init.d/rsyslog
+lrwxrwxrwx  1 root root   14 Jun 15 19:02 S17sudo -> ../init.d/sudo
+lrwxrwxrwx  1 root root   15 Jun  4 11:53 S18acpid -> ../init.d/acpid
+lrwxrwxrwx  1 root root   13 Jun  4 11:53 S18atd -> ../init.d/atd
+lrwxrwxrwx  1 root root   14 Jun  4 11:53 S18cron -> ../init.d/cron
+lrwxrwxrwx  1 root root   15 Jun 27 11:43 S18exim4 -> ../init.d/exim4
+lrwxrwxrwx  1 root root   13 Jun  4 11:53 S18ssh -> ../init.d/ssh
+lrwxrwxrwx  1 root root   18 Jun  4 11:53 S20bootlogs -> ../init.d/bootlogs
+lrwxrwxrwx  1 root root   18 Jun  4 11:53 S21rc.local -> ../init.d/rc.local
+lrwxrwxrwx  1 root root   19 Jun  4 11:53 S21rmnologin -> ../init.d/rmnologin
+lrwxrwxrwx  1 root root   23 Jun  4 11:53 S21stop-bootlogd -> ../init.d/stop-bootlogd
+user1@vm1:/etc$ sudo rcconf --list
+rsyslog on
+ssh on
+bootlogs on
+portmap on
+sudo on
+nfs-common on
+udev on
+console-setup on
+kbd on
+exim4 on
+keyboard-setup on
+acpid on
+cron on
+atd on
+procps on
+module-init-tools on
+user1@vm1:/etc$
+</code>
+
+===== Explanation =====
+
+  - Installs **rcconf** package which allows you to easily manage runlevels.
+  - Prints out directory containing startup scripts for runlevel 2. Mail server exim4 is enabled for now.
+  - Just prints out services for the same runlevel. Notice that there are several services which are not shown because they are considered system services. **rcconf --list --expert** will list them all and many more which reside on different runlevels.
+  - Disables automatic startup of exim4, the mail server.
+  - Prints out directory containing startup scripts for runlevel 2. exim4 startup script is now renamed from **S18exim4** to **K01exim4** which means that exim4 is stopped (killed) when entering this runlevel. If exim4 was not running to begin with, nothing happens.
+  - Prints out services for runlevel 2. Service exim4 is now //off//.
+  - Enables automatic startup of exim4.
+  - Prints out directory containing startup scripts for runlevel 2 once more, exim4 in enabled again.
+  - Prints out services for runlevel 2. Status of exim4 changed to //on// as expected.
+
+====== Extra credit ======
+  - Read about Debian boot process here: http://www.debian.org/doc/manuals/debian-reference/ch03.en.html
+  - Try this: **aptitude install sysv-rc-conf**, **sysv-rc-conf --list**. Read **man sysv-rc-conf**.

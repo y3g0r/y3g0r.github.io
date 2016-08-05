@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex0 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:18 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex0 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex0"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex0decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex0.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex0.txt"/>
+<link rel="canonical" href="ex0.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex0","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_0_the_setup">Exercise 0. The Setup</h1>
+<div class="level1">
+</div>
+<h2 class="sectionedit2" id="windows_manual_installation">Windows, Manual Installation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> <a href="ex0/manual.html" class="wikilink1" title="llthw:ex0:manual">A Very Long Guide</a></div>
+</li>
+</ol>
+</div>
+<h2 class="sectionedit3" id="windows_virtualbox_virtual_appliance_preconfigured_image_in_ova_format">Windows, VirtualBox virtual appliance (preconfigured image in .ova format)</h2>
+<div class="level2">
+</div>
+<h3 class="sectionedit4" id="what_you_will_need">What you will need</h3>
+<div class="level3">
+<ol>
+<li class="level1"><div class="li"> <strong>VitualBox</strong>, a virtual machine player.</div>
+</li>
+<li class="level1"><div class="li"> <strong>putty</strong>, terminal emulator.</div>
+</li>
+<li class="level1"><div class="li"> Preconfigured VirtualBox image with Debian. </div>
+</li>
+</ol>
+</div>
+<h3 class="sectionedit5" id="do_this">Do this</h3>
+<div class="level3">
+<p>
+<strong>1.</strong> Download and install <a href="http://download.virtualbox.org/virtualbox/4.1.18/VirtualBox-4.1.18-78361-Win.exe" class="urlextern" title="http://download.virtualbox.org/virtualbox/4.1.18/VirtualBox-4.1.18-78361-Win.exe" rel="nofollow">VirtualBox</a>
+</p>
+<p>
+<strong>2.</strong> Download and install <a href="http://the.earth.li/~sgtatham/putty/latest/x86/putty-0.62-installer.exe" class="urlextern" title="http://the.earth.li/~sgtatham/putty/latest/x86/putty-0.62-installer.exe" rel="nofollow">Putty</a>.
+</p>
+<p>
+<strong>3.</strong> Download this file: <a href="https://docs.google.com/open?id=0Bw1iG1X4Li39ZlhkQmgtM1BhV2s" class="urlextern" title="https://docs.google.com/open?id=0Bw1iG1X4Li39ZlhkQmgtM1BhV2s" rel="nofollow">https://docs.google.com/open?id=0Bw1iG1X4Li39ZlhkQmgtM1BhV2s</a>
+</p>
+<p>
+Another link: <a href="http://thepiratebay.se/search/vm1.ova/0/99/0" class="urlextern" title="http://thepiratebay.se/search/vm1.ova/0/99/0" rel="nofollow">http://thepiratebay.se/search/vm1.ova/0/99/0</a>
+</p>
+<p>
+Or yet another link: <a href="http://fileconvoy.com/dfl.php?id=gf78117efb38017f19991890063f232bd5cd39165a" class="urlextern" title="http://fileconvoy.com/dfl.php?id=gf78117efb38017f19991890063f232bd5cd39165a" rel="nofollow">http://fileconvoy.com/dfl.php?id=gf78117efb38017f19991890063f232bd5cd39165a</a>
+</p>
+<pre class="code">md5: 7ac8a6059460f7f3e39aee7c4ee2c230 
+sha256: 18d8f31d0894c89865d5306b0cb3284d8889e15d155c7435fc7888f3dbafa3ec</pre>
+<p>
+<strong>4.</strong> Open this file.
+</p>
+<p>
+<a href="../_detail/llthw/setup149f3.html?id=llthw%3Aex0" class="media" title="llthw:setup1.png"><img src="../_media/llthw/setup1.png_%3b" class="media" alt=""/></a>
+</p>
+<p>
+<strong>5.</strong> Click <strong>Import</strong>.
+</p>
+<p>
+<a href="../_detail/llthw/setup249f3.html?id=llthw%3Aex0" class="media" title="llthw:setup2.png"><img src="../_media/llthw/setup2.png_%3b" class="media" alt=""/></a>
+</p>
+<p>
+<strong>6.</strong> Select <strong>vm1</strong> and click <strong>Start</strong>.
+</p>
+<p>
+<a href="../_detail/llthw/setup349f3.html?id=llthw%3Aex0" class="media" title="llthw:setup3.png"><img src="../_media/llthw/setup3.png_%3b" class="media" alt=""/></a>
+</p>
+<p>
+<strong>7.</strong> Wait for <strong>vm1</strong> to boot.
+</p>
+<p>
+<a href="../_detail/llthw/setup449f3.html?id=llthw%3Aex0" class="media" title="llthw:setup4.png"><img src="../_media/llthw/setup4.png_%3b" class="media" alt=""/></a>
+</p>
+<p>
+<strong>8.</strong> Launch <strong>putty</strong>, enter <strong>localhost</strong> into <strong>Host Name (or IP address)</strong> field and click <strong>Open</strong>.
+</p>
+<p>
+<a href="../_detail/llthw/setup549f3.html?id=llthw%3Aex0" class="media" title="llthw:setup5.png"><img src="../_media/llthw/setup5.png_%3b" class="media" alt=""/></a>
+</p>
+<p>
+<strong>9.</strong> Type in <strong>user1</strong>, <strong>&lt;ENTER&gt;</strong>, <strong>123qwe</strong>, <strong>&lt;ENTER&gt;</strong>.
+</p>
+<p>
+<a href="../_detail/llthw/setup649f3.html?id=llthw%3Aex0" class="media" title="llthw:setup6.png"><img src="../_media/llthw/setup6.png_%3b" class="media" alt=""/></a>
+</p>
+<p>
+10. Congratulations, you are now logged into vm1!
+</p>
+<p>
+<a href="../_detail/llthw/setup749f3.html?id=llthw%3Aex0" class="media" title="llthw:setup7.png"><img src="../_media/llthw/setup7.png_%3b" class="media" alt=""/></a>
+</p>
+</div>
+<h2 class="sectionedit6" id="linux">Linux</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> You already use Linux, what else do you want? Joking, you may follow windows guide fairly closely or just experiment on your live system, but with discretion. </div>
+</li>
+</ol>
+</div>
+<h2 class="sectionedit7" id="macos">MacOS</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> I will add steps here someday too.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex0.html';
+var disqus_title   = 'Exercise 0. The Setup';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex0.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex0.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex0.txt</bdi> · Last modified: 2012/12/31 09:42 (external edit)<br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerf6ca.gif?id=llthw%3Aex0&amp;1428742707" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex0 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:38 GMT -->
+</html>

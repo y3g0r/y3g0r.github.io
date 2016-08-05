@@ -1,0 +1,262 @@
+<code bash>
+Scopes and namespaces
+    namespace -- mapping from names to objects
+    attribute -- anything after a dot
+        read only or writable
+        =, del
+    local namespace
+        created on invocation, deleted on return
+    scope
+        textual region of python where a namespace is directly accessible
+            unqualified reference to name
+    determined statically, used dymaically
+    three nested scopes
+        innermost -- local names
+        scope of any enclosing functions
+        next-to-last scope - module global name
+        outermost -- contains built-in namespace
+    global
+        all references and assignments middle scope
+    assignments -- innermost scope
+        do not copy data, bind names to objects
+        deletions also
+    import
+        bind the module or function name in the local scope
+
+First look at classes
+    a little bit of new syntax
+    three new object types
+    some new semantics
+    Class definition syntax
+        class ClassName:
+            <statement-1>
+            .
+            .
+            .
+            <statement-N>
+        class definitions must be executed before any effect
+        statements inside a class will usually be function definitions
+            peculiar for of argument list
+        on entering class definition new namespace is created
+            is used as the local scope
+            function definitions bind the name of the new function here
+        on leaving class definition
+            new namespace is created, used as local scope
+            class object is created
+                basically a wrapper around contents of namespace
+                original scope is reinstated
+                class object is bound to the class name in the class definition header
+
+    Class objects
+        attribute references
+            standard syntax used for all attribute references: obj.name
+            all names that were in the class namespace then class object was created
+            valid attribute references      class MyClass:
+                MyClass.i                       """A simple example class"""
+                MyClass.f                       i = 12345
+                _doc_                           def f(self):
+                                                    return 'hello world'
+        instantiation
+            uses function notation
+            class object is like parameterless function that returns new instance of the class
+                x = MyClass() -- creates new instance of the class and assigns is to local variable x
+            instantiation operation creates an empty object
+            initial state
+                class instantiation auto invokes __init__() def __init__(self):
+                _init_ may have arguments                       self.data = []
+    Instance objects                           x.counter = 1                                     
+        data attributes                        while x.counter < 10:
+            need not to be declared                x.counter = x.counter * 2
+            appear then first assigned to      print x.counter
+        method                                 del x.counter
+            function that belongs to an object
+            not unique to class instances
+            valid names
+                depend on class
+                all atributes of a class that are functions
+                    define correcponding methods of its instances
+                    x.f -- valid method
+                    x.i -- not valid method
+                    x.f =\= MyClass.f, which is a method object
+    Method objects                
+        usually method is called right after it is bound, or stored away
+        x.f()     xf = x.f
+                  while True:
+                      print xf()
+    what happens when method is called?
+        oject is passed as the first argument of the function
+            in this example x.f() == MyClass.f(x)
+            calling a method with n arguments == calling corresponding function with and arg list
+                with an argument list that is created by inserting the methods object before the first arg
+        when instance attr is referenced that isnt a data attr
+            its clas is searched
+            if name denotes valid class attr that is a function
+                method object is created 
+                    by packing (pointers to) the instance of object
+                    funct object just found together in an absract object: method object
+        when method object is called with an argument list
+            new argument list is constructed from the instance object
+            function object is called with this new argument list
+Random remarks
+    data attr override method attr with the same name          def f1(self, x, y): # Function defined outside the class            
+    data attr may be ref by methods as well                        return min(x, x+y)           
+    clients shoud use data attrs with care                     class C:                         
+    cliens may add their own data attrs to instance object         f = f1                       
+        without affecting validity of methods                      def g(self):                 
+    no shorthand for ref data attr from within methods                 return 'hello world'  
+    often the first method attr is called self                     h = g                     
+        just a convention                                       
+    any function which is class attr                           class Bag:                  
+        defines a method for instances of that class               def __init__(self):          
+        f, g, h are all attrs of class c                               self.data = []
+            consequentally all methods of instances of c           def add(self, x):
+        methods may call other methods using self                      self.data.append(x)
+        methods may ref global vars as ordinary functions          def addtwice(self, x):
+        global scope associated with a method                          self.add(x)
+            module conataining its def                                 self.add(x)            
+            never used as global scope
+        each val is an objects and therefore has a class (type)
+            stored in object.__class__
+Inheritance
+    class DerivedClassName(BaseClassName):
+        <statement-1>
+        .
+        .
+        .
+        <statement-N>
+    class DerivedClassName(modname.BaseClassName):
+    if requested attr is not found in the class, it is looked in base class
+    method ref is only valid if it is a function object 
+    derived classes may override methods of their base classes
+    base class that calls another method in she same base class
+        may end up calling a method of derived class
+        to call directly
+            BaseClassName.methodname(self, arguments)
+            only works if base class is accesible as BaseClassName in global scope
+    multiple inheritance 
+        class DerivedClassName(Base1, Base2, Base3):
+            <statement-1>
+            .
+            .
+            .
+            <statement-N>
+Private vars and class-local refs
+    private instance var that cannot be accessed from inside an object do not exist in python
+    convention holds that a name prefixed with _ should be treated as a non-public part of the API
+    name mangling
+        any __spam is textually replaced with _classname__spam
+            classname being the current class with leading underscores stripped
+    Name mangling is helpful for letting subclasses override methods without breaking intraclass method calls
+    Note that the mangling rules are designed mostly to avoid accidents
+Odds and Ends
+    sometimes it is useful to have data type similar to C struct
+        bundling together a few nemed data items
+            class Employee:
+                pass
+
+            john = Employee() # Create an empty employee record
+
+            # Fill the fields of the record
+            john.name = 'John Doe'
+            john.dept = 'computer lab'
+            john.salary = 1000
+    class may be made to emulate the methods of data types
+        read() and readline()
+Exceptions are classes too
+    raise Class, instance 
+        instance must be an instance of Class or of a class derived from it
+    raise instance 
+        second form is a shorthand for:
+        raise instance.__class__, instance
+    A class in an except clause is compatible with an exception 
+        if it is the same class or a base class thereof (but not the other way around 
+        — an except clause listing a derived class is not compatible with a base class). 
+    For example, the following code will print B, C, D in that order:
+        class B:
+            pass
+        class C(B):
+            pass
+        class D(C):
+            pass
+
+        for c in [B, C, D]:
+            try:
+                raise c()
+            except D:
+                print "D"
+            except C:
+                print "C"
+            except B:
+                print "B"
+Iterators
+    for calls iter() on the container object
+        which returns an iterator object that defines the method next()
+            wihch accesses elements in the container one at a time
+        when there are no more elemets
+            next() raises a StopIteration
+            for loop terminates
+    it is easy to add iterator behavior to your classes. 
+        Define an __iter__() method which returns an object with a next() method. 
+        If the class defines next(), then __iter__() can just return self: 
+Generators
+    simple and powerful tool for creating iterators    
+        written like regular functions but use the yield statement whenever they want to return data  
+        Each time next() is called, the generator resumes where it left-off 
+            it remembers all the data values and which statement was last executed      
+    def reverse(data):
+        for index in range(len(data)-1, -1, -1):
+            yield data[index]
+        >>> for char in reverse('golf'):
+        ...     print char
+        ...
+        f
+        l
+        o
+        g
+    What makes generators so compact is that the __iter__() and next() methods are created automatically.           
+        automatically raise StopIteration
+Generator expressions
+    Some simple generators can be coded succinctly as expressions
+        using a syntax similar to list comprehensions but with parentheses instead of brackets   
+        designed for situations where the generator is used right away by an enclosing function    
+    are more compact but less versatile than full generator definitions
+    tend to be more memory friendly than equivalent list comprehensions.
+
+    Examples:
+
+        >>>
+        >>> sum(i*i for i in range(10))                 # sum of squares
+        285
+
+        >>> xvec = [10, 20, 30]
+        >>> yvec = [7, 5, 3]
+        >>> sum(x*y for x,y in zip(xvec, yvec))         # dot product
+        260
+
+        >>> from math import pi, sin
+        >>> sine_table = dict((x, sin(x*pi/180)) for x in range(0, 91))
+
+        >>> unique_words = set(word  for line in page  for word in line.split())
+
+        >>> valedictorian = max((student.gpa, student.name) for student in graduates)
+
+        >>> data = 'golf'
+        >>> list(data[i] for i in range(len(data)-1,-1,-1))
+        ['f', 'l', 'o', 'g']
+    
+        
+            
+
+
+            
+    
+
+
+
+
+            
+                
+        
+        
+
+</code>

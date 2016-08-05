@@ -1,0 +1,20 @@
+====== Simple launcher to allow logging of all scripts run via cron ======
+
+<code bash>
+#!/bin/bash
+
+# Usage: launcher user /etc/opt/script
+
+if id $1 | grep uid > /dev/null ; then
+        date_time=$(/bin/date +%Y-%m-%d\:%H:%M)
+        echo | tee -a /var/log/launcher/$(basename $2).log;
+        echo $date_time - starting script run... | tee -a /var/log/launcher/$(basename $2).log;
+        su -l $1 -c $2 2>&1 | tee -a /var/log/launcher/$(basename $2).log;
+        if (( ${PIPESTATUS[0]} == 0 )); then
+                echo $date_time:SUCCESS:[${PIPESTATUS[0]}] | tee -a /var/log/launcher/$(basename $2).log;
+        else
+                echo $date_time:ERROR:[${PIPESTATUS[0]}] | tee -a /var/log/launcher/$(basename $2).log;
+        fi;
+        echo $(/bin/date +%Y-%m-%d\:%H:%M) - script run finished. | tee -a /var/log/launcher/$(basename $2).log;
+fi;
+</code>

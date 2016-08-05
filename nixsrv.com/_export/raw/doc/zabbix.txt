@@ -1,0 +1,53 @@
+====== Zabbix cheatsheet ======
+
+===== Zabbix agent ======
+<code bash>
+# check parameter 
+    zabbix_get -s 127.0.0.1 -p 10050 -k "psql.tx_commited"
+# custom parameters
+    # disk subsystem usage, custom multiplier: 0.0009765625
+        UserParameter=sda.blk_read, iostat sda | grep sda | awk '{print $5}' 
+        UserParameter=sda.blk_wrtn, iostat sda | grep sda | awk '{print $6}'
+    # PostgreSQL monitoring
+        # Total transactions per second
+        UserParameter=psql.tx_commited, psql -U postgres -t -c "select sum(xact_commit) from pg_stat_database"
+        # Transactions per second per base
+        UserParameter=psql.test, psql -U postgres -t -c "SELECT datname, xact_commit FROM pg_stat_database" | egrep -E "^\ test .*$" | awk '{print $3}'
+    # tps monitoring, alternative
+        # in crontab
+        */2  *    * * *   root    /usr/bin/iostat -t 59 2 sda | grep sda | awk '{print $2}' > /tmp/tps.tmp && mv /tmp/tps.tmp /tmp/    tps
+        # in zabbixd_confg
+        UserParameter=iops, cat /tmp/tps    
+</code>
+===== Another agent config for using with scipts which I'm too lazy to paste here =====
+<code bash>
+    UserParameter=nginx[*],/etc/opt/nginx-stats "none" "$1" "$2"
+    # ----- apache performance monitoring --- 
+    UserParameter=apache2[*],/etc/opt/apache-stats "none" "$1" "$2"
+    # ----- mysql performance monitoring --- 
+    # For all the following commands HOME should be set to the directory that has .my.cnf file with password information.
+    # Flexible parameter to grab global variables. On the frontend side, use keys like mysql.status[Com_insert].
+    # Key syntax is mysql.status[variable].
+    UserParameter=mysql.status[*],echo "show global status where Variable_name='$1';" | HOME=/var/lib/zabbix mysql -N | awk '{print $$2}'
+    # Flexible parameter to determine database or table size. On the frontend side, use keys like mysql.size[zabbix,history,data].
+    # Key syntax is mysql.size[<database>,<table>,<type>]. Database may be a database name or "all". Default is "all".
+    # Table may be a table name or "all". Default is "all". Type may be "data", "index", "free" or "both". Both is a sum of data and index. Default is "both".
+    # Database is mandatory if a table is specified. Type may be specified always.  Returns value in bytes.
+    # 'sum' on data_length or index_length alone needed when we are getting this information for whole database instead of a single table
+    UserParameter=mysql.size[*],echo "select sum($(case "$3" in both|"") echo "data_length+index_length";; data|index) echo "$3_length";; free) echo "data_free";; esac)) from information_schema.tables$([[ "$1" = "all" || ! "$1" ]] || echo " where table_schema='$1'")$([[ "$2" = "all" || ! "$2" ]] || echo "and table_name='$2'");" | HOME=/var/lib/zabbix mysql -N
+    UserParameter=mysql.ping,HOME=/var/lib/zabbix mysqladmin ping | grep -c alive
+    UserParameter=mysql.version,mysql -Vl
+</code>
+
+===== Lame SSH script for establishing connections to Zabbix agents =====
+<code bash>
+#!/bin/bash
+num_servers = 3
+if (( $(ps ax | grep fNL | wc -l) < $num_servers )) # to avoid ssh dos
+then
+    ps ax | grep fNL | grep foo.site || ssh -fNL 127.0.0.1:10068:127.0.0.1:10050 foo.site
+    ps ax | grep fNL | grep bar.site || ssh -fNL 127.0.0.1:10067:127.0.0.1:10050 bar.site
+else
+    echo "Something bad happaned!"
+fi    
+</code>

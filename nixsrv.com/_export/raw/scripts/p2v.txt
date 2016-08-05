@@ -1,0 +1,29 @@
+====== p2v ======
+
+This is a small script which performs automated dump of a server and restores this dump on a selected partition. I wrote it to automate cloning servers to virtual machines.
+
+====== github =======
+
+https://github.com/sistemshik/p2v
+
+====== How it looks like =======
+<code bash>
+virt_server> p2v.py foo full
+WORKING WITH SERVER: 'foo'
+READING CONFIG FOR 'foo'
+CHECKING LOCAL CONFIG
+CHECKING LOCAL CONFIG FOR 'foo' COMPLETED SUCCESSFULLY
+CHECKING REMOTE CONFIG
+CHECKING NODUMP FLAG: "lsattr -d /home/backupman/dumps | egrep '[\\w-]+d[\\w-]+[ ]/data/dumps'"
+CHECKING REMOTE DUMP: 'sudo /sbin/dump a0f /dev/null /dev/null'
+CHECKING IF WE ARE ABLE TO SSH TO: "ssh -T backupman@foo 'if [ -d /data/dumps ] ; then exit 0 ; else exit 1 ; fi'"
+CHECKING REMOTE CONFIG FOR 'foo' COMPLETED SUCCESSFULLY
+DUMPING FILESYSTEMS
+GETTING THE DUMPS
+STOPPING VM: foo2 
+MAKING FS TYPE: ext3 ON PARTITION: /dev/mapper/foo
+RESTORING DUMPS FOR: foo
+INSTALLING BOOTLOADER FOR: foo
+RESTORING CONFIG FOR: foo
+STARTING VM: /etc/xen/foo.xm
+</code>

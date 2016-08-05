@@ -1,0 +1,191 @@
+====== Exercise 14. Package management: Debian package management utility aptitude ======
+
+Now it is time to get the sacred knowledge of adding new programs to your Linux system. The programs in Linux are called //packages//, and are usually installed from //network repositories// by tools knows as //package managers//.
+  * //Package// is typically a compressed program, and you install a package just like this: **aptitude install program . . .** To avoid installation of malicious programs, all packages are digitally signed by their creators, which means that if package is modified after its creation package manager will not allow you to install it.
+  * //Package manager// is a program which allows you install other program. Many programs //depend// on other programs, for example a program which uses dialog windows typically needs a program which knows how to draw those windows. Package manager knows about this dependencies, and when you ask it to install a particular programs it installs all programs which are needed for the one you asked to work. Debian package manager is called //aptitude//.
+  * //Network repository// is a site with many packages, readily available for installation.
+
+This is an outline of typical program installation:
+<code>
+YOU
+   Search for available programs using package manager
+   Ask your package manager to install a program
+Package manager 
+    Looks up for all programs which are needed to install current one
+    Marks them for installation in package manager database
+    Installs all needed programs including the one you need
+        Downloads all needed programs
+        Extracts files from those packages to places on your system defined by FHS standard
+            For every program runs a special install script which allow it to perform initial actions:
+                Create a directory
+                Create a database
+                Generate default configuration file
+                ...
+    Updates the system package database by modifying status of installed programs to installed
+YOU
+    Are able to run you freshly installed program now
+</code>
+
+It is time to understand where extracted files go. In Linux all same types of files are installed in the same locations. For example, executable files from all programs are installed in **/usr/bin**, documentation from all programs in **/usr/share/doc** and so on. This may sound a bit messy, but it is very useful. Which files go where is defined a document called //FHS standard//, you can view it by invoking **man 7 hier**. I will show you abbreviated version of The Filesystem Hierarchy Standard, Version 2.2 below:
+
+  * **/** -- This is the root directory.  This is where the whole tree starts.
+  * **/bin** -- This directory contains executable programs which are needed in single user mode and to bring the up or repair it.
+  * **/boot** -- Contains static files for the boot loader.  This directory only holds the files which are needed the boot process.  The map installer and configuration files should go to /sbin and /etc.
+  * **/dev** -- Special or device files, which refer to physical devices.  See mknod(1).
+  * **/etc** -- Contains  configuration  files which are local to the machine. 
+  * **/home** --  On  machines with home directories for users, these are usually beneath this directory, directly o The structure of this directory depends on local administration decisions.  
+  * **/lib** -- This directory should hold those shared libraries that are necessary to boot the system and to run commands in the root file system.
+  * **/media** -- This directory contains mount points for removable media such as CD and DVD disks or USB sticks.
+  * **/mnt** -- This directory is a mount point for a temporarily mounted file system. In some distributions, /mnt contains subdirectories intended to be used as mount points for several temporary file systems.
+  * **/proc** -- This is a mount point for the proc file system, which provides information about running processes and the kernel. This pseudo-file system is described in more detail in proc(5).
+  * **/root** -- This directory is usually the home directory for the root user (optional).
+  * **/sbin** -- Like /bin, this directory holds commands needed to boot the system, but which are usually not executed by normal users.
+  * **/srv** -- This directory contains site-specific data that is served by this system.
+  * **/tmp** -- This directory contains temporary files which may be deleted with no notice, such as by a regular job or at system boot up.
+  * **/usr** -- This directory is usually mounted from a separate partition. It should hold only sharable, read-only data, so that it can be mounted by various machines running Linux.
+  * **/usr/bin** -- This is the primary directory for executable programs. Most programs executed by normal users which are not needed for booting or for repairing the system and which are not installed locally should be placed in this directory.
+  * **/usr/local** -- This is where programs which are local to the site typically go.
+  * **/usr/share** -- This directory contains subdirectories with specific application data, that can be shared among different architectures of the same OS. Often one finds stuff here that used to live in /usr/doc or /usr/lib or /usr/man.
+  * **/usr/share/doc** -- Documentation about installed programs.
+  * **/var** -- This directory contains files which may change in size, such as spool and log files.
+  * **/var/log** -- Miscellaneous log files.
+  * **/var/spool** -- Spooled (or queued) files for various programs.
+  * **/var/tmp** -- Like /tmp, this directory holds temporary files stored for an unspecified duration.
+
+Well, that was big. But you do not need to memorize it, **man hier 7** is always there for you. For now you need to know only about **/usr/bin**, **/usr/share** and **/var/log**.
+
+Let us talk about packages and package managers a little more. First, let us reiterate:
+  * Every program is called a //package//.
+  * //Package manager// manages all you packages, that is installs and uninstalls them for you.
+  * To be able to do this, package managers holds a database of installed and available packages.
+
+Every package in this database has a status, which indicates whether package is installed, if it can be updated and so on. You can print out currently installed packages by typing **dpkg -l**. Example output is shown below:
+<code bash>
+user1@vm1:~$ dpkg -l | head | less -S
+Desired=Unknown/Install/Remove/Purge/Hold
+| Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
+|/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
+||/ Name                      Version                Description
++++-=====================-====================-========================================================
+ii  acpi                  1.5-2                displays information on ACPI devices
+ii  acpi-support-base     0.137-5              scripts for handling base ACPI  events such as the power
+ii  acpid                 1:2.0.7-1squeeze4    Advanced Configuration and Power Interface event daemon
+</code>
+As you can see, those statuses are shown in first three columns. From this output we can tall that all package are desired to be installed, are indeed installed and there is no error because third column is empty. Here is a list of all possible package statuses.
+
+First column. Desired action, what we want to do with package:
+  - u = Unknown (an unknown state) 
+  - i = Install. The package is selected for installation.
+  - r = The  package  is  selected  for  deinstallation (i.e. we want to remove all files, except configuration files).
+  - p = Purge. The package is selected to be purged (i.e.  we  want  to  remove everything from system directories, even configuration files).
+  - h = A package marked to be on hold is not handled by dpkg, unless forced to do that with option --force-hold.
+
+Second column. Package status, in what state package currently is:
+  - n = Not-installed. The package is not installed on your system.
+  - c = Config-files. Only the configuration files of the package exist on the system.
+  - H = Half-installed. The installation of the package has been started, but  not completed for some reason.
+  - U = Unpacked. The package is unpacked, but not configured.
+  - F = Half-configured. The  package is unpacked and configuration has been started, but not yet completed for some reason.
+  - W = Triggers-awaiting. The package awaits trigger processing by another package.
+  - t = Triggers-pending. The package has been triggered.
+  - i = Installed.  The package is unpacked and configured OK.
+
+Third column. Something got wrong: 
+  - R = reinst-required. A  package  marked  reinst-required is broken and requires reinstallation. These packages cannot be removed, unless forced with option --force-remove-reinstreq.
+
+Again, you don not need to memorize this, just remember **info dpkg** command which will show you exactly this information. And do not bother with package statuses for now, just remember that **ii** status means everything is ok with the package. 
+
+Enough talking, let us install a program called //midnight commander// which is a file manager, that is it allows you to visually navigate directories on your system and perform such operations on your files as copying, renaming or deleting them. 
+
+Now you will learn how search, install and remove packages.
+
+===== Do this =====
+
+<code bash 1>
+aptitude search mc | grep -i 'midnight commander'
+sudo aptitude install mc
+dpkg -L mc | grep '/usr/bin'
+aptitude search mc | grep -i 'midnight commander'
+mc
+<F10><ENTER>
+sudo aptitude remove mc
+</code>
+
+====== What you should see ======
+<code bash>
+user1@vm1:~$ aptitude search mc | grep -i 'midnight commander'
+p   mc                              - Midnight Commander - a powerful file manag
+p   mc-dbg                          - Midnight Commander - a powerful file manag
+user1@vm1:/home/user1# sudo aptitude install mc
+The following NEW packages will be installed:
+  libglib2.0-0{a} libglib2.0-data{a} mc shared-mime-info{a}
+0 packages upgraded, 4 newly installed, 0 to remove and 0 not upgraded.
+Need to get 2,957 kB/5,157 kB of archives. After unpacking 17.0 MB will be used.
+Do you want to continue? [Y/n/?] y
+Get:1 http://mirror.yandex.ru/debian/ squeeze/main libglib2.0-0 amd64 2.24.2-1 [1,122 kB]
+Get:2 http://mirror.yandex.ru/debian/ squeeze/main libglib2.0-data all 2.24.2-1 [994 kB]
+Get:3 http://mirror.yandex.ru/debian/ squeeze/main shared-mime-info amd64 0.71-4 [841 kB]
+Fetched 2,957 kB in 0s (4,010 kB/s)
+Selecting previously deselected package libglib2.0-0.
+(Reading database ... 24220 files and directories currently installed.)
+Unpacking libglib2.0-0 (from .../libglib2.0-0_2.24.2-1_amd64.deb) ...
+Selecting previously deselected package libglib2.0-data.
+Unpacking libglib2.0-data (from .../libglib2.0-data_2.24.2-1_all.deb) ...
+Selecting previously deselected package mc.
+Unpacking mc (from .../mc_3%3a4.7.0.9-1_amd64.deb) ...
+Selecting previously deselected package shared-mime-info.
+Unpacking shared-mime-info (from .../shared-mime-info_0.71-4_amd64.deb) ...
+Processing triggers for man-db ...
+Setting up libglib2.0-0 (2.24.2-1) ...
+Setting up libglib2.0-data (2.24.2-1) ...
+Setting up mc (3:4.7.0.9-1) ...
+Setting up shared-mime-info (0.71-4) ...
+user1@vm1:~$ aptitude search mc | grep -i 'midnight commander'
+i   mc                              - Midnight Commander - a powerful file manag
+p   mc-dbg                          - Midnight Commander - a powerful file manag
+user1@vm1:~$ mc
+  Left     File     Command     Options     Right
+|<  ~ ---------------------.[^]>||<  ~ ---------------------.[^]>|
+|'n  Name    | Size |Modify time||'n  Name    | Size |Modify time|
+|/..         |P--DIR|un  6 21:49||/..         |P--DIR|un  6 21:49|
+|/.aptitude  |  4096|un 25 18:34||/.aptitude  |  4096|un 25 18:34|
+|/.mc        |  4096|un 25 18:41||/.mc        |  4096|un 25 18:41|
+| .bash~story| 10149|un 21 12:01|| .bash~story| 10149|un 21 12:01|
+| .bash~ogout|   220|un  6 21:48|| .bash~ogout|   220|un  6 21:48|
+| .bashrc    |  3184|un 14 12:24|| .bashrc    |  3184|un 14 12:24|
+| .lesshst   |   157|un 25 11:31|| .lesshst   |   157|un 25 11:31|
+|----------------------------------------------------------------|
+|UP--DIR                        --UP--DIR                        |
+ ----------- 6367M/7508M (84%) -------------- 6367M/7508M (84%) -|
+Hint: The homepage of GNU Midnight Commander: http://www.midnight-
+user1@vm1:~$                                                   [^]
+ 1Help  2Menu  3View  4Edit  5Copy  6Re~ov 7Mkdir 8De~te 9Pu~Dn
+user1@vm1:~$ sudo aptitude remove mc
+The following packages will be REMOVED:
+  libglib2.0-0{u} libglib2.0-data{u} mc shared-mime-info{u}
+0 packages upgraded, 0 newly installed, 4 to remove and 0 not upgraded.
+Need to get 0 B of archives. After unpacking 17.0 MB will be freed.
+Do you want to continue? [Y/n/?] y
+(Reading database ... 24637 files and directories currently installed.)
+Removing shared-mime-info ...
+Removing mc ...
+Removing libglib2.0-data ...
+Removing libglib2.0-0 ...
+Processing triggers for man-db ...
+user1@vm1:~$
+</code>
+
+===== Explanation =====
+
+  - Search packages which name contains **mc** and show only whose packages which contain "midnight commander" in description. **grep -i** means that grep should search both lowercase and uppercase letters, without it grep will not show you lines containing **Midnight Commander** because they start from uppercase letters. Notice that **mc** has **p** status, which means that the desired action with this package is //purge//, and because there is nothing in other two status columns, we can conclude that this package is not installed. You man notice, that you did not install this package to begin with, but it is ok, because not installed packages have //purged// status by default.
+  - Installs package "mc". Because this change is system-wide this command needs to be invoked as superuser, which is allowed to write to all directories in the sytem. Also notice how debian package manager aptitude automatically installs packages libglib2.0-0, libglib2.0-data and shared-mime-info which are needed for mc.
+  - Shows you installed package executable files. As you can see, they go into **/usr/bin**.
+  - Invokes **mc**.
+  - Exits **mc**.
+  - Removes mc. Notice that automatically installed packages are also removed automatically. If after **mc** installation you would install something that needs those packages, aptitude will keep them.
+
+====== Extra creadit ======
+
+Well, that was a big one. And here is more:
+  - Type **aptiutde search emacs**. Find out what **v** means.
+  - Read, or at list skim, through [[http://www.debian.org/doc/manuals/debian-reference/ch02.en.html|Chapter 2. Debian package management]] of Debian manual.

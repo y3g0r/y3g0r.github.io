@@ -1,0 +1,133 @@
+====== Exercise 4. Bash: working with files, pwd, ls, cp, mv, rm, touch ======
+
+In Linux everything is a file. But what is a file? For now it will suffice to say that it is an object which contains some information. It is usually [[http://en.wikipedia.org/wiki/Computer_file|defined]] like this:
+
+> A computer file is a block of arbitrary information, or resource for storing information, which is available to a computer program and is usually based on some kind of durable storage. A file is durable in the sense that it remains available for programs to use after the current program has finished. Computer files can be considered as the modern counterpart of paper documents which traditionally are kept in offices' and libraries' files, and this is the source of the term.
+
+But this definition is too general, so let us be more specific. **man stat** tells us that file is an object which has the following properties additionally to information it contains:
+
+<code c>
+struct stat {
+   dev_t     st_dev;     /* ID of device containing file */
+   ino_t     st_ino;     /* inode number */
+   mode_t    st_mode;    /* protection */
+   nlink_t   st_nlink;   /* number of hard links */
+   uid_t     st_uid;     /* user ID of owner */
+   gid_t     st_gid;     /* group ID of owner */
+   dev_t     st_rdev;    /* device ID (if special file) */
+   off_t     st_size;    /* total size, in bytes */
+   blksize_t st_blksize; /* blocksize for file system I/O */
+   blkcnt_t  st_blocks;  /* number of 512B blocks allocated */
+   time_t    st_atime;   /* time of last access */
+   time_t    st_mtime;   /* time of last modification */
+   time_t    st_ctime;   /* time of last status change */
+};
+</code>
+
+Don not be intimidated, just remember the following properties:
+  * Size, which is exactly what is says on the tin.
+  * Time of last access, which is updated when you view a file.
+  * Time of last modification, which is updated when you change a file.
+
+Now you will learn how to print out your current directory, files in your directory, copy and move files.
+
+===== Do this =====
+<code bash 1>
+pwd
+ls
+ls -a
+ls -al
+ls -altr
+cp -v .bash_history{,1}
+cp -v .bash_history1 .bash_history2
+mv -v .bash_history1 .bash_history2
+rm -v .bash_history2
+touch .bashrc
+ls -al
+ls .*
+</code>
+
+====== What you should see ======
+<code bash>
+Hello, user1!
+user1@vm1:~$ pwd
+/home/user1
+user1@vm1:~$ ls
+user1@vm1:~$ ls -a
+.  ..  .bash_history  .bash_history1  .bash_logout  .bashrc  .lesshst  .profile  .profile.bak  .profile.bak1
+user1@vm1:~$ ls -al
+total 40
+drwxr-xr-x 2 user1 user1 4096 Jun  7 13:30 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1  853 Jun  7 15:03 .bash_history
+-rw------- 1 user1 user1  308 Jun  7 13:14 .bash_history1
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun  6 21:48 .bashrc
+-rw------- 1 user1 user1   45 Jun  7 13:31 .lesshst
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+user1@vm1:~$ ls -altr
+total 40
+-rw-r--r-- 1 user1 user1 3184 Jun  6 21:48 .bashrc
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+-rw------- 1 user1 user1  308 Jun  7 13:14 .bash_history1
+drwxr-xr-x 2 user1 user1 4096 Jun  7 13:30 .
+-rw------- 1 user1 user1   45 Jun  7 13:31 .lesshst
+-rw------- 1 user1 user1  853 Jun  7 15:03 .bash_history
+user1@vm1:~$ cp -v .bash_history{,1}
+`.bash_history' -> `.bash_history1'
+user1@vm1:~$ cp -v .bash_history1 .bash_history2
+`.bash_history1' -> `.bash_history2'
+user1@vm1:~$ mv -v .bash_history1 .bash_history2
+`.bash_history1' -> `.bash_history2'
+user1@vm1:~$ rm -v .bash_history2
+removed `.bash_history2'
+user1@vm1:~$ touch .bashrc
+user1@vm1:~$ ls -al
+total 36
+drwxr-xr-x 2 user1 user1 4096 Jun 14 12:23 .
+drwxr-xr-x 3 root  root  4096 Jun  6 21:49 ..
+-rw------- 1 user1 user1  853 Jun  7 15:03 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jun  6 21:48 .bash_logout
+-rw-r--r-- 1 user1 user1 3184 Jun 14 12:24 .bashrc
+-rw------- 1 user1 user1   45 Jun  7 13:31 .lesshst
+-rw-r--r-- 1 user1 user1  697 Jun  7 12:25 .profile
+-rw-r--r-- 1 user1 user1  741 Jun  7 12:19 .profile.bak
+-rw-r--r-- 1 user1 user1  741 Jun  7 13:12 .profile.bak1
+user1@vm1:~$
+user1@vm1:~$ ls .*
+.bash_history  .bash_logout  .bashrc  .lesshst  .profile  .profile.bak  .profile.bak1
+
+.:
+ls.out
+
+..:
+user1
+</code>
+
+===== Explanation =====
+   - Prints out your current working directory, which is your home directory. Notice how this differs from **~** in **user1@vm1:~**, which also indicates that your are in your home directory. That is because **~** is a shortcut for your home directory.
+   - You get nothing here because there are only hidden files in your home directory. Remember, hidden files are ones which names start with a dot.
+   - Prints out all files in your home directory, because **-a** parameter tells ls to show all files including hidden ones.
+   - Prints out all files in your home directory in long format: **permissions**, **owner**, **group**, **size**, **timestamp (normally modification time) and filename**.
+   - Notice how files are now arranged by date, newest files being last. **-t** tells ls to sort by time, and **-r** tells ls to reverse the sort.
+   - Copies **.bash_history** to **.bash_history1**. It may seem cryptic to you, but explanation is really simple. Bash has a feature called brace expansion, that it has a set of rules which define how constructs like **something{1,2,3}** are treated. In our case **.bash_history{,1}** expands into two arguments, namely **.bash_history** and **.bash_history1**. Bash just takes a parameter before the brace, **.bash_history** in our case, and adds everything which is in braces, separated by commas, to this parameter consequentially. First addition becomes just **.bash_history** because first argument in braces is void, there is no first argument. Next, Bash adds **1** because that's the second argument, and voila! Resulting arguments, which are passed to **cp** //after// expansion are **-v .bash_history .bash_history1**.
+   - This might be obvious for you now. Copies recently created **.bash_history1** to **.bash_history2**.
+   - Moves **.bash_history1** to **.bash_history2**. Notice that it overwrites the destination file without asking, so there is no more **.bash_history2**, gone!
+   - Removes **.bash_history2**. Where is no warning, so beware. Also, always use **-v** key.
+   - Updates **.bashrc** timestamp to current date and time. This means that all **.bashrc** time attributes, **st_atime**, **st_mtime** and **st_ctime** are set to current date and time. You may become sure of this by typing in **stat .bashrc**.
+   - Prints out all files in long format again. Notice how **.bashrc** timestamps changed.
+   - Prints out files in you home directory in short format. Notice that you get listing of not only of **/home/user1** directory, but also of **/home** directory itself. <html><span style="color:red;font-size:100%;">Do not use this construct with any command, especially <b>rm</b>, ever! Chances are, you will accidentally cripple your system by deleting wrong files or changes access right to them.</span></html>
+
+ 
+====== Extra credit =====
+   - Play with bash brace expansion. Start with **echo test{1,2,foo,bar}**. Try typing in several separate parameters with braces. 
+   - Google **bash brace expansion**, open "Bash Reference Manual" from the search results and read the appropriate section.
+   - Try to find out how and why **ls .*** works.
+   - Say to yourself 10 times: "I will always use verbose option. Verbose option is commonly accessible as **-v** parameter".
+   - Say to yourself 10 times: "I will always use check any hazardous command with **ls**".

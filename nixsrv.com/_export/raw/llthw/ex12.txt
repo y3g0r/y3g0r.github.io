@@ -1,0 +1,93 @@
+====== Exercise 12. Documentation: man, info ======
+
+Now that you have tasted Linux it is time to introduce online Linux documentation facilities. You already know about **man**, because I told you to look things up in it. Maybe you even had read **man** documentation page. So anyway, what do you need to know about **man** to use it effectively?
+
+To begin with, **man** pages are just compressed text files containing special markup so **man** program will know how to format them for you. In Debian they are located in **/usr/share/man/**. You can browse them by using **zless**. It is not even a program but a shell script, which uncompresses files and invokes **less**.
+
+Next, I will quote **man** page about its sections:
+  - Executable programs or shell commands
+  - System calls (functions provided by the kernel)
+  - Library calls (functions within program libraries)
+  - Special files (usually found in /dev)
+  - File formats and conventions eg /etc/passwd
+  - Games
+  - Miscellaneous  (including  macro  packages and conventions), e.g. man(7), groff(7)
+  - System administration commands (usually only for root)
+  - Kernel routines [Non standard]
+
+It is exactly what it says on the tin. To invoke appropriate **man** section just type its section number, like: **man 1**.  No worries if you do not understand what some section means, for now you will need only sections **1** and **8**, which are about programs and system administrator utilities installed on your system. Additionally, you man already know what **man(7)** is for.
+
+This are standard sections of a man page:  
+  - //NAME// — program name and short description.
+  - //SYNOPSIS// — short list of available program options
+  - //DESCRIPTION// — description of a program and explanation of available parameters.
+  - //OPTIONS// — some man pages keep explanation of available parameters here.
+  - //EXIT STATUS// — every program returns a code which indicates its success or failure. This code values are explained here.
+  - //RETURN VALUE// — usually the same as //EXIT STATUS//.
+  - //ERRORS// — known errors in a program.
+  - //ENVIRONMENT// — environment variables. Set those before invoking the program.
+  - //FILES// — usually, program configuration files.
+  - //VERSIONS// — information about changes in program.
+  - //CONFORMING TO// — notes about compatibility.
+  - //NOTES// — information which an author of a man page did not know where to put.
+  - //BUGS// — known errors in a program.
+  - //EXAMPLE// — contains examples of program invocation. Very useful!
+  - //AUTHORS// — who wrote the program.
+  - //SEE ALSO// — related man pages.
+
+Now about conventions, quoting again:
+  - **bold text** — type exactly as shown.
+  - __//italic text//__ — replace with appropriate argument. This text mostly is displayed not //italic//, but like __underlined__.
+  - **[-abc]** — any or all arguments within **[ ]** are optional.
+  - **-a|-b** — options delimited by **|** cannot be used together.
+  - **argument ...** — argument is repeatable.
+  - **[expression] ...** — entire expression within **[ ]** is repeatable.
+
+I will illustrate this by example. **man less** shows this:
+
+{{:llthw:less.png?847|}}
+
+Well, looks kinda scary I must say. First 4 lines are easy, just type what is shown and that is it:\\
+**1.** **less -?**\\
+**2.** **less --help**\\
+**3.** **less -V**\\
+**4.** **less --version**\\
+
+Starting from line 5, as we can see, //italic// text is indeed shown as __underlined__.  And, it looks totally incomprehensible. Let us go through it line by line.
+
+**5.** **less [-[+]aBcCdeEfFgGiIJKLmMnNqQrRsSuUVwWX~]** — this looks more scary.
+  * First, it is optional because all arguments are enclosed in **[]**.
+  * Second, when specifying an argument it //must// start with **-**. This is non-optional. 
+  * Third, after **-** you //may// specify optional modifier **+**, which meaning is explained further in the manual.
+  * Fourth, you can specify one or several of commands which are shown as sequence of letters here. For example, you may type **less -S .bashrc**, or **less -+S .bashrc**, or **less -SG .bashrc .profile** or **less -+SG .bashrc .profile**
+
+**6.** **[-b space] [-h lines] [-j line] [-k keyfile]** — simple enough, you may specify any of the keys shown **-b**, **-h**, **-j**, **-k** with parameters **space**, **lines**, **line** and **keyfile** respectively, which are explained in further in the manual.
+
+**7.** **[-{oO} logfile] [-p pattern] [-P prompt] [-t tag]** — almost the same as line 6. **-{oO}** means that you may specify **-o** or **-O**, but not both at the same time.
+
+**8.** **[-T tagsfile] [-x tab,...] [-y lines] [-[z] lines]** — again, almost the same as line 6. **-x tab,...** means that you may specify several values after **-x**, for example **-x9** or **-x9,17**. **-[z] lines** means, that **-z** is optional, and you may just type **less -10** instead of **less -z10**.
+
+**9.** **[-# shift] [+[+]cmd] [- -] [filename]...** — this is somewhat more cryptic. **+[+]cmd** means that you may type **less +cmd** or **less ++ cmd**. **- -** is just a prefix. **[filename]...** reads //one-or-more// and means that you may specify several files when invoking less, for example **less .bashrc**, **less .bashrc .profile**, etc.
+
+We are done! Not so scary, is it? Remember, because you are viewing manuals with **less**, to search what some key means type **/key<ENTER>** or **&key<ENTER>**. For example, to search what **-T** key means, type **/-T<ENTER>**. 
+
+Now I will give you list of useful man commands:
+   - **man -k .** — list all man pages in your system. Not exactly very useful, but you may want to mediate on this list sometime. Or you can just count them all by typing **man -k . | wc**. 
+   - **man -k [search string]** — search something in man pages descriptions. Tye this: **man -k tty**.
+   - **man -wK [search string]** - search something in man page bodies. Try **man -wK tty**.
+
+Well, that is it for **man**. Now, there is another useful documentation utility, **info**. The command list is as follows:
+  - **info [...]** — invoke **info**. If you invoke it without arguments, it will take you to the index page. 
+  - **<UP>**, **<DOWN>**, **<LEFT>**, **<RIGHT>** allows you to scroll text.
+  - **<ENTER>** open the link under cursor. Links start with ** * **.
+  - **<TAB>** — jump to the next link in document. 
+  - **u** — go up one level.
+  - **p** — go to previous page, just like in browser.
+  - **n** — go to next pages.
+  - **q** — close info.
+
+To start info with already familiar to you as I hope, vi keys, type **info --vi-keys**. Now you can scroll with **j** and **k**. 
+
+====== Extra credit ======
+  - Type **man man** and try to decode //SYNOPSIS// section, which explains how it may be invoked.
+  - Type **info** and **h**, read **info** help section.

@@ -1,0 +1,730 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex23 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:54 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex23 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex23"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex23decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex23.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex23.txt"/>
+<link rel="canonical" href="ex23.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex23","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_23_filesystemssecurity_permissions_chown_chmod_umask">Exercise 23. Filesystems: security permissions, chown, chmod, umask</h1>
+<div class="level1">
+<p>
+It is time to understand Linux filesystems security model. Let us start with quoting Wikipedia article on <a href="http://en.wikipedia.org/wiki/Filesystem_permissions#Traditional_Unix_permissions" class="urlextern" title="http://en.wikipedia.org/wiki/Filesystem_permissions#Traditional_Unix_permissions" rel="nofollow">permissions</a>:
+</p>
+<blockquote><div class="no">
+Most current file systems have methods of administering permissions or access rights to specific users and groups of users. These systems control the ability of the users to view or make changes to the contents of the filesystem.</div></blockquote>
+<blockquote><div class="no">
+Permissions on Unix-like systems are managed in three distinct classes. These classes are known as <em>user</em>, <em>group</em>, and <em>others</em>. In effect, Unix permissions are a simplified form of access control lists (ACLs).</div></blockquote>
+<blockquote><div class="no">
+When a new file is created on a Unix-like system, its permissions are determined from the <em>umask</em> of the process that created it.</div></blockquote>
+<p>
+For each file in Linux there are three <em>permission classes</em> associated with it. For each <em>permission class</em> there are three <em>permissions</em>.
+</p>
+<p>
+This are <em>permission classes</em>:
+</p>
+<div class="table sectionedit2"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> <em>Class</em> </th><th class="col1"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> user </td><td class="col1 leftalign"> One system user. The file is said to be <em>owned</em> by this user. </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> group </td><td class="col1"> One group of users </td>
+</tr>
+<tr class="row3">
+<td class="col0"> others </td><td class="col1"> Any other users or groups </td>
+</tr>
+</table></div>
+<p>
+This are <em>permissions</em>, assignable for each class:
+</p>
+<div class="table sectionedit3"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 rightalign"> <em>Permission</em> </th><th class="col1"> Symbolic <br/>
+notation </th><th class="col2"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"><strong>r</strong>ead </td><td class="col1"> <pre class="code">r--</pre>
+</td><td class="col2"> Ability to read the file </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"><strong>w</strong>rite </td><td class="col1"> <pre class="code">-w-</pre>
+</td><td class="col2"> Ability to write to the file </td>
+</tr>
+<tr class="row3">
+<td class="col0">e<strong>x</strong>ecute</td><td class="col1"> <pre class="code">--x</pre>
+</td><td class="col2"> Ability to execute file as a program, <br/>
+for example a shell script should have this set </td>
+</tr>
+</table></div>
+<p>
+This two tables can be summed up:
+</p>
+<div class="table sectionedit4"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 centeralign" colspan="3"> Owner </th><th class="col3 centeralign" colspan="3"> Group </th><th class="col6 centeralign" colspan="3"> Others </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"><pre class="code">r</pre>
+</td><td class="col1"><pre class="code">w</pre>
+</td><td class="col2"><pre class="code">x</pre>
+</td><td class="col3"><pre class="code">r</pre>
+</td><td class="col4"><pre class="code">w</pre>
+</td><td class="col5"><pre class="code">x</pre>
+</td><td class="col6"><pre class="code">r</pre>
+</td><td class="col7"><pre class="code">w</pre>
+</td><td class="col8"><pre class="code">x</pre>
+</td>
+</tr>
+</table></div>
+<p>
+This permissions are represented as numbers. Consider the following output:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-al</span> tmp.img
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> root root <span class="nu0">252706816</span> Jul  <span class="nu0">6</span> 07:<span class="nu0">54</span> tmp.img
+<span class="co4">user1@vm1:~$ </span><span class="kw2">stat</span> tmp.img
+  File: <span class="st_h">'tmp.img'</span>
+  Size: <span class="nu0">252706816</span>       Blocks: <span class="nu0">494064</span>     IO Block: <span class="nu0">4096</span>   regular <span class="kw2">file</span>
+Device: 809h<span class="sy0">/</span>2057d      Inode: <span class="nu0">88534</span>       Links: <span class="nu0">1</span>
+Access: <span class="br0">&#40;</span>0644<span class="sy0">/</span>-rw-r--r--<span class="br0">&#41;</span>  Uid: <span class="br0">&#40;</span>    <span class="nu0">0</span><span class="sy0">/</span>    root<span class="br0">&#41;</span>   Gid: <span class="br0">&#40;</span>    <span class="nu0">0</span><span class="sy0">/</span>    root<span class="br0">&#41;</span>
+Access: <span class="nu0">2012</span>-07-06 07:<span class="nu0">56</span>:<span class="nu0">58.000000000</span> <span class="re5">-0400</span>
+Modify: <span class="nu0">2012</span>-07-06 07:<span class="nu0">54</span>:<span class="nu0">54.000000000</span> <span class="re5">-0400</span>
+Change: <span class="nu0">2012</span>-07-06 07:<span class="nu0">54</span>:<span class="nu0">54.000000000</span> <span class="re5">-0400</span>
+<span class="co4">user1@vm1:~$</span></pre>
+<p>
+Here we are able to see that <strong>tmp.img</strong> is <em>owned</em> by user <strong>root</strong> and group <strong>root</strong> and has the following permissions: <strong>-rw-r–r–</strong>. Let us learn to read them.
+</p>
+<pre class="bash code bash"><span class="re5">-rw</span>        <span class="co0"># Owner can read and write to the file</span>
+r--        <span class="co0"># Group can only read the file</span>
+r--        <span class="co0"># Others can also only read the file</span>
+<span class="nu0">1</span>          <span class="co0">#</span>
+root       <span class="co0"># Owner is user root</span>
+root       <span class="co0"># Group is root (but remember not to confuse this with user)</span>
+<span class="nu0">252706816</span>  <span class="co0">#</span>
+Jul        <span class="co0">#</span>
+<span class="nu0">6</span>          <span class="co0">#</span>
+07:<span class="nu0">54</span>      <span class="co0">#</span>
+tmp.img    <span class="co0">#</span></pre>
+<p>
+Here are the same permissions is <em>octal</em> notation:
+</p>
+<pre class="bash code bash">Access:
+<span class="br0">&#40;</span>
+  <span class="nu0">0</span>
+  <span class="nu0">6</span> <span class="re5">-rw</span>
+  <span class="nu0">4</span> r--
+  <span class="nu0">4</span> r--
+<span class="br0">&#41;</span>
+Uid: <span class="br0">&#40;</span>    <span class="nu0">0</span><span class="sy0">/</span>    root<span class="br0">&#41;</span>
+Gid: <span class="br0">&#40;</span>    <span class="nu0">0</span><span class="sy0">/</span>    root<span class="br0">&#41;</span></pre>
+<p>
+And this is the table for translating from <em>octal</em> to <em>symbolic</em> notation:
+</p>
+<div class="table sectionedit5"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Symbolic </th><th class="col1"> Octal </th><th class="col2"> Binary </th><th class="col3">.</th><th class="col4"> Symbolic </th><th class="col5"> Octal </th><th class="col6"> Binary </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"> <pre class="code"> --- </pre>
+</td><td class="col1"> <pre class="code"> 0 </pre>
+</td><td class="col2"> <pre class="code"> 000 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> r-- </pre>
+</td><td class="col5"> <pre class="code"> 4 </pre>
+</td><td class="col6"> <pre class="code"> 101 </pre>
+</td>
+</tr>
+<tr class="row2">
+<td class="col0"> <pre class="code"> --x </pre>
+</td><td class="col1"> <pre class="code"> 1 </pre>
+</td><td class="col2"> <pre class="code"> 001 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> r-x </pre>
+</td><td class="col5"> <pre class="code"> 5 </pre>
+</td><td class="col6"> <pre class="code"> 100 </pre>
+</td>
+</tr>
+<tr class="row3">
+<td class="col0"> <pre class="code"> -w- </pre>
+</td><td class="col1"> <pre class="code"> 2 </pre>
+</td><td class="col2"> <pre class="code"> 010 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> rw- </pre>
+</td><td class="col5"> <pre class="code"> 6 </pre>
+</td><td class="col6"> <pre class="code"> 110 </pre>
+</td>
+</tr>
+<tr class="row4">
+<td class="col0"> <pre class="code"> -wx </pre>
+</td><td class="col1"> <pre class="code"> 3 </pre>
+</td><td class="col2"> <pre class="code"> 011 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> rwx </pre>
+</td><td class="col5"> <pre class="code"> 7 </pre>
+</td><td class="col6"> <pre class="code"> 111 </pre>
+</td>
+</tr>
+</table></div>
+<p>
+Notice that resulting permissions are obtained with simple addition. For example, let us take <strong>r-x</strong> permission. <strong>r</strong> in octal notation is 4, <strong>x</strong> is 1, 1+4 is 5 which is <strong>r-x</strong>.
+</p>
+<p>
+Now lets talk about zero in stat output <strong>0644</strong>. This is for setting up something called <strong><a href="http://en.wikipedia.org/wiki/Setuid" class="urlextern" title="http://en.wikipedia.org/wiki/Setuid" rel="nofollow">SUID</a></strong>, <strong>SGID</strong> and <strong><a href="http://en.wikipedia.org/wiki/Sticky_bit" class="urlextern" title="http://en.wikipedia.org/wiki/Sticky_bit" rel="nofollow">Sticky bit</a></strong>. I will not cover it in detail, but I will give you an Extra Credit task for this and translation tables.
+</p>
+<p>
+Special bits:
+</p>
+<div class="table sectionedit6"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 centeralign"> Mode </th><th class="col1"> Symbolic <br/>
+notataion </th><th class="col2"> Description </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> SUID </td><td class="col1 leftalign"> <pre class="code">u--</pre>
+</td><td class="col2"> <strong>S</strong>et <strong>U</strong>ser <strong>ID</strong> upon execution. </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"> SGID </td><td class="col1 leftalign"> <pre class="code">-g-</pre>
+</td><td class="col2"> <strong>S</strong>et <strong>G</strong>roup <strong>ID</strong> upon execution. </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> Sticky </td><td class="col1 leftalign"> <pre class="code">--s</pre>
+</td><td class="col2"> Works only for directories, when set, files in that directory may only be unlinked or renamed by root or their owner. </td>
+</tr>
+</table></div>
+<p>
+Translating special bits from symbolic to octal notation:
+</p>
+<div class="table sectionedit7"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Symbolic </th><th class="col1"> Octal </th><th class="col2"> Binary </th><th class="col3">.</th><th class="col4"> Symbolic </th><th class="col5"> Octal </th><th class="col6"> Binary </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"> <pre class="code"> --- </pre>
+</td><td class="col1"> <pre class="code"> 0 </pre>
+</td><td class="col2"> <pre class="code"> 000 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> u-- </pre>
+</td><td class="col5"> <pre class="code"> 4 </pre>
+</td><td class="col6"> <pre class="code"> 101 </pre>
+</td>
+</tr>
+<tr class="row2">
+<td class="col0"> <pre class="code"> --s </pre>
+</td><td class="col1"> <pre class="code"> 1 </pre>
+</td><td class="col2"> <pre class="code"> 001 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> u-s </pre>
+</td><td class="col5"> <pre class="code"> 5 </pre>
+</td><td class="col6"> <pre class="code"> 100 </pre>
+</td>
+</tr>
+<tr class="row3">
+<td class="col0"> <pre class="code"> -g- </pre>
+</td><td class="col1"> <pre class="code"> 2 </pre>
+</td><td class="col2"> <pre class="code"> 010 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> ug- </pre>
+</td><td class="col5"> <pre class="code"> 6 </pre>
+</td><td class="col6"> <pre class="code"> 110 </pre>
+</td>
+</tr>
+<tr class="row4">
+<td class="col0"> <pre class="code"> -gs </pre>
+</td><td class="col1"> <pre class="code"> 3 </pre>
+</td><td class="col2"> <pre class="code"> 011 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> ugs </pre>
+</td><td class="col5"> <pre class="code"> 7 </pre>
+</td><td class="col6"> <pre class="code"> 111 </pre>
+</td>
+</tr>
+</table></div>
+<p>
+Now what about newly created file? For example, you created a file with <strong>touch umask.test</strong>, which permissions will it have? It turns out that you are able to control this with <a href="http://en.wikipedia.org/wiki/Umask" class="urlextern" title="http://en.wikipedia.org/wiki/Umask" rel="nofollow">file mode creation mask</a>, <em>umask</em>. Is a mechanism to define which permissions assign to files when you are creating it. The umask works by <em>masking out</em>, that is substracting permissions from default ones, which for <strong>bash</strong> are <strong>777</strong> for directories and <strong>666</strong> for files. Umask is define for <strong>user</strong>, <strong>group</strong> and <strong>others</strong> also.
+</p>
+<p>
+Mapping betweend umask values and permissions:
+</p>
+<div class="table sectionedit8"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Symbolic </th><th class="col1"> Octal </th><th class="col2"> Binary </th><th class="col3">.</th><th class="col4"> Symbolic </th><th class="col5"> Octal </th><th class="col6"> Binary </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0"> <pre class="code"> rwx </pre>
+</td><td class="col1"> <pre class="code"> 0 </pre>
+</td><td class="col2"> <pre class="code"> 000 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> -wc </pre>
+</td><td class="col5"> <pre class="code"> 4 </pre>
+</td><td class="col6"> <pre class="code"> 101 </pre>
+</td>
+</tr>
+<tr class="row2">
+<td class="col0"> <pre class="code"> rw- </pre>
+</td><td class="col1"> <pre class="code"> 1 </pre>
+</td><td class="col2"> <pre class="code"> 001 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> -w- </pre>
+</td><td class="col5"> <pre class="code"> 5 </pre>
+</td><td class="col6"> <pre class="code"> 100 </pre>
+</td>
+</tr>
+<tr class="row3">
+<td class="col0"> <pre class="code"> r-x </pre>
+</td><td class="col1"> <pre class="code"> 2 </pre>
+</td><td class="col2"> <pre class="code"> 010 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> --x </pre>
+</td><td class="col5"> <pre class="code"> 6 </pre>
+</td><td class="col6"> <pre class="code"> 110 </pre>
+</td>
+</tr>
+<tr class="row4">
+<td class="col0"> <pre class="code"> r-- </pre>
+</td><td class="col1"> <pre class="code"> 3 </pre>
+</td><td class="col2"> <pre class="code"> 011 </pre>
+</td><td class="col3">.</td><td class="col4"> <pre class="code"> --- </pre>
+</td><td class="col5"> <pre class="code"> 7 </pre>
+</td><td class="col6"> <pre class="code"> 111 </pre>
+</td>
+</tr>
+</table></div>
+<p>
+To understand more clearly, here is another table. Remember that this permissions are <em>masked out</em>, that is they are removed. For simplicity in this example <em>user</em>, <em>group</em> and <em>others</em> permissions are the same.
+</p>
+<div class="table sectionedit9"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0"> Umask value </th><th class="col1"> Masked out (removed) permisssions </th><th class="col2"> Effective permissions <br/>
+for a new file with <br/>
+default permissions 666 </th><th class="col3"> Notes </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign">000 </td><td class="col1 leftalign"> none </td><td class="col2"> 666 write, read and execute </td><td class="col3"> All default permissions are preserved </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign">111 </td><td class="col1 leftalign"> execute only </td><td class="col2"> 666 write, read and execute </td><td class="col3"> Because new files are not executable </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign">222 </td><td class="col1 leftalign"> write only </td><td class="col2 leftalign"> 555 read and execute </td><td class="col3"> - </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign">333 </td><td class="col1 leftalign"> write and execute </td><td class="col2 leftalign"> 444 read only </td><td class="col3"> - </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign">444 </td><td class="col1 leftalign"> read only </td><td class="col2"> 333 write and execute </td><td class="col3"> - </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign">555 </td><td class="col1 leftalign"> read and execute </td><td class="col2 leftalign"> 222 write </td><td class="col3"> - </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign">666 </td><td class="col1 leftalign"> read and write </td><td class="col2"> 111 execute </td><td class="col3"> - </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign">777 </td><td class="col1"> read, write and execute </td><td class="col2"> 000 nothing </td><td class="col3 leftalign"> No permissions are preserved </td>
+</tr>
+</table></div>
+<p>
+Another <em>umask</em> example:
+</p>
+<div class="table sectionedit10"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 leftalign"> </th><th class="col1 centeralign"> Octal </th><th class="col2 centeralign"> Symbolic </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign"> umask </td><td class="col1"> <pre class="code">022</pre>
+</td><td class="col2"> <pre class="code"> --- -w- -w- </pre>
+</td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign"><strong>New files</strong> </td><td class="col1 leftalign"> </td><td class="col2 leftalign"> </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign"> Initial file permission </td><td class="col1"> <pre class="code">666</pre>
+</td><td class="col2"> <pre class="code"> rw- rw- rw- </pre>
+</td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign"> Compliment of umask </td><td class="col1"> <pre class="code">022</pre>
+</td><td class="col2"> <pre class="code"> --- -w- -w- </pre>
+</td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign"> Resultant file permission </td><td class="col1"> <pre class="code">644</pre>
+</td><td class="col2"> <pre class="code"> rw- r-- r-- </pre>
+</td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign"> <strong>New directory</strong> </td><td class="col1 leftalign"> </td><td class="col2 leftalign"> </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign"> Initial directory permission </td><td class="col1"> <pre class="code">777</pre>
+</td><td class="col2"> <pre class="code"> rwx rwx rwx </pre>
+</td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign"> Complement of umask </td><td class="col1"> <pre class="code">022</pre>
+</td><td class="col2"> <pre class="code"> --- -w- -w- </pre>
+</td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign"> Resultant directory permission </td><td class="col1"> <pre class="code">655</pre>
+</td><td class="col2"> <pre class="code"> rwx r-x r-x </pre>
+</td>
+</tr>
+</table></div>
+<p>
+Let us summarize this infodump:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>Permissions</strong>, or access rights — mechanism for controlling access to files and directories.</div>
+</li>
+<li class="level1"><div class="li"> <strong>Permission modes</strong> — types of permissions which allow actions with files.</div>
+<ol>
+<li class="level2"><div class="li"> <strong>Read, r</strong> — ability to read the file.</div>
+</li>
+<li class="level2"><div class="li"> <strong>Write, w</strong> — ability to write to the file.</div>
+</li>
+<li class="level2"><div class="li"> <strong>Execute, x</strong> — ability to execute the file as a program. For directories this has a special meaning, namely it allows directory to be listed.</div>
+</li>
+</ol>
+</li>
+<li class="level1"><div class="li"> <strong>Classes of users</strong> — entities to which permissions are applied.</div>
+<ol>
+<li class="level2"><div class="li"> <strong>User/owner class, u</strong> — owner of file or directory, often is is the one who created them.</div>
+</li>
+<li class="level2"><div class="li"> <strong>Group class, g</strong> — group is a collections of users.</div>
+</li>
+<li class="level2"><div class="li"> <strong>Others class, o</strong> — everyone else except <strong>owner</strong> and <strong>group</strong>.</div>
+</li>
+</ol>
+</li>
+<li class="level1"><div class="li"> <strong>Umask</strong> — a mechanism for controlling access to newly created files.</div>
+</li>
+</ol>
+<p>
+And the commands to manage permissions:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>chmod</strong> — change file permissions.</div>
+</li>
+<li class="level1"><div class="li"> <strong>chown</strong> — change owner permissions.</div>
+</li>
+<li class="level1"><div class="li"> <strong>umask</strong> — change mask for assigning permissions to new files.</div>
+</li>
+</ol>
+<p>
+Now you will learn how to change file permissions, file owner and umask.
+</p>
+</div>
+<h2 class="sectionedit11" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno">1:</span> <span class="kw3">umask</span>
+<span class="lno">2:</span> <span class="kw3">echo</span> <span class="st_h">'test'</span> <span class="sy0">&gt;</span> perms.022
+<span class="lno">3:</span> <span class="kw2">ls</span> <span class="re5">-l</span> perms.022
+<span class="lno">4:</span> <span class="kw2">stat</span> perms.022  <span class="sy0">|</span> <span class="kw2">grep</span> <span class="st_h">'Access: ('</span>
+<span class="lno">5:</span> <span class="kw2">chmod</span> 000 perms.022
+<span class="lno">6:</span> <span class="kw2">ls</span> <span class="re5">-al</span> perms.0022
+<span class="lno">7:</span> <span class="kw3">echo</span> <span class="st_h">'test'</span> <span class="sy0">&gt;</span> perms.022
+<span class="lno">8:</span> <span class="kw2">rm</span> <span class="re5">-v</span> perms.022
+</pre>
+<p>
+Remember question from Extra Credit of previous exercise? You are in similar situation now, because you are not allowed to do anything with this file. But why you are allowed to remove it? That is because when removing file, you are actually removing information about this file from <em>directory</em>, doing nothing with file itself. I have nice extra credit for you on this topic.
+</p>
+<pre class="bash code bash"><span class="lno"> 9:</span> <span class="kw3">umask</span> <span class="nu0">666</span>
+<span class="lno">10:</span> <span class="kw3">echo</span> <span class="st_h">'test'</span> <span class="sy0">&gt;</span> perms.000
+<span class="lno">11:</span> <span class="kw2">ls</span> <span class="re5">-l</span> perms.000
+<span class="lno">12:</span> <span class="kw2">cat</span> perms.000
+<span class="lno">13:</span> <span class="kw2">chmod</span> <span class="nu0">600</span> perms.000
+<span class="lno">14:</span> <span class="kw2">cat</span> perms.000
+<span class="lno">15:</span> <span class="kw2">rm</span> <span class="re5">-v</span> perms.000
+<span class="lno">16:</span> <span class="kw3">umask</span> 027
+<span class="lno">17:</span> <span class="kw3">echo</span> <span class="st_h">'test'</span> <span class="sy0">&gt;</span> perms.027
+<span class="lno">18:</span> <span class="kw2">ls</span> <span class="re5">-l</span> perms.027
+<span class="lno">19:</span> <span class="kw2">sudo</span> <span class="kw2">chown</span> root perms.027
+<span class="lno">20:</span> <span class="kw3">echo</span> <span class="st_h">'test1'</span> <span class="sy0">&gt;&gt;</span> perms.027
+<span class="lno">21:</span> <span class="kw2">chown</span> user1 perms.027
+<span class="lno">22:</span> <span class="kw2">sudo</span> <span class="kw2">chown</span> user1 perms.027
+<span class="lno">23:</span> <span class="kw3">echo</span> <span class="st_h">'test1'</span> <span class="sy0">&gt;&gt;</span> perms.027
+<span class="lno">24:</span> <span class="kw2">rm</span> <span class="re5">-v</span> perms.027
+<span class="lno">25:</span> <span class="kw3">umask</span> 022
+</pre>
+</div>
+<h1 class="sectionedit12" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw3">umask</span>
+0027
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="st_h">'test'</span> <span class="sy0">&gt;</span> perms.022
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-l</span> perms.022
+<span class="re5">-rw-r-----</span> <span class="nu0">1</span> user1 user1 <span class="nu0">5</span> Jul  <span class="nu0">9</span> <span class="nu0">10</span>:<span class="nu0">23</span> perms.022
+<span class="co4">user1@vm1:~$ </span><span class="kw2">stat</span> perms.022  <span class="sy0">|</span> <span class="kw2">grep</span> <span class="st_h">'Access: ('</span>
+Access: <span class="br0">&#40;</span>0640<span class="sy0">/</span>-rw-r-----<span class="br0">&#41;</span>  Uid: <span class="br0">&#40;</span> <span class="nu0">1000</span><span class="sy0">/</span>   user1<span class="br0">&#41;</span>   Gid: <span class="br0">&#40;</span> <span class="nu0">1000</span><span class="sy0">/</span>   user1<span class="br0">&#41;</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">chmod</span> 000 perms.022
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-al</span> perms.0022
+ls: cannot access perms.0022: No such <span class="kw2">file</span> or directory
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="st_h">'test'</span> <span class="sy0">&gt;</span> perms.022
+-bash: perms.022: Permission denied
+<span class="co4">user1@vm1:~$ </span><span class="kw2">rm</span> <span class="re5">-v</span> perms.022
+rm: remove write-protected regular <span class="kw2">file</span> <span class="sy0">`</span>perms.022<span class="st_h">'? y
+removed `perms.022'</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">umask</span> <span class="nu0">666</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="st_h">'test'</span> <span class="sy0">&gt;</span> perms.000
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-l</span> perms.000
+<span class="re5">----------</span> <span class="nu0">1</span> user1 user1 <span class="nu0">5</span> Jul  <span class="nu0">9</span> <span class="nu0">10</span>:<span class="nu0">23</span> perms.000
+<span class="co4">user1@vm1:~$ </span><span class="kw2">cat</span> perms.000
+cat: perms.000: Permission denied
+<span class="co4">user1@vm1:~$ </span><span class="kw2">chmod</span> <span class="nu0">600</span> perms.000
+<span class="co4">user1@vm1:~$ </span><span class="kw2">cat</span> perms.000
+<span class="kw3">test</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">rm</span> <span class="re5">-v</span> perms.000
+removed <span class="sy0">`</span>perms.000<span class="st_h">'
+user1@vm1:~$ umask 027
+user1@vm1:~$ echo '</span><span class="kw3">test</span><span class="st_h">' &gt; perms.027
+user1@vm1:~$ ls -l perms.027
+-rw-r----- 1 user1 user1 5 Jul  9 10:24 perms.027
+user1@vm1:~$ sudo chown root perms.027
+user1@vm1:~$ echo '</span>test1<span class="st_h">' &gt;&gt; perms.027
+-bash: perms.027: Permission denied
+user1@vm1:~$ chown user1 perms.027
+chown: changing ownership of `perms.027'</span>: Operation not permitted
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">chown</span> user1 perms.027
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="st_h">'test1'</span> <span class="sy0">&gt;&gt;</span> perms.027
+<span class="co4">user1@vm1:~$ </span><span class="kw2">rm</span> <span class="re5">-v</span> perms.027
+removed <span class="sy0">`</span>perms.027<span class="st_h">'
+user1@vm1:~$ umask 022</span></pre>
+</div>
+<h2 class="sectionedit13" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Prints current <strong>umask</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Creates file <strong>perms.022</strong> containing line <strong>test</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out information about this file.</div>
+</li>
+<li class="level1"><div class="li"> Prints out permission information about this file in octal notation.</div>
+</li>
+<li class="level1"><div class="li"> Changes permissions on this file, forbidding anyone to do anything with it.</div>
+</li>
+<li class="level1"><div class="li"> Prints out information about this file.</div>
+</li>
+<li class="level1"><div class="li"> Tries to replace this file contents with line &#039;test&#039;, failing because of absent permissions.</div>
+</li>
+<li class="level1"><div class="li"> Removes this file. This is is possible because file itself is not being touched, only an entry from directory <strong>/home/user1</strong> is.</div>
+</li>
+<li class="level1"><div class="li"> Changes <strong>umask</strong> to assign none permissions by default.</div>
+</li>
+<li class="level1"><div class="li"> Creates file <strong>perms.000</strong> containing line <strong>test</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out information about this file.</div>
+</li>
+<li class="level1"><div class="li"> Tries to print out this file content, which obviously results in error.</div>
+</li>
+<li class="level1"><div class="li"> Changes file permissions to allow owner to read and write it.</div>
+</li>
+<li class="level1"><div class="li"> Prints this file contents, this time successfully.</div>
+</li>
+<li class="level1"><div class="li"> Removes this file.</div>
+</li>
+<li class="level1"><div class="li"> Changes <strong>umask</strong> once more.</div>
+</li>
+<li class="level1"><div class="li"> Creates file <strong>perms.027</strong> containing line <strong>test</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Prints out information about this file.</div>
+</li>
+<li class="level1"><div class="li"> Changes file owner to <strong>root</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Tries to append line <strong>test1</strong> to this file, what results in error.</div>
+</li>
+<li class="level1"><div class="li"> Tries to change file owner back to <strong>user1</strong>, failing this because information about file owner is contained in file itself, more precisely in its index node.</div>
+</li>
+<li class="level1"><div class="li"> Changes file owner back to <strong>user1</strong>, this time succeeding because run as <strong>root</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Adds line <strong>test1</strong> to our file, this time successfully. </div>
+</li>
+<li class="level1"><div class="li"> Removes <strong>perms.027</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Returns <strong>umask</strong> to its default value.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit14" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Read <strong>man chmod</strong>, <strong>man chown</strong>, <strong>man umask</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Reread man chmod on <strong>setuid</strong>, <strong>setgid</strong> and <strong>sticky</strong> bits. Set your directory <strong>setuid</strong> bit in such a way that when doing <strong>umask 002 &amp;&amp; echo test | sudo tee perms.root</strong> <strong>user1</strong> was the resulting group of <strong>perms.root</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Find out why <strong>umask 002</strong> did not work.</div>
+</li>
+<li class="level1"><div class="li"> Try this: <pre class="code">
+user1_block0=$(echo 'stat /user1' | sudo debugfs /dev/sda9 2&#62;/dev/null | grep '(0)' | cut -d':' -f2)
+echo $user1_block0
+sudo dd if=/dev/sda9 bs=4096 skip=$user1_block0 count=1 | hexdump -C</pre>
+<p>
+Cool, huh? You have just read the directory contents directly from raw partition. Well, when you are deleting a file, an entry is deleted from here, and you have permissions to modify this entries because this is what directory (a special file) actually is.
+</p>
+</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex23.html';
+var disqus_title   = 'Exercise 23. Filesystems: security permissions, chown, chmod, umask';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex23.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex23.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex23.txt</bdi> · Last modified: 2012/12/28 07:34 (external edit)<br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer4a4f.gif?id=llthw%3Aex23&amp;1428742726" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex23 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:58 GMT -->
+</html>

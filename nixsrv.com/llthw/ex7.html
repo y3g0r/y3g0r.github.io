@@ -1,0 +1,320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex7 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:55 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex7 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex7"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex7decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex7.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex7.txt"/>
+<link rel="canonical" href="ex7.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex7","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_7_bashredirection_stdin_stdout_stderr_tee_pv">Exercise 7. Bash: redirection, stdin, stdout, stderr, &lt;, &gt;, &gt;&gt;, |, tee, pv</h1>
+<div class="level1">
+<p>
+In Linux, everything is just a file. This means that, for console programs:
+</p>
+<ol>
+<li class="level1"><div class="li"> Keyboard is represented as a file, from which Bash reads your input.</div>
+</li>
+<li class="level1"><div class="li"> Display is represented as a file, to which Bash writes its output.</div>
+</li>
+</ol>
+<p>
+Let us say you have a program which counts lines in a file. You can call it by typing <strong>wc -l</strong>. Try this now. Nothing happened, right? It just hangs there. Wrong, it is waiting for your input. This is an outline of what it does:
+</p>
+<pre class="code">
+line_counter = 0
+while end of file is not reached
+    read a line
+    add 1 to line_counter
+print line_counter</pre>
+<p>
+So <strong>wc</strong> currently reads lines from <strong>/dev/tty</strong>, which is in current context your keyboard. A line is given to <strong>wc</strong> each time you hit <strong>Enter</strong>. Type any several lines, and then hit <strong>CTRL+D</strong>, which will produce <abbr title="End of file">EOF</abbr> character for <strong>wc</strong> to understand that <a href="http://en.wikipedia.org/wiki/End-of-file" class="urlextern" title="http://en.wikipedia.org/wiki/End-of-file" rel="nofollow">end of file</a> is reached. Now it will tell you how much lines you entered.
+</p>
+<p>
+But what if you want to count lines in existing file? Well, where is <em>redirection</em> for that! To feed an existing file on its input, type this: <strong>wc -l &lt; .bash_history</strong>. You see, it works! And it really is that simple! <a href="http://en.wikipedia.org/wiki/Redirection_(computing)" class="urlextern" title="http://en.wikipedia.org/wiki/Redirection_%28computing%29" rel="nofollow">redirection</a> is a mechanism which allows you tell a program to redirect its input and/or output from keyboard and display to another file. To do this, you can use these special commands then starting a program:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>&lt;</strong> — replace standard input (for example keyboard) with a file.</div>
+</li>
+<li class="level1"><div class="li"> <strong>&gt;</strong> — replace standard output (for example display) with a file. Warning! This command <em>overwrites</em> contents of file you specify, so be careful.</div>
+</li>
+<li class="level1"><div class="li"> <strong>&gt;</strong><strong>&gt;</strong> — same as above, but instead of <em>overwriting</em> a file it <em>writes to the end of it</em>, preserving already existing information in this file. Be careful not to confuse the two.</div>
+</li>
+<li class="level1"><div class="li"> <strong>|</strong> — Take an output from one program and connect it to the other. This will be elaborated on in next exercise.</div>
+</li>
+</ol>
+<p>
+Now you will learn how to redirect input and output of programs to files or another programs.
+</p>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno"> 1:</span> <span class="kw2">sudo</span> <span class="kw2">aptitude</span> <span class="kw2">install</span> pv
+<span class="lno"> 2:</span> <span class="kw2">read</span> foo <span class="sy0">&lt;</span> <span class="sy0">/</span>dev<span class="sy0">/</span>tty
+<span class="lno"> 3:</span> Hello World<span class="sy0">!</span>
+<span class="lno"> 4:</span> <span class="kw3">echo</span> <span class="re1">$foo</span> <span class="sy0">&gt;</span> foo.out
+<span class="lno"> 5:</span> <span class="kw2">cat</span> foo.out
+<span class="lno"> 6:</span> <span class="kw3">echo</span> <span class="re1">$foo</span> <span class="sy0">&gt;&gt;</span> foo.out
+<span class="lno"> 7:</span> <span class="kw2">cat</span> foo.out
+<span class="lno"> 8:</span> <span class="kw3">echo</span> <span class="sy0">&gt;</span> foo.out
+<span class="lno"> 9:</span> <span class="kw2">cat</span> foo.out
+<span class="lno">10:</span> <span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">|</span> <span class="kw2">grep</span> foo
+<span class="lno">11:</span> <span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">|</span> <span class="kw2">tee</span> ls.out
+<span class="lno">12:</span> <span class="kw2">dd</span> <span class="re2">if</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>zero <span class="re2">of</span>=~<span class="sy0">/</span>test.img <span class="re2">bs</span>=1M <span class="re2">count</span>=<span class="nu0">10</span>
+<span class="lno">13:</span> pv ~<span class="sy0">/</span>test.img <span class="sy0">|</span> <span class="kw2">dd</span> <span class="re2">if</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>stdin <span class="re2">of</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>null <span class="re2">bs</span>=<span class="nu0">1</span>
+<span class="lno">14:</span> <span class="kw2">rm</span> <span class="re5">-v</span> foo.out
+<span class="lno">15:</span> <span class="kw2">rm</span> <span class="re5">-v</span> test.img
+</pre>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">aptitude</span> <span class="kw2">install</span> pv
+The following NEW packages will be installed:
+  pv
+<span class="nu0">0</span> packages upgraded, <span class="nu0">1</span> newly installed, <span class="nu0">0</span> to remove and <span class="nu0">0</span> not upgraded.
+Need to get <span class="nu0">0</span> B<span class="sy0">/</span><span class="nu0">28.9</span> kB of archives. After unpacking <span class="nu0">143</span> kB will be used.
+Selecting previously deselected package pv.
+<span class="br0">&#40;</span>Reading database ... <span class="nu0">39657</span> files and directories currently installed.<span class="br0">&#41;</span>
+Unpacking pv <span class="br0">&#40;</span>from ...<span class="sy0">/</span>archives<span class="sy0">/</span>pv_1.1.4-<span class="nu0">1</span>_amd64.deb<span class="br0">&#41;</span> ...
+Processing triggers <span class="kw1">for</span> man-db ...
+Setting up pv <span class="br0">&#40;</span>1.1.4-<span class="nu0">1</span><span class="br0">&#41;</span> ...
+&nbsp;
+<span class="co4">user1@vm1:~$ </span><span class="kw2">read</span> foo <span class="sy0">&lt;</span> <span class="sy0">/</span>dev<span class="sy0">/</span>tty
+Hello World<span class="sy0">!</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="re1">$foo</span> <span class="sy0">&gt;</span> foo.out
+<span class="co4">user1@vm1:~$ </span><span class="kw2">cat</span> foo.out
+Hello World<span class="sy0">!</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="re1">$foo</span> <span class="sy0">&gt;&gt;</span> foo.out
+<span class="co4">user1@vm1:~$ </span><span class="kw2">cat</span> foo.out
+Hello World<span class="sy0">!</span>
+Hello World<span class="sy0">!</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="sy0">&gt;</span> foo.out
+<span class="co4">user1@vm1:~$ </span><span class="kw2">cat</span> foo.out
+&nbsp;
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">|</span> <span class="kw2">grep</span> foo
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1    <span class="nu0">1</span> Jun <span class="nu0">15</span> <span class="nu0">20</span>:03 foo.out
+<span class="co4">user1@vm1:~$ </span><span class="kw2">ls</span> <span class="re5">-al</span> <span class="sy0">|</span> <span class="kw2">tee</span> ls.out
+total <span class="nu0">44</span>
+drwxr-xr-x <span class="nu0">2</span> user1 user1 <span class="nu0">4096</span> Jun <span class="nu0">15</span> <span class="nu0">20</span>:01 .
+drwxr-xr-x <span class="nu0">3</span> root  root  <span class="nu0">4096</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">49</span> ..
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1 <span class="nu0">4865</span> Jun <span class="nu0">15</span> <span class="nu0">19</span>:<span class="nu0">34</span> .bash_history
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">220</span> Jun  <span class="nu0">6</span> <span class="nu0">21</span>:<span class="nu0">48</span> .bash_logout
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1 <span class="nu0">3184</span> Jun <span class="nu0">14</span> <span class="nu0">12</span>:<span class="nu0">24</span> .bashrc
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1    <span class="nu0">1</span> Jun <span class="nu0">15</span> <span class="nu0">20</span>:03 foo.out
+<span class="re5">-rw-------</span> <span class="nu0">1</span> user1 user1   <span class="nu0">50</span> Jun <span class="nu0">15</span> <span class="nu0">18</span>:<span class="nu0">41</span> .lesshst
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1    <span class="nu0">0</span> Jun <span class="nu0">15</span> <span class="nu0">20</span>:03 ls.out
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">697</span> Jun  <span class="nu0">7</span> <span class="nu0">12</span>:<span class="nu0">25</span> .profile
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">741</span> Jun  <span class="nu0">7</span> <span class="nu0">12</span>:<span class="nu0">19</span> .profile.bak
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1  <span class="nu0">741</span> Jun  <span class="nu0">7</span> <span class="nu0">13</span>:<span class="nu0">12</span> .profile.bak1
+<span class="re5">-rw-r--r--</span> <span class="nu0">1</span> user1 user1    <span class="nu0">0</span> Jun <span class="nu0">15</span> <span class="nu0">20</span>:02 test.img
+<span class="co4">user1@vm1:~$ </span><span class="kw2">dd</span> <span class="re2">if</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>zero <span class="re2">of</span>=~<span class="sy0">/</span>test.img <span class="re2">bs</span>=1M <span class="re2">count</span>=<span class="nu0">10</span>
+<span class="nu0">10</span>+<span class="nu0">0</span> records <span class="kw1">in</span>
+<span class="nu0">10</span>+<span class="nu0">0</span> records out
+<span class="nu0">10485760</span> bytes <span class="br0">&#40;</span><span class="nu0">10</span> MB<span class="br0">&#41;</span> copied, <span class="nu0">0.0130061</span> s, <span class="nu0">806</span> MB<span class="sy0">/</span>s
+<span class="co4">user1@vm1:~$ </span>pv ~<span class="sy0">/</span>test.img <span class="sy0">|</span> <span class="kw2">dd</span> <span class="re2">if</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>stdin <span class="re2">of</span>=<span class="sy0">/</span>dev<span class="sy0">/</span>null <span class="re2">bs</span>=<span class="nu0">1</span>
+  10MB <span class="nu0">0</span>:00:03 <span class="br0">&#91;</span>3.24MB<span class="sy0">/</span>s<span class="br0">&#93;</span> <span class="br0">&#91;</span>=================================================================================<span class="sy0">&gt;</span><span class="br0">&#93;</span> <span class="nu0">100</span><span class="sy0">%</span>
+<span class="nu0">10485760</span>+<span class="nu0">0</span> records <span class="kw1">in</span>
+<span class="nu0">10485760</span>+<span class="nu0">0</span> records out
+<span class="nu0">10485760</span> bytes <span class="br0">&#40;</span><span class="nu0">10</span> MB<span class="br0">&#41;</span> copied, <span class="nu0">3.10446</span> s, <span class="nu0">3.4</span> MB<span class="sy0">/</span>s
+<span class="co4">user1@vm1:~$ </span><span class="kw2">rm</span> <span class="re5">-v</span> foo.out
+removed <span class="sy0">`</span>foo.out<span class="st_h">'
+user1@vm1:~$ rm -v test.img
+removed `test.img'</span>
+<span class="co4">user1@vm1:~$</span></pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Install <strong>pv</strong> (pipe viewer) program on your system which you will need later on.</div>
+</li>
+<li class="level1"><div class="li"> Reads your input to a variable <strong>foo</strong>. This is possible because display and keyboard are actually a teletype for the system. Yes, <a href="http://www.google.ru/search?rlz=1C1CHKZ_enRU438RU438&amp;sugexp=chrome,mod%3D11&amp;q=unix+filter&amp;um=1&amp;ie=UTF-8&amp;hl=en&amp;tbm=isch&amp;source=og&amp;sa=N&amp;tab=wi&amp;ei=QWDbT7LILsTi4QTJxNXWCg&amp;biw=1116&amp;bih=875&amp;sei=Q2DbT93XOLLS4QTmst2ACg#um=1&amp;hl=en&amp;newwindow=1&amp;rlz=1C1CHKZ_enRU438RU438&amp;tbm=isch&amp;sa=1&amp;q=teletype&amp;oq=teletype&amp;aq=f&amp;aqi=g10&amp;aql=&amp;gs_l=img.3..0l10.455489.456448.4.456736.8.6.0.2.2.0.144.567.4j2.6.0...0.0.Qa6W2PHvUWw&amp;pbx=1&amp;bav=on.2,or.r_gc.r_pw.r_qf.,cf.osb&amp;fp=e87c07212bd9e2a6&amp;biw=1116&amp;bih=875" class="urlextern" title="http://www.google.ru/search?rlz=1C1CHKZ_enRU438RU438&amp;sugexp=chrome,mod%3D11&amp;q=unix+filter&amp;um=1&amp;ie=UTF-8&amp;hl=en&amp;tbm=isch&amp;source=og&amp;sa=N&amp;tab=wi&amp;ei=QWDbT7LILsTi4QTJxNXWCg&amp;biw=1116&amp;bih=875&amp;sei=Q2DbT93XOLLS4QTmst2ACg#um=1&amp;hl=en&amp;newwindow=1&amp;rlz=1C1CHKZ_enRU438RU438&amp;tbm=isch&amp;sa=1&amp;q=teletype&amp;oq=teletype&amp;aq=f&amp;aqi=g10&amp;aql=&amp;gs_l=img.3..0l10.455489.456448.4.456736.8.6.0.2.2.0.144.567.4j2.6.0...0.0.Qa6W2PHvUWw&amp;pbx=1&amp;bav=on.2,or.r_gc.r_pw.r_qf.,cf.osb&amp;fp=e87c07212bd9e2a6&amp;biw=1116&amp;bih=875" rel="nofollow">that</a> teletype! Read more about <strong>tty</strong> online.</div>
+</li>
+<li class="level1"><div class="li"> This is what you type.</div>
+</li>
+<li class="level1"><div class="li"> Redirects contents of the <strong>foo</strong> variable to the <strong>foo.out</strong> file, creating the file in the process <em>or overwriting an existing file without warning removing all there was!!</em></div>
+</li>
+<li class="level1"><div class="li"> Prints out <strong>foo.out</strong> contents.</div>
+</li>
+<li class="level1"><div class="li"> Redirects contents of the <strong>foo</strong> variable to the <strong>foo.out</strong> file, creating the file in the process or <em>appending</em> to an existing file. This is safe, but don not confuse the two, or great sorrow will fall upon you.</div>
+</li>
+<li class="level1"><div class="li"> Prints out <strong>foo.out</strong> contents again.</div>
+</li>
+<li class="level1"><div class="li"> Redirects nothing to the <strong>foo.out</strong>, emptying file in the process.</div>
+</li>
+<li class="level1"><div class="li"> Shows that the file is, indeed, empty.</div>
+</li>
+<li class="level1"><div class="li"> Lists your directory and <em>pipes</em> the output to <strong>grep</strong>. This works by taking all <strong>ls -al</strong> output and feeding it into <strong>grep</strong>. Again, this is called <em>piping</em>.</div>
+</li>
+<li class="level1"><div class="li"> Lists your directory to the screen <em>and</em> to the <strong>ls.out</strong>. Very useful!</div>
+</li>
+<li class="level1"><div class="li"> Creates a zeroed file with size of 10 Megabytes. Don&#039;t bother with how this works for now.</div>
+</li>
+<li class="level1"><div class="li"> Reads this file to <strong>/dev/null</strong>, which is an ultimate garbage can in your system, a void. Everything which is written into it goes nowhere. Notice how <strong>pv</strong> shows you a progress of reading the file, if you try to read it with another command instead you won&#039;t know how long it will take to complete.</div>
+</li>
+<li class="level1"><div class="li"> Removes <strong>foo.out</strong>. Always remember to clean up after yourself.</div>
+</li>
+<li class="level1"><div class="li"> Removes <strong>test.img</strong>.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Read about piping and redirection on <a href="http://stackoverflow.com/questions/5802879/difference-between-pipelining-and-redirection-in-linux" class="urlextern" title="http://stackoverflow.com/questions/5802879/difference-between-pipelining-and-redirection-in-linux" rel="nofollow">stackoverflow</a>, again on <a href="http://stackoverflow.com/questions/19122/bash-pipe-handling?rq=1" class="urlextern" title="http://stackoverflow.com/questions/19122/bash-pipe-handling?rq=1" rel="nofollow">stackoverflow</a> and on <a href="http://mywiki.wooledge.org/BashFAQ/024" class="urlextern" title="http://mywiki.wooledge.org/BashFAQ/024" rel="nofollow">Greg&#039;s Wiki</a> which is very useful resource indeed, remember it.</div>
+</li>
+<li class="level1"><div class="li"> Open man page for <strong>bash</strong>, scroll down to <em>REDIRECTION</em> section and read it.</div>
+</li>
+<li class="level1"><div class="li"> Read descriptions from <strong>man pv</strong> and <strong>man tee</strong>. </div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex7.html';
+var disqus_title   = 'Exercise 7. Bash: redirection, stdin, stdout, stderr, <, >, >>, |, tee, pv';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex7.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex7.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----MIIHPwYJKoZIhvcNAQcEoIIHMDCCBywCAQExggEwMIIBLAIBADCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwDQYJKoZIhvcNAQEBBQAEgYByTD54uWvmVXFF4/ye/cSXblkaJBzuA70AO3hGD5eiT3YhPyNF7LyeoPOZiR4skW70CYjjq6vZjzPKvrDc6JacUsMRyxMrqbt0r2naKgZpaiG/OCq0oaQ176iT5ZV08cIJjesD9ttI1MvCwqi5s6RDBkcq4wAG/I3HSmqjJoc6+DELMAkGBSsOAwIaBQAwgbwGCSqGSIb3DQEHATAUBggqhkiG9w0DBwQITtPc/6Bw4nGAgZhFFv7nh6EI5rVRN7KbJq/brSd2GDxt/tlwxMOkoWpCPUV3sb0zEeEDu7j6A81bi3A5JmsgClVSSApfLhIz1LKBfjzDVLFtHTYT+0EFRMaE5YX+8uL53tXScdKR4NWW0H+3QHIrfU9lKOAjjkzx7chzsBqjSurGOsprgmeT1PgAKJbOdmJgSecA18X5CtzW64IU3kiUKVDyYKCCA4cwggODMIIC7KADAgECAgEAMA0GCSqGSIb3DQEBBQUAMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTAeFw0wNDAyMTMxMDEzMTVaFw0zNTAyMTMxMDEzMTVaMIGOMQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxFDASBgNVBAoTC1BheVBhbCBJbmMuMRMwEQYDVQQLFApsaXZlX2NlcnRzMREwDwYDVQQDFAhsaXZlX2FwaTEcMBoGCSqGSIb3DQEJARYNcmVAcGF5cGFsLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAwUdO3fxEzEtcnI7ZKZL412XvZPugoni7i7D7prCe0AtaHTc97CYgm7NsAtJyxNLixmhLV8pyIEaiHXWAh8fPKW+R017+EmXrr9EaquPmsVvTywAAE1PMNOKqo2kl4Gxiz9zZqIajOm1fZGWcGS0f5JQ2kBqNbvbg2/Za+GJ/qwUCAwEAAaOB7jCB6zAdBgNVHQ4EFgQUlp98u8ZvF71ZP1LXChvsENZklGswgbsGA1UdIwSBszCBsIAUlp98u8ZvF71ZP1LXChvsENZklGuhgZSkgZEwgY4xCzAJBgNVBAYTAlVTMQswCQYDVQQIEwJDQTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEUMBIGA1UEChMLUGF5UGFsIEluYy4xEzARBgNVBAsUCmxpdmVfY2VydHMxETAPBgNVBAMUCGxpdmVfYXBpMRwwGgYJKoZIhvcNAQkBFg1yZUBwYXlwYWwuY29tggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADgYEAgV86VpqAWuXvX6Oro4qJ1tYVIT5DgWpE692Ag422H7yRIr/9j/iKG4Thia/Oflx4TdL+IFJBAyPK9v6zZNZtBgPBynXb048hsP16l2vi0k5Q2JKiPDsEfBhGI+HnxLXEaUWAcVfCsQFvd2A1sxRr67ip5y2wwBelUecP3AjJ+YcxggGaMIIBlgIBATCBlDCBjjELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAYDVQQHEw1Nb3VudGFpbiBWaWV3MRQwEgYDVQQKEwtQYXlQYWwgSW5jLjETMBEGA1UECxQKbGl2ZV9jZXJ0czERMA8GA1UEAxQIbGl2ZV9hcGkxHDAaBgkqhkiG9w0BCQEWDXJlQHBheXBhbC5jb20CAQAwCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEyMDcwMjE3NTUwM1owIwYJKoZIhvcNAQkEMRYEFNxQpzsP6V2QYIZw83iK6s/ShwtlMA0GCSqGSIb3DQEBAQUABIGATYUTe/66EXsCdY90YYsDJJrwpX0lCRBexMqmS0QBCVSAYn6+i6wg6kXbMl0wG6RGjktQ6CvcgEoQlCcwQGqXrXv6SlJBYYlqzb4x5IjOHm2cXJzT/UvQY5nWRlKKdePpG0QC6WVfNRZeuKsJZ5qWNNrwrvDCouYZX04Ze7KQSt8=-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex7.txt</bdi> · Last modified: 2012/11/19 10:56 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerea4f.gif?id=llthw%3Aex7&amp;1428742712" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex7 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:58 GMT -->
+</html>

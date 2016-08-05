@@ -1,0 +1,288 @@
+====== Exercise 18. Logging, /var/log, rsyslog, logger ======
+
+Daemon are those programs which run in the background. Because of this a question arises: how do they tell you how they are doing? And how do they tell you that something got wrong? This problem is solved by log files, in which daemons write their status and operations. In Debian this files reside in **/var/log** directory. 
+
+But who writes those files? The most obvious answer, //The daemons themselves//, is actually often wrong. In some cases daemons do indeed write log files themselves, but usually they do it through the daemon called **rsyslogd**, which is called a //logging daemon//. It writes logs to different files for simplifying searching and analyzing them. Do distinguish between this files it has a concept called //facilities//. This is list of standard facilities:
+
+^Facility^Facility Description^^Facility^Facility Description^
+|auth      |Authorization-related messages          ||local0|local use 0 |
+|authpriv  |Security information of sensitive nature||local1|local use 1 |
+|cron      |Cron information                        ||local2|local use 2 |
+|daemon    |System daemons                          ||local3|local use 3 |
+|ftp       |FTP demon messagestion messages         ||local4|local use 4 |
+|kern      |Kernel messages                         ||local5|local use 5 |
+|lpr       |Line printer subsystem                  ||local6|local use 6 |
+|mail      |Mail subsystem                          ||local7|local use 7 |
+|news      |News subsystem                          ||      |            | 
+|security  |Depreacated name for **auth**           ||      |            |
+|syslog    |Messages generated internally by syslogd||      |            |
+|user      |                                        ||      |            | 
+|uucp      |UUCP subsystem                          ||      |            |
+
+Every entry is also marked with severity status for ease of analyzing what happaned: 
+^Code Name^Severity	      ^Description                        ^General Description^
+|alert    |Alert           |Action must be taken immediately.  |Should be corrected immediately, therefore notify staff who can fix the problem. An example would be the loss of a backup ISP connection.|
+|crit     |Critical        |Critical conditions.               |Should be corrected immediately, but indicates failure in a primary system, an example is a loss of primary ISP connection.|
+|debug    |Debug           |Debug-level messages.              |Info useful to developers for debugging the application, not useful during operations.|
+|emerg    |Emergency       |System is unusable.                |A "panic" condition usually affecting multiple apps/servers/sites. At this level it would usually notify all tech staff on call.|
+|err      |Error           |Error conditions.                  |Non-urgent failures, these should be relayed to developers or admins; each item must be resolved within a given time.|
+|error    |Error           |Deprecated name for **err**        |Non-urgent failures, these should be relayed to developers or admins; each item must be resolved within a given time.|
+|info     |Informational   |Informational messages.            |Normal operational messages - may be harvested for reporting, measuring throughput, etc. - no action required.|
+|notice   |Notice          |Normal but significant condition.  |Events that are unusual but not error conditions - might be summarized in an email to developers or admins to spot potential problems - no immediate action required.|
+|panic    |Emergency       |Deprecated name for **emerg**      |A "panic" condition usually affecting multiple apps/servers/sites. At this level it would usually notify all tech staff on call.|
+|warning  |Warning         |Warning conditions.                |Warning messages, not an error, but indication that an error will occur if action is not taken, e.g. file system 85% full - each item must be resolved within a given time.|
+|warn     |Warning         |Deprecated name for **warning**    |Warning messages, not an error, but indication that an error will occur if action is not taken, e.g. file system 85% full - each item must be resolved within a given time.|
+
+
+Because if log files are left to themselves they tend to grow really big and consume all available disk space, there is a mechanism called rotation. This mechanism by default usually keeps only seven last log files, for last 7 days, including today. Rotation is performed by **logrotate** daemon, to help you understand what this daemon does I wrote it out for you:
+<code>
+Day 0
+    log.0 is created
+Day 1
+    mv log.0 log.1
+    log.0 is created
+Day 2
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 3
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 4
+    mv log.3 log.4
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 5
+    mv log.4 log.5
+    mv log.3 log.4
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 6  
+    mv log.5 log.6
+    mv log.4 log.5
+    mv log.3 log.4
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+Day 7
+    rm log.6
+    mv log.5 log.6
+    mv log.4 log.5
+    mv log.3 log.4
+    mv log.2 log.3
+    mv log.1 log.2
+    mv log.0 log.1
+    log.0 is created
+</code>
+
+Let me reiterate for you:
+  - //[[http://en.wikipedia.org/wiki/Computer_data_logging|Logging]]// is the process of recording events, with an automated computer program, in a certain scope in order to provide an audit trail that can be used to understand the activity of the system and to diagnose problems.
+  - //Logging daemon// is a program which other programs may ask to write something down in a log file.
+  - Every log entry has //facility// (logging category) and //severity// (how important it is) attributes.
+  - //Rotation// is a process of keeping only limited number of log files to avoid disks filling up.
+  - In Debian, log files are usually found in **/var/log** directory.
+
+This are useful commands to work with logs (remember to open relevant **man** pages and find out what those program options are for):
+  - **logger Hello, I have a kitty!** — write a custom log message.
+  - **ls -altr /var/log** — list log directory in such a way that lastly modified files are in the end.
+  - **grep user1 /var/log/auth.log** — list all lines in a file which contain **user1**.
+  - **grep -irl user1 /var/log** — list all files which contain **user1** anywhere.
+  - **find /var/log -mmin -10** — find any files which are modified in last 10 minutes.
+  - **tail /var/log/auth.log** — print out last 10 lines of a log file.
+  - **tail -f /var/log/auth.log** — follow a log file in real time. It is very useful when configuring daemons.
+
+No you will learn how to view logs and write something to system log.
+
+===== Do this =====
+
+<code bash 1>
+sudo -s
+cd /var/log
+ls -altr | tail
+tail auth.log
+grep user1 auth.log | tail
+/etc/init.d/exim4 restart
+find /var/log -mmin -5
+tail /var/log/exim4/mainlog
+grep -irl rcconf .
+tail ./dpkg.log
+last
+lastlog 
+logger local0.alert I am a kitty, sittin in ur system watchin u work ^^
+ls -altr | tail
+tail messages
+</code>
+
+
+====== What you should see ======
+
+
+<code bash>
+user1@vm1:~$ sudo -s
+root@vm1:/home/user1# cd /var/log
+root@vm1:/var/log# ls -altr | tail
+-rw-r-----  1 root        adm   46955 Jun 29 12:28 messages
+-rw-r-----  1 root        adm   19744 Jun 29 12:28 dmesg
+-rw-r-----  1 root        adm     696 Jun 29 12:28 daemon.log
+drwxr-xr-x  7 root        root   4096 Jun 29 12:28 .
+-rw-r-----  1 root        adm   60738 Jun 29 12:28 syslog
+-rw-r-----  1 root        adm   58158 Jun 29 12:28 kern.log
+-rw-r-----  1 root        adm   12652 Jun 29 12:28 debug
+-rw-rw-r--  1 root        utmp  75264 Jun 29 12:28 wtmp
+-rw-rw-r--  1 root        utmp 292584 Jun 29 12:28 lastlog
+-rw-r-----  1 root        adm   38790 Jun 29 12:40 auth.log
+root@vm1:/var/log# tail auth.log
+Jun 29 12:28:22 vm1 sshd[983]: Server listening on 0.0.0.0 port 22.
+Jun 29 12:28:22 vm1 sshd[983]: Server listening on :: port 22.
+Jun 29 12:28:44 vm1 sshd[1214]: Accepted password for user1 from 194.85.195.183 port 53775 ssh2
+Jun 29 12:28:44 vm1 sshd[1214]: pam_unix(sshd:session): session opened for user user1 by (uid=0)
+Jun 29 12:30:49 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:30:53 vm1 login[1260]: pam_securetty(login:auth): unexpected response from failed conversation function
+Jun 29 12:30:53 vm1 login[1260]: pam_securetty(login:auth): cannot determine username
+Jun 29 12:35:08 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:35:14 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:40:32 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+root@vm1:/var/log# tail auth.log | grep user1
+Jun 29 12:28:44 vm1 sshd[1214]: Accepted password for user1 from 194.85.195.183 port 53775 ssh2
+Jun 29 12:28:44 vm1 sshd[1214]: pam_unix(sshd:session): session opened for user user1 by (uid=0)
+Jun 29 12:30:49 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:35:08 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:35:14 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:40:32 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+root@vm1:/var/log# grep user1 auth.log | tail
+Jun 29 12:26:33 vm1 sshd[1302]: Accepted password for user1 from 194.85.195.183 port 53008 ssh2
+Jun 29 12:26:33 vm1 sshd[1302]: pam_unix(sshd:session): session opened for user user1 by (uid=0)
+Jun 29 12:26:38 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:28:02 vm1 sshd[1302]: pam_unix(sshd:session): session closed for user user1
+Jun 29 12:28:44 vm1 sshd[1214]: Accepted password for user1 from 194.85.195.183 port 53775 ssh2
+Jun 29 12:28:44 vm1 sshd[1214]: pam_unix(sshd:session): session opened for user user1 by (uid=0)
+Jun 29 12:30:49 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:35:08 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:35:14 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+Jun 29 12:40:32 vm1 sudo:    user1 : TTY=pts/0 ; PWD=/home/user1 ; USER=root ; COMMAND=/bin/bash
+root@vm1:/home/user1# /etc/init.d/exim4 restart
+Stopping MTA for restart: exim4_listener.
+Restarting MTA: exim4.
+root@vm1:/home/user1# find /var/log -mmin -5
+/var/log/exim4/mainlog
+/var/log/auth.log
+root@vm1:/home/user1# tail /var/log/exim4/mainlog
+2012-06-29 12:24:11 exim 4.72 daemon started: pid=1159, -q30m, listening for SMTP on [127.0.0.1]:25 [::1]:25
+2012-06-29 12:24:11 Start queue run: pid=1165
+2012-06-29 12:24:11 End queue run: pid=1165
+2012-06-29 12:28:22 exim 4.72 daemon started: pid=1190, -q30m, listening for SMTP on [127.0.0.1]:25 [::1]:25
+2012-06-29 12:28:22 Start queue run: pid=1196
+2012-06-29 12:28:22 End queue run: pid=1196
+2012-06-29 12:41:18 exim 4.72 daemon started: pid=1622, -q30m, listening for SMTP on [127.0.0.1]:25 [::1]:25
+2012-06-29 12:41:18 Start queue run: pid=1624
+2012-06-29 12:41:18 End queue run: pid=1624
+2012-06-29 12:42:28 exim 4.72 daemon started: pid=1886, -q30m, listening for SMTP on [127.0.0.1]:25 [::1]:25
+root@vm1:/home/user1# grep -irl rcconf .
+./aptitude
+./apt/history.log
+./apt/term.log
+./dpkg.log
+./auth.log
+root@vm1:/home/user1# tail ./dpkg.log
+2012-06-26 19:27:40 status unpacked rcconf 2.5
+2012-06-26 19:27:40 status unpacked rcconf 2.5
+2012-06-26 19:27:40 trigproc man-db 2.5.7-8 2.5.7-8
+2012-06-26 19:27:40 status half-configured man-db 2.5.7-8
+2012-06-26 19:27:40 status installed man-db 2.5.7-8
+2012-06-26 19:27:41 startup packages configure
+2012-06-26 19:27:41 configure rcconf 2.5 2.5
+2012-06-26 19:27:41 status unpacked rcconf 2.5
+2012-06-26 19:27:41 status half-configured rcconf 2.5
+2012-06-26 19:27:41 status installed rcconf 2.5
+root@vm1:/var/log# last
+user1    pts/0        sis.site  Fri Jun 29 12:26   still logged in
+user1    pts/0        sis.site  Fri Jun 29 12:14 - down   (00:09)
+user1    pts/0        sis.site  Thu Jun 28 19:40 - 11:25  (15:45)
+user1    pts/0        sis.site  Wed Jun 27 19:14 - 17:04  (21:50)
+user1    pts/0        sis.site  Tue Jun 26 13:54 - 18:18 (1+04:23)
+user1    pts/0        sis.site  Thu Jun 21 15:23 - 13:11 (4+21:47)
+user1    pts/0        sis.site  Fri Jun 15 19:34 - 12:01 (5+16:26)
+user1    pts/0        sis.site  Fri Jun 15 19:11 - 19:34  (00:22)
+reboot   system boot  2.6.32-5-amd64   Fri Jun 29 12:24 - 12:26  (00:02)
+user1    pts/0        sis.site  Fri Jun 29 12:14 - down   (00:09)
+root@vm1:/var/log# lastlog
+Username         Port     From             Latest
+root                                       **Never logged in**
+daemon                                     **Never logged in**
+bin                                        **Never logged in**
+sys                                        **Never logged in**
+sync                                       **Never logged in**
+games                                      **Never logged in**
+man                                        **Never logged in**
+lp                                         **Never logged in**
+mail                                       **Never logged in**
+news                                       **Never logged in**
+uucp                                       **Never logged in**
+proxy                                      **Never logged in**
+www-data                                   **Never logged in**
+backup                                     **Never logged in**
+list                                       **Never logged in**
+irc                                        **Never logged in**
+gnats                                      **Never logged in**
+nobody                                     **Never logged in**
+libuuid                                    **Never logged in**
+Debian-exim                                **Never logged in**
+statd                                      **Never logged in**
+sshd                                       **Never logged in**
+user1            pts/0    sis.site  Fri Jun 29 12:28:45 +0400 2012
+root@vm1:/var/log# logger local0.alert I am a kitty, sittin in ur system watchin u work ^^
+root@vm1:/var/log# ls -altr | tail
+-rw-r-----  1 root        adm     696 Jun 29 12:28 daemon.log
+drwxr-xr-x  7 root        root   4096 Jun 29 12:28 .
+-rw-r-----  1 root        adm   58158 Jun 29 12:28 kern.log
+-rw-r-----  1 root        adm   12652 Jun 29 12:28 debug
+-rw-rw-r--  1 root        utmp  75264 Jun 29 12:28 wtmp
+-rw-rw-r--  1 root        utmp 292584 Jun 29 12:28 lastlog
+-rw-r-----  1 root        adm   38971 Jun 29 13:17 auth.log
+-rw-r-----  1 root        adm     229 Jun 29 13:19 user.log
+-rw-r-----  1 root        adm   60932 Jun 29 13:19 syslog
+-rw-r-----  1 root        adm   47047 Jun 29 13:19 messages
+root@vm1:/var/log# tail messages
+Jun 29 12:28:21 vm1 kernel: [    1.846975] processor LNXCPU:00: registered as cooling_device0
+Jun 29 12:28:21 vm1 kernel: [    1.868828] usbcore: registered new interface driver hiddev
+Jun 29 12:28:21 vm1 kernel: [    1.895676] input: QEMU 0.14.1 QEMU USB Tablet as /devices/pci0000:00/0000:00:01.2/usb1/1-1/1-1:1.0/input/input4
+Jun 29 12:28:21 vm1 kernel: [    1.895743] generic-usb 0003:0627:0001.0001: input,hidraw0: USB HID v0.01 Pointer [QEMU 0.14.1 QEMU USB Tablet] on usb-0000:00:01.2-1/input0
+Jun 29 12:28:21 vm1 kernel: [    1.895762] usbcore: registered new interface driver usbhid
+Jun 29 12:28:21 vm1 kernel: [    1.895765] usbhid: v2.6:USB HID core driver
+Jun 29 12:28:21 vm1 kernel: [    2.373061] EXT3 FS on vda1, internal journal
+Jun 29 12:28:21 vm1 kernel: [    2.394992] loop: module loaded
+Jun 29 12:28:21 vm1 kernel: [    2.413478] input: ImExPS/2 Generic Explorer Mouse as /devices/platform/i8042/serio1/input/input5
+Jun 29 13:19:11 vm1 user1: local0.alert I am a kitty, sittin in ur system watchin u work ^^
+root@vm1:/var/log#
+</code>
+
+===== Explanation =====
+
+  - Opens //root// (superuser) shell. This is because you are not allowed to read all log files due security considerations when working as //user1//.
+  - Changes directory to **/var/log**.
+  - Prints out all files sorted by date, with last modified ones at the bottom.
+  - Prints out last 10 lines from **auth.log**, which contains information about logging into the system.
+  - Prints out last 10 lines from **auth.log** which contain **user1**.
+  - Restars **exim4** mail server.
+  - Prints out files changes in last 5 minutes. Now you can easily spot in which file **exim4** logs its operation.
+  - Prints out last 10 lines from **exim4** log.
+  - Searches for **rcconf** through all files in current directory. Now you can easily spot where Debian package system logs its operations.
+  - Pritns out last 10 lines from **dpkg.log**, which contain information about package installation and removal.
+  - Prints out information about last logins of users.
+  - Prints out information about the most recent logins of all users.
+  - Passes your message to **rsyslogd** daemon.
+  - Prints out all files sorted by date, with last modified ones at the bottom, again. Now you may see there did your message go.
+  - Prints out last 10 lines from **messages**, you are able to see that your message is indeed logged.
+
+====== Extra credit =====
+  - Read man pages for **rsyslogd** and **logger**.
+  - Find out the difference between **last** and **lastlog** by reading corresponding man pages.
+  - Read **logrotate** man page and remember that it exists.
+  - Execute **tail -f /var/log/auth.log** and make second connection to **vm1** (with putty if you are working on Windows). Nice, huh?

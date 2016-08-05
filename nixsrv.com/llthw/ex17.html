@@ -1,0 +1,449 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex17 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:35 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex17 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex17"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex17decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex17.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex17.txt"/>
+<link rel="canonical" href="ex17.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex17","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_17_job_schedulerscron_at">Exercise 17. Job schedulers: cron, at</h1>
+<div class="level1">
+<p>
+Often a need arises to execute a program on schedule. For example let us imagine that you need to make a copy of your work every midnight. To accomplish this in Linux there is a special program called <strong>cron</strong>. It is a demon, which means that is starts when computer is booted up and sits silently in the background, executing other programs for you when time comes. Cron has several configuration files, system-wide, and one per each user. By default users do not have crontabs, because nothing is scheduled for them. This are cron configuration file locations:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>/etc/crontab</strong> — system-wide cron configuration file.</div>
+</li>
+<li class="level1"><div class="li"> <strong>/var/spool/cron/crontabs/</strong> — directory for storing user configuration files.</div>
+</li>
+</ol>
+<p>
+Now let us talk about cron configuration file format. If you run <strong>cat /etc/crontab</strong> you will see this:
+</p>
+<pre class="bash code bash"><span class="co0"># /etc/crontab: system-wide crontab</span>
+<span class="co0"># Unlike any other crontab you don't have to run the `crontab'</span>
+<span class="co0"># command to install the new version when you edit this file</span>
+<span class="co0"># and files in /etc/cron.d. These files also have username fields,</span>
+<span class="co0"># that none of the other crontabs do.</span>
+&nbsp;
+<span class="re2">SHELL</span>=<span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">sh</span>
+<span class="re2">PATH</span>=<span class="sy0">/</span>usr<span class="sy0">/</span>local<span class="sy0">/</span>sbin:<span class="sy0">/</span>usr<span class="sy0">/</span>local<span class="sy0">/</span>bin:<span class="sy0">/</span>sbin:<span class="sy0">/</span>bin:<span class="sy0">/</span>usr<span class="sy0">/</span>sbin:<span class="sy0">/</span>usr<span class="sy0">/</span>bin
+&nbsp;
+<span class="co0"># m h dom mon dow user  command</span>
+<span class="nu0">17</span> <span class="sy0">*</span>    <span class="sy0">*</span> <span class="sy0">*</span> <span class="sy0">*</span>   root    <span class="kw3">cd</span> <span class="sy0">/</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">run-parts</span> <span class="re5">--report</span> <span class="sy0">/</span>etc<span class="sy0">/</span>cron.hourly
+<span class="nu0">25</span> <span class="nu0">6</span>    <span class="sy0">*</span> <span class="sy0">*</span> <span class="sy0">*</span>   root    <span class="kw3">test</span> <span class="re5">-x</span> <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>anacron <span class="sy0">||</span> <span class="br0">&#40;</span> <span class="kw3">cd</span> <span class="sy0">/</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">run-parts</span> <span class="re5">--report</span> <span class="sy0">/</span>etc<span class="sy0">/</span>cron.daily <span class="br0">&#41;</span>
+<span class="nu0">47</span> <span class="nu0">6</span>    <span class="sy0">*</span> <span class="sy0">*</span> <span class="nu0">7</span>   root    <span class="kw3">test</span> <span class="re5">-x</span> <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>anacron <span class="sy0">||</span> <span class="br0">&#40;</span> <span class="kw3">cd</span> <span class="sy0">/</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">run-parts</span> <span class="re5">--report</span> <span class="sy0">/</span>etc<span class="sy0">/</span>cron.weekly <span class="br0">&#41;</span>
+<span class="nu0">52</span> <span class="nu0">6</span>    <span class="nu0">1</span> <span class="sy0">*</span> <span class="sy0">*</span>   root    <span class="kw3">test</span> <span class="re5">-x</span> <span class="sy0">/</span>usr<span class="sy0">/</span>sbin<span class="sy0">/</span>anacron <span class="sy0">||</span> <span class="br0">&#40;</span> <span class="kw3">cd</span> <span class="sy0">/</span> <span class="sy0">&amp;&amp;</span> <span class="kw2">run-parts</span> <span class="re5">--report</span> <span class="sy0">/</span>etc<span class="sy0">/</span>cron.monthly <span class="br0">&#41;</span>
+<span class="co0">#</span></pre>
+<p>
+Its syntax is simple enough. Let us take the line
+</p>
+<pre class="code">47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.weekly</pre>
+<p>
+and take it apart:
+</p>
+<pre class="code">
+17                                  # On 17-minute of every hour
+*                                   # Every day of month
+*                                   # Every month of the year
+*                                   # Every weekday
+root                                # As user root
+cd /                                # Execute command 'cd /'
+&#38;&#38;                                  # If 'cd /' completed successfully, then
+run-parts --report /etc/cron.hourly # Execute command 'run-parts --report /etc/cron.hourly'</pre>
+<p>
+Now I will sum up cron format:
+</p>
+<pre class="code">
+*    *    *    *    *     user            command to be executed
+T    T    T    T    T     (for system
+|    |    |    |    |      crontab only)
+|    |    |    |    |
+|    |    |    |    '----- day of week (0 - 6) (0 is Sunday, or use names)
+|    |    |    '---------- month of year (1 - 12)
+|    |    '--------------- day of month (1 - 31)
+|    '-------------------- hour (0 - 23)
+'------------------------- min (0 - 59)</pre>
+<p>
+This is abbreviated list of possible characters for time specification:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong> Asterisk (*) </strong> — all values in the field, e.g. <strong> * </strong> in minutes field means every minute.</div>
+</li>
+<li class="level1"><div class="li"> <strong> Slash (/) </strong> — defines increments of ranges. For example, 30-40/3 means run program on 30-th minute and every 3 minutes thereafter until 40-th minute.</div>
+</li>
+<li class="level1"><div class="li"> <strong> Percent (%) </strong> — in command field, all data after percent will be sent to the command as standard input. Do not bother with this for now.</div>
+</li>
+<li class="level1"><div class="li"> <strong> Comma (,) </strong> — specify a list, e.g. 30,40 in minutes field means 30th and 40th minute.</div>
+</li>
+<li class="level1"><div class="li"> <strong> Hyphen (-) </strong> — a range. For example, 30-40 in minutes field means every minute between 30th and 40th minute.</div>
+</li>
+<li class="level1"><div class="li"> <strong> L </strong> — specify last something, for example it allows you specify last day of month.</div>
+</li>
+</ol>
+<p>
+Now I will give you more some examples:
+</p>
+<pre class="bash code bash"><span class="co0"># m      h   dom  mon  dow    user            command</span>
+<span class="co0"># Every minute, every hour, every day of month, every month of year, every day of week</span>
+<span class="sy0">*</span>        <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>     root            <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">false</span>
+<span class="co0"># Every minute in interval of 30-40 minutes, every hour, every day of month, every month of year, every day of week</span>
+<span class="nu0">30</span>-<span class="nu0">40</span>    <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>     root            <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">false</span>
+<span class="co0"># Every 5 minutes in interval of 30-40 minutes, every hour, every day of month, every month of year, every day of week</span>
+<span class="nu0">30</span>-<span class="nu0">40</span><span class="sy0">/</span><span class="nu0">5</span>  <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>     root            <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">false</span>
+<span class="co0"># Every 5 minutes in interval of 0-59 minutes, every hour, every day of month, every month of year, every day of week</span>
+<span class="sy0">*/</span><span class="nu0">5</span>      <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>     user            <span class="kw3">command</span> to be executed
+<span class="co0"># Every minute, every hour, last day of month, every month of year, every day of week</span>
+<span class="sy0">*</span>        <span class="sy0">*</span>    L    <span class="sy0">*</span>    <span class="sy0">*</span>     root            <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">false</span>
+<span class="co0"># Every minute, every hour, every day of month, every month of year, Monday and Thursday</span>
+<span class="sy0">*</span>        <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="sy0">*</span>    <span class="nu0">0</span>,<span class="nu0">3</span>   root          <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">false</span></pre>
+<p>
+Ok, but how to install a crontab? This is list of the cron commands:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>crontab -l</strong> — print out current crontab.</div>
+</li>
+<li class="level1"><div class="li"> <strong>crontab -e</strong> — edit crontab for current user.</div>
+</li>
+<li class="level1"><div class="li"> <strong>crontab -r</strong> — remove crontab for current user.</div>
+</li>
+<li class="level1"><div class="li"> <strong>crontab /path/to/file</strong> — install crontab for the current user, overwriting existing one in the process.</div>
+</li>
+<li class="level1"><div class="li"> <strong>crontab &gt; /path/to/file</strong> — save crontab to a file.</div>
+</li>
+</ol>
+<p>
+Well, that was about using cron system daemon. But there is one more option to schedule program execution. It is via <strong>at</strong> utility. The difference between them is that <strong>cron</strong> is designed to run tasks repetitively, many times, and <strong>at</strong> is designed for scheduling one-time tasks. This are relevant commands:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>at</strong> — executes commands at a specified time.</div>
+</li>
+<li class="level1"><div class="li"> <strong>atq</strong> — lists pending jobs. </div>
+</li>
+<li class="level1"><div class="li"> <strong>atrm</strong> — removes a job.</div>
+</li>
+<li class="level1"><div class="li"> <strong>batch</strong> — executes commands then system in idling.</div>
+</li>
+</ol>
+<p>
+As if this infodump is not enough, now I will give you a table of possible time specification for <strong>at</strong>, taken from <a href="http://content.hccfl.edu/pollock/unix/atdemo.htm" class="urlextern" title="http://content.hccfl.edu/pollock/unix/atdemo.htm" rel="nofollow">http://content.hccfl.edu/pollock/unix/atdemo.htm</a> In the examples below assume that the date and time currently is 10:00 AM Tuesday, September 18, 2001
+</p>
+<div class="table sectionedit2"><table class="inline">
+<thead>
+<tr class="row0">
+<th class="col0 centeralign"> Example </th><th class="col1 leftalign">Meaning </th>
+</tr>
+</thead>
+<tr class="row1">
+<td class="col0 leftalign">at noon </td><td class="col1 leftalign">12:00 PM September 18, 2001 </td>
+</tr>
+<tr class="row2">
+<td class="col0 leftalign">at midnight </td><td class="col1 leftalign">12:00 AM September 19, 2001 </td>
+</tr>
+<tr class="row3">
+<td class="col0 leftalign">at teatime </td><td class="col1 leftalign">4:00 PM September 18, 2001 </td>
+</tr>
+<tr class="row4">
+<td class="col0 leftalign">at tomorrow </td><td class="col1 leftalign">10:00 AM September 19, 2001 </td>
+</tr>
+<tr class="row5">
+<td class="col0 leftalign">at noon tomorrow </td><td class="col1 leftalign">12:00 PM September 19, 2001 </td>
+</tr>
+<tr class="row6">
+<td class="col0 leftalign">at next week </td><td class="col1 leftalign">10:00 AM September 25, 2001 </td>
+</tr>
+<tr class="row7">
+<td class="col0 leftalign">at next monday </td><td class="col1 leftalign">10:00 AM September 24, 2001 </td>
+</tr>
+<tr class="row8">
+<td class="col0 leftalign">at fri </td><td class="col1 leftalign">10:00 AM September 21, 2001 </td>
+</tr>
+<tr class="row9">
+<td class="col0 leftalign">at OCT </td><td class="col1 leftalign">10:00 AM October 18, 2001 </td>
+</tr>
+<tr class="row10">
+<td class="col0 leftalign">at 9:00 AM </td><td class="col1 leftalign">9:00 AM September 19, 2001 </td>
+</tr>
+<tr class="row11">
+<td class="col0 leftalign">at 2:30 PM </td><td class="col1 leftalign">2:30 PM September 18, 2001 </td>
+</tr>
+<tr class="row12">
+<td class="col0 leftalign">at 1430 </td><td class="col1 leftalign">2:30 PM September 18, 2001 </td>
+</tr>
+<tr class="row13">
+<td class="col0 leftalign">at 2:30 PM tomorrow </td><td class="col1 leftalign">2:30 PM September 19, 2001 </td>
+</tr>
+<tr class="row14">
+<td class="col0 leftalign">at 2:30 PM next month </td><td class="col1 leftalign">2:30 PM October 18, 2001 </td>
+</tr>
+<tr class="row15">
+<td class="col0 leftalign">at 2:30 PM Fri </td><td class="col1 leftalign">2:30 PM September 21, 2001 </td>
+</tr>
+<tr class="row16">
+<td class="col0 leftalign">at 2:30 PM 9/21 </td><td class="col1 leftalign">2:30 PM September 21, 2001 </td>
+</tr>
+<tr class="row17">
+<td class="col0 leftalign">at 2:30 PM Sept 21 </td><td class="col1 leftalign">2:30 PM September 21, 2001 </td>
+</tr>
+<tr class="row18">
+<td class="col0 leftalign">at 2:30 PM 9/21/2010 </td><td class="col1 leftalign">2:30 PM September 21, 2010 </td>
+</tr>
+<tr class="row19">
+<td class="col0 leftalign">at 2:30 PM 9.21.10 </td><td class="col1 leftalign">2:30 PM September 21, 2010 </td>
+</tr>
+<tr class="row20">
+<td class="col0 leftalign">at now + 30 minutes </td><td class="col1 leftalign">10:30 AM September 18, 2001 </td>
+</tr>
+<tr class="row21">
+<td class="col0 leftalign">at now + 1 hour </td><td class="col1 leftalign">11:00 AM September 18, 2001 </td>
+</tr>
+<tr class="row22">
+<td class="col0 leftalign">at now + 2 days </td><td class="col1 leftalign">10:00 AM September 20, 2001 </td>
+</tr>
+<tr class="row23">
+<td class="col0 leftalign">at 4 PM + 2 days </td><td class="col1 leftalign">4:00 PM September 20, 2001 </td>
+</tr>
+<tr class="row24">
+<td class="col0 leftalign">at now + 3 weeks </td><td class="col1 leftalign">10:00 AM October 9, 2001 </td>
+</tr>
+<tr class="row25">
+<td class="col0 leftalign">at now + 4 months </td><td class="col1 leftalign">10:00 AM January 18, 2002 </td>
+</tr>
+<tr class="row26">
+<td class="col0 leftalign">at now + 5 years </td><td class="col1 leftalign">10:00 AM September 18, 2007 </td>
+</tr>
+</table></div>
+<p>
+Now you will learn how to add, view and remove <strong>at</strong> and <strong>crontab</strong> jobs.
+</p>
+</div>
+<h2 class="sectionedit3" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno">1:</span> <span class="kw3">echo</span> <span class="st_h">'echo Here I am, sitting in ur at, staring at ur date: $(date) | write user1'</span> <span class="sy0">|</span> at now + <span class="nu0">1</span> minutes
+<span class="lno">2:</span> atq
+</pre>
+<p>
+Wait for your message to appear, press <strong>&lt;ENTER&gt;</strong> and type some more:
+</p>
+<pre class="bash code bash"><span class="lno">3:</span> <span class="kw3">echo</span> <span class="st_h">'* * * * * echo Here I am, sitting in ur crontab, staring at ur date: $(date) | write user1'</span> <span class="sy0">&gt;</span> ~<span class="sy0">/</span>crontab.tmp
+<span class="lno">4:</span> crontab <span class="re5">-l</span>
+<span class="lno">5:</span> crontab ~<span class="sy0">/</span>crontab.tmp
+<span class="lno">6:</span> crontab <span class="re5">-l</span>
+</pre>
+<p>
+Now wait for this one message to appear and remove it:
+</p>
+<pre class="bash code bash"><span class="lno">7:</span> crontab <span class="re5">-r</span>
+<span class="lno">8:</span> crontab <span class="re5">-l</span>
+</pre>
+</div>
+<h1 class="sectionedit4" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="st_h">'echo Here I am, sitting in ur at, staring at ur date: $(date) | write user1'</span> <span class="sy0">|</span> at now + <span class="nu0">1</span> minutes
+warning: commands will be executed using <span class="sy0">/</span>bin<span class="sy0">/</span><span class="kw2">sh</span>
+job <span class="nu0">13</span> at Thu Jun <span class="nu0">28</span> <span class="nu0">14</span>:<span class="nu0">43</span>:00 <span class="nu0">2012</span>
+<span class="co4">user1@vm1:~$ </span>atq
+<span class="nu0">14</span>      Thu Jun <span class="nu0">28</span> <span class="nu0">14</span>:<span class="nu0">45</span>:00 <span class="nu0">2012</span> a user1
+<span class="co4">user1@vm1:~$
+</span>Message from user1<span class="sy0">@</span>vm1 on <span class="br0">&#40;</span>none<span class="br0">&#41;</span> at <span class="nu0">14</span>:<span class="nu0">43</span> ...
+Here I am, sitting <span class="kw1">in</span> ur at, staring at ur date: Thu Jun <span class="nu0">28</span> <span class="nu0">14</span>:<span class="nu0">43</span>:00 MSK <span class="nu0">2012</span>
+EOF
+&nbsp;
+<span class="co4">user1@vm1:~$ </span>crontab <span class="re5">-l</span>
+no crontab <span class="kw1">for</span> user1
+<span class="co4">user1@vm1:~$ </span><span class="kw3">echo</span> <span class="st_h">'* * * * * echo Here I am, sitting in ur crontab, staring at ur date: $(date) | write user1'</span> <span class="sy0">&gt;</span> ~<span class="sy0">/</span>crontab.tmp
+<span class="co4">user1@vm1:~$ </span>crontab <span class="re5">-l</span>
+<span class="sy0">*</span> <span class="sy0">*</span> <span class="sy0">*</span> <span class="sy0">*</span> <span class="sy0">*</span> <span class="kw3">echo</span> Here I am, sitting <span class="kw1">in</span> ur crontab, staring at ur date: $<span class="br0">&#40;</span><span class="kw2">date</span><span class="br0">&#41;</span> <span class="sy0">|</span> <span class="kw2">write</span> user1
+<span class="co4">user1@vm1:~$
+</span>Message from user1<span class="sy0">@</span>vm1 on <span class="br0">&#40;</span>none<span class="br0">&#41;</span> at <span class="nu0">14</span>:<span class="nu0">47</span> ...
+Here I am, sitting <span class="kw1">in</span> ur crontab, staring at ur date: Thu Jun <span class="nu0">28</span> <span class="nu0">14</span>:<span class="nu0">47</span>:01 MSK <span class="nu0">2012</span>
+EOF
+&nbsp;
+<span class="co4">user1@vm1:~$ </span>crontab <span class="re5">-r</span>
+<span class="co4">user1@vm1:~$ </span>crontab <span class="re5">-l</span>
+no crontab <span class="kw1">for</span> user1
+<span class="co4">user1@vm1:~$</span></pre>
+</div>
+<h2 class="sectionedit5" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Makes <strong>at</strong> execute the command <strong>echo Here I am, sitting in ur at, staring at ur date: $(date) | write user1</strong> when next minute starts.</div>
+</li>
+<li class="level1"><div class="li"> Prints out <strong>at</strong> job queue.</div>
+</li>
+<li class="level1"><div class="li"> Writes line <strong>echo &#039;* * * * * echo Here I am, sitting in ur crontab, staring at ur date: $(date) | write user1</strong> to the file <strong>crontab.tmp</strong> in your home direcroty.</div>
+</li>
+<li class="level1"><div class="li"> Prints out your current crontab, but there is none currently so it just tells this to you.</div>
+</li>
+<li class="level1"><div class="li"> Loads contents of <strong>crontab.tmp</strong> to your personal crontab file.</div>
+</li>
+<li class="level1"><div class="li"> Prints out your current crontab. Now there is something in it.</div>
+</li>
+<li class="level1"><div class="li"> Removes your current crontab.</div>
+</li>
+<li class="level1"><div class="li"> Tells you that you do not have a crontab once again.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit6" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Read <strong>man crontab</strong>, <strong>man at</strong>, <strong>man write</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Make your system tell you current time every 5 minutes.</div>
+</li>
+<li class="level1"><div class="li"> Make your system tell you current hour at the start of every hour.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex17.html';
+var disqus_title   = 'Exercise 17. Job schedulers: cron, at';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex17.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex17.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex17.txt</bdi> · Last modified: 2012/07/09 07:11 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer08c8.gif?id=llthw%3Aex17&amp;1428742722" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex17 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:40 GMT -->
+</html>

@@ -1,0 +1,185 @@
+====== Exercise 17. Job schedulers: cron, at======
+
+Often a need arises to execute a program on schedule. For example let us imagine that you need to make a copy of your work every midnight. To accomplish this in Linux there is a special program called **cron**. It is a demon, which means that is starts when computer is booted up and sits silently in the background, executing other programs for you when time comes. Cron has several configuration files, system-wide, and one per each user. By default users do not have crontabs, because nothing is scheduled for them. This are cron configuration file locations:
+  - **/etc/crontab** — system-wide cron configuration file.
+  - **/var/spool/cron/crontabs/** — directory for storing user configuration files.
+
+Now let us talk about cron configuration file format. If you run **cat /etc/crontab** you will see this:
+<code bash>
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# m h dom mon dow user  command
+17 *    * * *   root    cd / && run-parts --report /etc/cron.hourly
+25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )
+47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )
+52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )
+#
+</code>
+
+Its syntax is simple enough. Let us take the line <code>47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly</code> and take it apart:
+<code>
+17                                  # On 17-minute of every hour 
+*                                   # Every day of month 
+*                                   # Every month of the year 
+*                                   # Every weekday 
+root                                # As user root
+cd /                                # Execute command 'cd /'
+&&                                  # If 'cd /' completed successfully, then 
+run-parts --report /etc/cron.hourly # Execute command 'run-parts --report /etc/cron.hourly'
+</code>
+
+Now I will sum up cron format:
+<code>
+*    *    *    *    *     user            command to be executed
+T    T    T    T    T     (for system 
+|    |    |    |    |      crontab only)
+|    |    |    |    |
+|    |    |    |    '----- day of week (0 - 6) (0 is Sunday, or use names)
+|    |    |    '---------- month of year (1 - 12)
+|    |    '--------------- day of month (1 - 31)
+|    '-------------------- hour (0 - 23)
+'------------------------- min (0 - 59)
+</code>  
+
+This is abbreviated list of possible characters for time specification:
+  - ** Asterisk (*) ** — all values in the field, e.g. ** * ** in minutes field means every minute.
+  - ** Slash (/) ** — defines increments of ranges. For example, 30-40/3 means run program on 30-th minute and every 3 minutes thereafter until 40-th minute.
+  - ** Percent (%) ** — in command field, all data after percent will be sent to the command as standard input. Do not bother with this for now.
+  - ** Comma (,)  ** — specify a list, e.g. 30,40 in minutes field means 30th and 40th minute.
+  - ** Hyphen (-) ** — a range. For example, 30-40 in minutes field means every minute between 30th and 40th minute.
+  - ** L ** — specify last something, for example it allows you specify last day of month.
+
+Now I will give you more some examples:
+<code bash>
+# m      h   dom  mon  dow    user            command
+# Every minute, every hour, every day of month, every month of year, every day of week
+*        *    *    *    *     root            /bin/false
+# Every minute in interval of 30-40 minutes, every hour, every day of month, every month of year, every day of week
+30-40    *    *    *    *     root            /bin/false
+# Every 5 minutes in interval of 30-40 minutes, every hour, every day of month, every month of year, every day of week
+30-40/5  *    *    *    *     root            /bin/false
+# Every 5 minutes in interval of 0-59 minutes, every hour, every day of month, every month of year, every day of week
+*/5      *    *    *    *     user            command to be executed
+# Every minute, every hour, last day of month, every month of year, every day of week
+*        *    L    *    *     root            /bin/false
+# Every minute, every hour, every day of month, every month of year, Monday and Thursday
+*        *    *    *    0,3   root          /bin/false
+</code>
+Ok, but how to install a crontab?  This is list of the cron commands:
+  - **crontab -l** — print out current crontab.
+  - **crontab -e** — edit crontab for current user.
+  - **crontab -r** — remove crontab for current user.
+  - **crontab /path/to/file** — install crontab for the current user, overwriting existing one in the process.
+  - **crontab > /path/to/file** — save crontab to a file.
+
+Well, that was about using cron system daemon. But there is one more option to schedule program execution. It is via **at** utility. The difference between them is that **cron** is designed to run tasks repetitively, many times, and **at** is designed for scheduling one-time tasks. This are relevant commands:
+  - **at** — executes commands at a specified time.
+  - **atq** — lists pending jobs. 
+  - **atrm** — removes a job.
+  - **batch** — executes commands then system in idling.
+
+As if this infodump is not enough, now I will give you a table of possible time specification for **at**, taken from http://content.hccfl.edu/pollock/unix/atdemo.htm In the examples below assume that the date and time currently is 10:00 AM Tuesday, September 18, 2001
+^   Example             ^Meaning                             ^
+|at noon                |12:00 PM September 18, 2001         |
+|at midnight            |12:00 AM September 19, 2001         |
+|at teatime             |4:00 PM September 18, 2001          |
+|at tomorrow            |10:00 AM September 19, 2001         |
+|at noon tomorrow	    |12:00 PM September 19, 2001         |
+|at next week           |10:00 AM September 25, 2001         |
+|at next monday         |10:00 AM September 24, 2001         |
+|at fri                 |10:00 AM September 21, 2001         |
+|at OCT                 |10:00 AM October 18, 2001           |
+|at 9:00 AM             |9:00 AM September 19, 2001          |
+|at 2:30 PM             |2:30 PM September 18, 2001          |
+|at 1430                |2:30 PM September 18, 2001          |
+|at 2:30 PM tomorrow	|2:30 PM September 19, 2001          |
+|at 2:30 PM next month	|2:30 PM October 18, 2001            |
+|at 2:30 PM Fri         |2:30 PM September 21, 2001          |
+|at 2:30 PM 9/21        |2:30 PM September 21, 2001          |
+|at 2:30 PM Sept 21     |2:30 PM September 21, 2001          |
+|at 2:30 PM 9/21/2010	|2:30 PM September 21, 2010          |
+|at 2:30 PM 9.21.10     |2:30 PM September 21, 2010          |
+|at now + 30 minutes    |10:30 AM September 18, 2001         |
+|at now + 1 hour        |11:00 AM September 18, 2001         |
+|at now + 2 days        |10:00 AM September 20, 2001         |
+|at 4 PM + 2 days       |4:00 PM September 20, 2001          |
+|at now + 3 weeks       |10:00 AM October 9, 2001            |
+|at now + 4 months      |10:00 AM January 18, 2002           |
+|at now + 5 years       |10:00 AM September 18, 2007         |
+
+
+Now you will learn how to add, view and remove **at** and **crontab** jobs.
+
+===== Do this =====
+
+<code bash 1>
+echo 'echo Here I am, sitting in ur at, staring at ur date: $(date) | write user1' | at now + 1 minutes
+atq
+</code>
+
+Wait for your message to appear, press **<ENTER>** and type some more:
+
+<code bash 3>
+echo '* * * * * echo Here I am, sitting in ur crontab, staring at ur date: $(date) | write user1' > ~/crontab.tmp
+crontab -l
+crontab ~/crontab.tmp
+crontab -l
+</code>
+
+Now wait for this one message to appear and remove it:
+
+<code bash 7>
+crontab -r
+crontab -l
+</code>
+
+====== What you should see ======
+<code bash>
+user1@vm1:~$ echo 'echo Here I am, sitting in ur at, staring at ur date: $(date) | write user1' | at now + 1 minutes
+warning: commands will be executed using /bin/sh
+job 13 at Thu Jun 28 14:43:00 2012
+user1@vm1:~$ atq
+14      Thu Jun 28 14:45:00 2012 a user1
+user1@vm1:~$
+Message from user1@vm1 on (none) at 14:43 ...
+Here I am, sitting in ur at, staring at ur date: Thu Jun 28 14:43:00 MSK 2012
+EOF
+
+user1@vm1:~$ crontab -l
+no crontab for user1
+user1@vm1:~$ echo '* * * * * echo Here I am, sitting in ur crontab, staring at ur date: $(date) | write user1' > ~/crontab.tmp
+user1@vm1:~$ crontab -l
+* * * * * echo Here I am, sitting in ur crontab, staring at ur date: $(date) | write user1
+user1@vm1:~$
+Message from user1@vm1 on (none) at 14:47 ...
+Here I am, sitting in ur crontab, staring at ur date: Thu Jun 28 14:47:01 MSK 2012
+EOF
+
+user1@vm1:~$ crontab -r
+user1@vm1:~$ crontab -l
+no crontab for user1
+user1@vm1:~$
+</code>
+
+===== Explanation =====
+
+  - Makes **at** execute the command **echo Here I am, sitting in ur at, staring at ur date: $(date) | write user1** when next minute starts.
+  - Prints out **at** job queue.
+  - Writes line **echo '* * * * * echo Here I am, sitting in ur crontab, staring at ur date: $(date) | write user1** to the file **crontab.tmp** in your home direcroty.
+  - Prints out your current crontab, but there is none currently so it just tells this to you.
+  - Loads contents of **crontab.tmp** to your personal crontab file.
+  - Prints out your current crontab. Now there is something in it.
+  - Removes your current crontab.
+  - Tells you that you do not have a crontab once again.
+
+====== Extra credit ======
+  - Read **man crontab**, **man at**, **man write**.
+  - Make your system tell you current time every 5 minutes.
+  - Make your system tell you current hour at the start of every hour.

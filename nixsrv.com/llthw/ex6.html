@@ -1,0 +1,332 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex6 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:53 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex6 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex6"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex6decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex6.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex6.txt"/>
+<link rel="canonical" href="ex6.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex6","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_6_bashlanguage_settings_lang_locale_dpkg-reconfigure_locales">Exercise 6. Bash: language settings, LANG, locale, dpkg-reconfigure locales</h1>
+<div class="level1">
+<p>
+In Linux language selection is as simple as an exporting of a variable. That is right, programs decide how to talk to you by looking into this varibale. Of course, for this to work program must support locales and have translation to your language available and installed. Let us see how it works by installing French locale.
+</p>
+<p>
+Now you will learn how to install and select a locale.
+</p>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno">1:</span> <span class="kw3">echo</span> <span class="re1">$LANG</span>
+<span class="lno">2:</span> locale
+<span class="lno">3:</span> <span class="kw2">man</span> <span class="kw2">man</span> <span class="co0"># press q to exit man</span>
+<span class="lno">4:</span> <span class="kw2">sudo</span> dpkg-reconfigure locales
+</pre>
+<p>
+Now, select the <strong>fr_FR.UTF-8 locale</strong> by navigating through the list using <strong>cursor keys</strong> and select the locale using <strong>space</strong>. Select <strong>en_US.UTF-8</strong> as the default system locale.
+</p>
+<pre class="bash code bash"><span class="lno"> 5:</span> <span class="kw3">export</span> <span class="re2">LANG</span>=fr_FR.UTF-<span class="nu0">8</span>
+<span class="lno"> 6:</span> <span class="kw3">echo</span> <span class="re1">$LANG</span>
+<span class="lno"> 7:</span> locale <span class="co0"># press q to exit man</span>
+<span class="lno"> 8:</span> <span class="kw2">man</span> <span class="kw2">man</span>
+<span class="lno"> 9:</span> <span class="kw3">export</span> <span class="re2">LANG</span>=en_US.UTF-<span class="nu0">8</span>
+</pre>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="code">
+user1@vm1:~$ echo $LANG
+en_US.UTF-8
+user1@vm1:~$ locale
+LANG=en_US.UTF-8
+LANGUAGE=en_US:en
+LC_CTYPE="en_US.UTF-8"
+LC_NUMERIC="en_US.UTF-8"
+LC_TIME="en_US.UTF-8"
+LC_COLLATE="en_US.UTF-8"
+LC_MONETARY="en_US.UTF-8"
+LC_MESSAGES="en_US.UTF-8"
+LC_PAPER="en_US.UTF-8"
+LC_NAME="en_US.UTF-8"
+LC_ADDRESS="en_US.UTF-8"
+LC_TELEPHONE="en_US.UTF-8"
+LC_MEASUREMENT="en_US.UTF-8"
+LC_IDENTIFICATION="en_US.UTF-8"
+LC_ALL=
+user1@vm1:~$ man man
+MAN(1)                Manual pager utils                MAN(1)
+
+NAME
+       man - an interface to the on-line reference manuals
+user1@vm1:~$ sudo dpkg-reconfigure locales
+---------------| Configuring locales |-----------------------
+|                                                           |
+| Locales are a framework to switch between multiple        |
+| languages and allow users to use their language,          |
+| country, characters, collation order, etc.                |
+|                                                           |
+| Please choose which locales to generate. UTF-8 locales    |
+| should be chosen by default, particularly for new         |
+| installations. Other character sets may be useful for     |
+| backwards compatibility with older systems and software.  |
+|                                                           |
+|                          &#60;Ok&#62;                             |
+|                                                           |
+-------------------------------------------------------------
+           -----------| Configuring locales |--------
+           | Locales to be generated:               |
+           |                                        |
+           |    [ ] fr_BE@euro ISO-8859-15          |
+           |    [ ] fr_CA ISO-8859-1                |
+           |    [ ] fr_CA.UTF-8 UTF-8               |
+           |    [ ] fr_CH ISO-8859-1                |
+           |    [ ] fr_CH.UTF-8 UTF-8               |
+           |    [*] fr_FR ISO-8859-1                |
+           |    [ ] fr_FR.UTF-8 UTF-8               |
+           |    [ ] fr_FR@euro ISO-8859-15          |
+           |                                        |
+           |                                        |
+           |        &#60;Ok&#62;            &#60;Cancel&#62;        |
+           |                                        |
+           ------------------------------------------
+ ------------------ Configuring locales ----------------------
+ |                                                           |
+ | Many packages in Debian use locales to display text in    |
+ | the correct language for the user. You can choose a       |
+ | default locale for the system from the generated          |
+ | locales.                                                  |
+ |                                                           |
+ | This will select the default language for the entire      |
+ | system. If this system is a multi-user system where not   |
+ | all users are able to speak the default language, they    |
+ | will experience difficulties.                             |
+ |                                                           |
+ |                          &#60;Ok&#62;                             |
+ |                                                           |
+ -------------------------------------------------------------
+------------ Configuring locales --------------
+| Default locale for the system environment:  |
+|                                             |
+|                 None                        |
+|                 en_US.UTF-8                 |
+|                 fr_FR.UTF-8                 |
+|                                             |
+|                                             |
+|          &#60;Ok&#62;              &#60;Cancel&#62;         |
+|                                             |
+-----------------------------------------------
+Generating locales (this might take a while)...
+  en_US.UTF-8... done
+  fr_FR.UTF-8... done
+Generation complete.
+user1@vm1:~$ export LANG=fr_FR.UTF-8
+user1@vm1:~$ echo $LANG
+fr_FR.UTF-8
+user1@vm1:~$ locale
+LANG=fr_FR.UTF-8
+LANGUAGE=en_US:en
+LC_CTYPE="fr_FR.UTF-8"
+LC_NUMERIC="fr_FR.UTF-8"
+LC_TIME="fr_FR.UTF-8"
+LC_COLLATE="fr_FR.UTF-8"
+LC_MONETARY="fr_FR.UTF-8"
+LC_MESSAGES="fr_FR.UTF-8"
+LC_PAPER="fr_FR.UTF-8"
+LC_NAME="fr_FR.UTF-8"
+LC_ADDRESS="fr_FR.UTF-8"
+LC_TELEPHONE="fr_FR.UTF-8"
+LC_MEASUREMENT="fr_FR.UTF-8"
+LC_IDENTIFICATION="fr_FR.UTF-8"
+LC_ALL=
+user1@vm1:~$ man man
+MAN(1)  Utilitaires de l'afficheur des pages de manuel  MAN(1)
+
+NOM
+       man   -   interface  de  consultation  des  manuels  de
+       référence en ligne
+user1@vm1:~$ export LANG=en_US.UTF-8
+user1@vm1:~$</pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Prints out your current <strong>LANG</strong> variable which is used by programs to determine which language to use when interacting with you.</div>
+</li>
+<li class="level1"><div class="li"> Prints out all locale variables which are used by programs for setting up number, address, phone format, etc. according to the format of the specified country.</div>
+</li>
+<li class="level1"><div class="li"> Shows you manual page about unix manual system. Notice how I used <strong>#</strong> to comment an action, everything after <strong>#</strong> is not executed.</div>
+</li>
+<li class="level1"><div class="li"> Executes a program for re-configuring your locales. Because this change is system wide, you need to run this command as root, that&#039;s why there is <strong>sudo</strong> in front of <strong>dpkg-reconfigure locales</strong>. Don&#039;t bother about sudo now, I&#039;d set it up for you.</div>
+</li>
+<li class="level1"><div class="li"> Exports <strong>LANG</strong> variable which is used to set all other locale variables.</div>
+</li>
+<li class="level1"><div class="li"> Prints out <strong>LANG</strong> variable, you can see that it&#039;s changed as you would expect.</div>
+</li>
+<li class="level1"><div class="li"> Prints out other locale variables which are changed also.</div>
+</li>
+<li class="level1"><div class="li"> Shows you <strong>man</strong> manual page, <em>in French</em>.</div>
+</li>
+<li class="level1"><div class="li"> Reverts <strong>LANG</strong> variable back to English.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Read manual page about locale. To do this, type in <strong>man locale</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Now, read a <strong>man 7 locale</strong> page. Notice how I used <strong>7</strong> here to call a man page about conventions. If you want, read <strong>man man</strong> now to understand what other possible codes are, or just wait for exercise which covers it.</div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex6.html';
+var disqus_title   = 'Exercise 6. Bash: language settings, LANG, locale, dpkg-reconfigure locales';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex6.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex6.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex6.txt</bdi> · Last modified: 2012/07/05 09:36 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexerf941.gif?id=llthw%3Aex6&amp;1428742711" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex6 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:03:55 GMT -->
+</html>

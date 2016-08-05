@@ -1,0 +1,4 @@
+====== List of *nix commands ======
+<code bash>
+:            # null command, http://linux.die.net/man/1/colon
+</code>

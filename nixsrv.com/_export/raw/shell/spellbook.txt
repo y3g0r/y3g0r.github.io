@@ -1,0 +1,120 @@
+======Sorted list of different commands======
+<code bash>
+/etc/sysctl.d/disableipv6.conf ; echo net.ipv6.conf.all.disable_ipv6=1 > /etc/sysctl.d/disableipv6.conf
+/usr/bin/kvm -monitor unix:/var/run/qemu-server/406.mon,server,nowait -vnc unix:/var/run/qemu-server/406.vnc,password -pidfile /var/run/qemu-server/406.pid -daemonize -usbdevice tablet -name foobar -smp sockets=1,cores=1 -nodefaults -boot menu=on,order=cad -vga cirrus -tdf -drive file=/dev/cdrom,if=ide,index=2,media=cdrom -drive file=/dev/vm/vm-406-disk-1,if=scsi,index=0,cache=none,boot=on -m 1024 -netdev type=tap,id=vlan1d0,ifname=tap406i1d0,script=/var/lib/qemu-server/bridge-vlan -device e1000,mac=7E:D6:68:BF:C8:DA,netdev=vlan1d0 -device pci-assign,host=24:10.0
+awk '{print $1}foobar'
+awk -F'[: ]' '{print $5-10}'
+awk -F'[: ]' '{print $5 " " $1}'
+batch #cron thing
+cat access_log-2011-03-31 | awk -F'[: ]' '{print $5}' | uniq -c # ip by hours
+cat access_log-2011-09-22.rez | awk -F'[: ]' '{print $1}' | sort | uniq -c | sort -rn | less # the same as above
+chown root:root /dev/ttyS0
+colordiff -y
+cu -l /dev/ttyS0 -s 9600
+dd ; time dd if=/srv/dumps/tmp/foobar.raw of=/dev/vm/vm-301-disk-1 bs=400M
+dd if=/dev/sdX of=/tmp/sda-mbr.bin bs=512 count=1 #backup mbr
+dd if=/dev/vdb of=/dev/vdc bs=1 count=446
+diff
+diff -y <(ll /) <(ll /mnt)
+dig @8.8.8.8 google.com
+du -h | grep '\d{-}'
+dump 0aLf foo.root /
+ethtool -s eth0 speed 100 duplex full autoneg off
+fdisk #!  DISK Geometry:  41610 cyls/16 heads/63 sectors = 41942880 sectors (20479MB)
+find . -exec file {} \; | grep text
+find . | xargs stat -f "%m%t%Sm %N" | sort -rn | head -10 | cut -f2- # show last modified files ./ -name "*.conf" | xargs grep 1000
+find / -ctime  -2 -not \( -path "/proc/*" -o  -path "/dev/*" -o -path "/sys/*" \)  -print | less -S
+find /usr/home -name .profile 2>&1 | more
+for i in {10..30}; do echo test $i; if (( $i < 20 )); then echo less than 20; fi; done; # loop
+for; c=1; n=0; for i in $( ls ); do n=$[$n+1]; if [ $n -gt $c ]; then echo item: $i $n; stat $i; fi; done # show files beginning pattern with pattern 
+grep '31/Mar/2011:12:' access_log-2011-03-31 | awk '{print $1}' | sort | uniq -c | sort -rn # uniq ip per hour
+grep -rlm 1 'foo' .
+grep ntp /etc/services
+inotifywait  -mr .
+inotifywatch
+iptables
+iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j
+iptables -A FORWARD -p tcp -d 192.168.0.1 --dport 3389 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -t filter -A FORWARD -p tcp -m tcp --dport 25 -j LOG --log-prefix "!!!SMTP drop: " --log-level 7
+iptables -t filter -A FORWARD -s 10.0.0.0/8 -p tcp -m tcp --dport 25 -j DROP
+iptables -t filter -L -n -v
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 192.168.0.1 #allow single machine to internet
+iptables -t nat -A POSTROUTING -s 192.168.0.1 -d 192.168.0.1 -j MASQUERADE
+iptables -t nat -A PREROUTING --src 10.0.0.1/24 --dst 10.0.0.1 -p udp --dport 53 -j DNAT --to-destination 8.8.8.8:53
+iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 4001 -j DNAT --to-destination 192.168.0.1:3389
+iptables -t nat -A PREROUTING -s 10.0.0.0/24 -d 10.0.0.1/32 -p udp -m udp --dport 53 -j DNAT --to-destination 192.168.0.1:53
+iptables #part1 iptables -t nat -A PREROUTING -p tcp --dport 8055 --dst 192.168.0.1 -j DNAT --to-destination 192.168.0.1:8055
+iptables #part2 iptables -t nat -A POSTROUTING -p tcp --dport 8055 --dst 192.168.0.1 -j SNAT --to-source 192.168.0.1
+ldapsearch -H 'ldaps://host.site/' -b "uid=user,ou=people,dc=domain,dc=site" -v
+less
+less -iMSx4 -FX -R
+ls -aF --color --group-directories-first
+ls -al
+ls -l | grep '^d'
+ls -ltr
+ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/' # show tree
+lsof -Pi tcp | cut -c 1-8,13-20,60-100 | sort | uniq # grop daemons by ports, ugly
+lsof -Pi tcp:80
+ltrace
+lvchange --addtag @pve-vm-300 /dev/vm/vm-500-disk-2 && lvchange --deltag @pve-vm-500 /dev/vm/vm-500-disk-2
+lvrename /dev/vm/vm-500-disk-2 vm-300-disk-1
+mail -s "subject" someone@someaddress.com
+md5sum debian-6.0.1a-amd64-CD-1.iso | awk '{print $1}' | diff -y <(xargs echo) <(echo "855f552327b1de54625407f554983301") ; echo $?
+mkdir -pv /{bin,cgi-bin,conf,core,etc,icons,include,perllib,share,templates,var,var/tmp}
+mkdir /tmp/ramdisk; chmod 777 /tmp/ramdisk ; mount -t tmpfs -o size=16384M tmpfs /tmp/ramdisk/ # ram disk
+modprobe -r igb && modprobe igb max_vfs=7
+modprobe ip_conntrack ; iptstate
+mysqldump -umoodle  -p moodle > "/srv/bak/moodlemysqldump-$(date +%d_%m_%Y_%H-%m-%S).sql"
+nc -v -w 2 -z localhost 1-65536
+nc ; echo QUIT | nc -v -w 5 yandex.ru 20-250 500-600 5990-7000
+nc ; yes BBBBBBBBBBBBBBBBBBBBBB | nc foobar.site 2222 > /dev/null
+netstat -ni
+nohup ./watchlogin >/dev/null 2>/dev/null &
+ntpdate -u 192.168.0.1
+objdump -p | grep NEEDED
+portmap
+qm start
+qmrestore
+qmrestore --storage vm /srv/dumps/bak/vzdump-qemu-146-2011_08_30-02_31_39.tgz 148
+route add -net 192.168.0.1 netmask 255.255.255.0 gw 192.168.0.1 dev vmbr2
+route delete -net 192.168.0.1/24 gw 0.0.0.0
+rsync -avve ssh root@host:/srv/dumps/bak/ /mnt/host
+scp -P 3022 foo orl@host:/home/foo
+script
+sed -i 's/old-word/new-word/g' *.txt
+sed ; find ./14* -type f -exec sed -i 's/vlan1/vlan3/' {} \;
+shmux
+sockstat | cut -c 1-15,29-80 | sort | uniq
+sort myfile.txt | uniq
+ssh-copy-id
+ssh -f -N -L 1234:localhost:110 user@POP3_server # port forwarding
+ssh -fN -R 127.0.0.1:22000:foo.site:22 bar.site
+ssh -R remote_port:localhost:22 your_home_computer
+ssh -t
+ssh ; date +%Y%m%d%T -s "`ssh root@vbox1 'date "+%Y%m%d %T"'`"
+ssh ; for HOST in foo bar foobar; do ssh $HOST mkdir -p .ssh ; cat .ssh/id_rsa.pub | ssh $HOST 'cat >> .ssh/authorized_keys'; done
+ssh ; ssh-keygen -t rsa ; ssh b@B mkdir -p .ssh ; cat .ssh/id_rsa.pub | ssh b@B 'cat >> .ssh/authorized_keys'
+ssh ; tar cfv - .vimrc | ssh 192.168.0.1 'cd /home/orl; tar xfv -'
+ssh host 'cat /srv/tmp/foo.root' | restore -rf -
+strace
+strace -f
+strace -f -o eximstart /etc/init.d/exim4 start
+strace -T tar -zxf /tmp/mail.110429.tar.gz 2>&1 | awk '{last=$NF; NF--; print last, $0}' | sort | head
+strace -T tar -zxf /tmp/mail.110429.tar.gz 2>&1 | awk '{last=$NF; NF--; print last, $0}' | sort | head
+sudo -l
+sudo -v
+sysctl net.ipv4.ip_forward=1
+sysrq-trigger; echo -e "u\ns\nb\n" > /proc/sysrq-trigger
+tar --create --verbose --gzip --preserve-permissions --exclude=/dev --exclude=/home --exclude=/media --exclude=/mnt --exclude=/opt --exclude=/proc --exclude=/srv --exclude=/srvs --exclude=/tmp --exclude=/usr --exclude=/var --exclude=/sys --file=foo.root /
+tar --one-file-system
+tar -czf /srv/bak/moodledata-$(date +%d_%m_%Y_%H-%m-%S).tgz /var/moodledata
+tar -zxvf foo, tar -tf foo
+tcpdump -vv 'udp port 53'
+tcpdump ip proto \\icmp
+tcpdump ip proto \\icmp and src host 192.168.0.1
+tune2fs -m 0 /dev/sda1
+update-initramfs -u -k 2.6.35-1-pve
+vim /etc/aliases
+visudo orl     ALL=(ALL) NOPASSWD: ALL
+vzdump --compress --dumpdir /srv/dumps/bak/manual 106
+</code>

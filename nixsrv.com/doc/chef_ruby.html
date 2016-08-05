@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/doc/chef_ruby by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:54 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>doc:chef_ruby - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="doc,chef_ruby"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="chef_rubydecf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedafd0.php?mode=list&amp;ns=doc"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/doc/chef_ruby.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/doc/chef_ruby.txt"/>
+<link rel="canonical" href="chef_ruby.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='doc';var JSINFO = {"id":"doc:chef_ruby","namespace":"doc"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<pre class="ruby code ruby"><span class="co1">#check syntax</span>
+    ruby <span class="sy0">-</span>c my_cookbook_file.<span class="me1">rb</span>
+<span class="co1"># This is a comment.</span>
+<span class="co1">#logic</span>
+    !!<span class="kw2">true</span>          <span class="co1"># =&gt; true</span>
+    !!<span class="kw2">false</span>         <span class="co1"># =&gt; false</span>
+    !!<span class="kw2">nil</span>           <span class="co1"># =&gt; false (when pressed, nil is false)</span>
+    !!<span class="nu0">0</span>             <span class="co1"># =&gt; true (zero is NOT false).</span>
+<span class="co1">#arrays</span>
+    x = <span class="br0">&#91;</span><span class="st0">&quot;a&quot;</span>, <span class="st0">&quot;b&quot;</span>, <span class="st0">&quot;c&quot;</span><span class="br0">&#93;</span>   <span class="co1"># =&gt; [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</span>
+    x<span class="br0">&#91;</span><span class="nu0">0</span><span class="br0">&#93;</span>                  <span class="co1"># =&gt; &quot;a&quot; (zero is the first index)</span>
+    x.<span class="me1">first</span>               <span class="co1"># =&gt; &quot;a&quot; (see?)</span>
+    x.<span class="me1">last</span>                <span class="co1"># =&gt; &quot;c&quot;</span>
+    x <span class="sy0">+</span> <span class="br0">&#91;</span><span class="st0">&quot;d&quot;</span><span class="br0">&#93;</span>             <span class="co1"># =&gt; [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span>
+    x                     <span class="co1"># =&gt; [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;] ( x is unchanged)</span>
+    x = x <span class="sy0">+</span> <span class="br0">&#91;</span><span class="st0">&quot;d&quot;</span><span class="br0">&#93;</span>         <span class="co1"># =&gt; [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span>
+    x                     <span class="co1"># =&gt; [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span>
+<span class="co1">#whitespace arrays</span>
+    <span class="kw1">if</span> <span class="sy0">%</span>w<span class="br0">&#123;</span>debian ubuntu<span class="br0">&#125;</span>.<span class="kw1">include</span>?<span class="br0">&#40;</span>node<span class="br0">&#91;</span><span class="st0">&quot;platform&quot;</span><span class="br0">&#93;</span><span class="br0">&#41;</span>
+    <span class="co1"># do debian/ubuntu things with the Ruby array %w{} shortcut</span>
+<span class="co1">#hashes</span>
+    h = <span class="br0">&#123;</span>
+        <span class="st0">&quot;first_name&quot;</span> <span class="sy0">=&gt;</span> <span class="st0">&quot;Bob&quot;</span>,
+        <span class="st0">&quot;last_name&quot;</span>  <span class="sy0">=&gt;</span> <span class="st0">&quot;Jones&quot;</span>
+    <span class="br0">&#125;</span>
+    h.<span class="me1">keys</span>              <span class="co1"># =&gt; [&quot;first_name&quot;, &quot;last_name&quot;]</span>
+    h<span class="br0">&#91;</span><span class="st0">&quot;first_name&quot;</span><span class="br0">&#93;</span>     <span class="co1"># =&gt; &quot;Bob&quot;</span>
+    h<span class="br0">&#91;</span><span class="st0">&quot;last_name&quot;</span><span class="br0">&#93;</span>      <span class="co1"># =&gt; &quot;Jones&quot;</span>
+    h<span class="br0">&#91;</span><span class="st0">&quot;age&quot;</span><span class="br0">&#93;</span> = <span class="nu0">23</span>
+    h.<span class="me1">keys</span>              <span class="co1"># =&gt; [&quot;first_name&quot;, &quot;age&quot;, &quot;last_name&quot;]</span>
+    h.<span class="me1">values</span>            <span class="co1"># =&gt; [&quot;Jones&quot;, &quot;Bob&quot;, 23]</span>
+<span class="co1">#statements</span>
+    <span class="kw1">if</span> <span class="kw2">false</span>  <span class="co1"># this won't happen</span>
+    <span class="kw1">elsif</span> <span class="kw2">nil</span> <span class="co1"># this won't either</span>
+    <span class="kw1">else</span>      <span class="co1"># code here will run though</span>
+    <span class="kw1">end</span>
+    x = <span class="st0">&quot;dog&quot;</span>
+    <span class="kw1">case</span> x
+    <span class="kw1">when</span> <span class="st0">&quot;fish&quot;</span>
+        <span class="co1"># this won't happen</span>
+    <span class="kw1">when</span> <span class="st0">&quot;dog&quot;</span>, <span class="st0">&quot;cat&quot;</span>, <span class="st0">&quot;monkey&quot;</span>
+        <span class="co1"># this will run</span>
+    <span class="kw1">else</span>
+        <span class="co1"># the else is an optional catch-all</span>
+    <span class="kw1">end</span>
+<span class="co1">#case</span>
+    <span class="kw1">case</span> node<span class="br0">&#91;</span><span class="st0">&quot;platform&quot;</span><span class="br0">&#93;</span>
+    <span class="kw1">when</span> <span class="st0">&quot;debian&quot;</span>, <span class="st0">&quot;ubuntu&quot;</span>
+        <span class="co1"># do debian/ubuntu things</span>
+    <span class="kw1">when</span> <span class="st0">&quot;redhat&quot;</span>, <span class="st0">&quot;centos&quot;</span>, <span class="st0">&quot;fedora&quot;</span>
+        <span class="co1"># do redhat/centos/fedora things</span>
+    <span class="kw1">end</span>
+    <span class="co1">#For example, using a case statement with the platform_family node attribute:</span>
+        <span class="kw1">case</span> node<span class="br0">&#91;</span><span class="st0">&quot;platform_family&quot;</span><span class="br0">&#93;</span>
+        <span class="kw1">when</span> <span class="st0">&quot;debian&quot;</span>
+            <span class="co1"># do things on debian-ish platforms (debian, ubuntu, linuxmint)</span>
+        <span class="kw1">when</span> <span class="st0">&quot;rhel&quot;</span>
+            <span class="co1"># do things on RHEL platforms (redhat, centos, scientific, etc)</span>
+        <span class="kw1">end</span>
+<span class="co1">#Call a Method</span>
+    <span class="co1">#Call a method on something with .method_name():</span>
+        x = <span class="st0">&quot;My String&quot;</span>
+        x.<span class="kw3">split</span><span class="br0">&#40;</span><span class="st0">&quot; &quot;</span><span class="br0">&#41;</span>            <span class="co1"># =&gt; [&quot;My&quot;, &quot;String&quot;]</span>
+        x.<span class="kw3">split</span><span class="br0">&#40;</span><span class="st0">&quot; &quot;</span><span class="br0">&#41;</span>.<span class="me1">join</span><span class="br0">&#40;</span><span class="st0">&quot;, &quot;</span><span class="br0">&#41;</span> <span class="co1"># =&gt; &quot;My, String&quot;</span>
+        Define a <span class="kw4">Method</span>
+        Define a method <span class="br0">&#40;</span><span class="kw1">or</span> a function, <span class="kw1">if</span> you like<span class="br0">&#41;</span>:
+        <span class="co1">#</span>
+        <span class="kw1">def</span> do_something_useless<span class="br0">&#40;</span> first_argument, second_argument<span class="br0">&#41;</span>
+          <span class="kw3">puts</span> <span class="st0">&quot;You gave me #{first_argument} and #{second_argument}&quot;</span>
+        <span class="kw1">end</span>
+        do_something_useless<span class="br0">&#40;</span> <span class="st0">&quot;apple&quot;</span>, <span class="st0">&quot;banana&quot;</span><span class="br0">&#41;</span>
+        <span class="co1"># =&gt; &quot;You gave me apple and banana&quot;</span>
+        do_something_useless <span class="nu0">1</span>, <span class="nu0">2</span>
+        <span class="co1"># =&gt; &quot;You gave me 1 and 2&quot;</span>
+        <span class="co1"># see how the parens are optional if there's no confusion about what to do</span>
+<span class="co1">#Ruby Class</span>
+    <span class="co1">#Use the Ruby File class in a recipe. Because Chef has the file resource, use ::File to use the Ruby File class. For example:</span>
+        execute <span class="st0">'apt-get-update'</span> <span class="kw1">do</span>
+          command <span class="st0">'apt-get update'</span>
+          ignore_failure <span class="kw2">true</span>
+          only_if <span class="br0">&#123;</span> apt_installed? <span class="br0">&#125;</span>
+          not_if <span class="br0">&#123;</span> ::<span class="kw4">File</span>.<span class="me1">exist</span>?<span class="br0">&#40;</span><span class="st0">'/var/lib/apt/periodic/update-success-stamp'</span><span class="br0">&#41;</span> <span class="br0">&#125;</span>
+        <span class="kw1">end</span>
+<span class="co1">#Include a Class</span>
+    <span class="co1">#Use :include to include another Ruby class. For example:</span>
+        ::<span class="re2">Chef::Recipe</span>.<span class="me1">send</span><span class="br0">&#40;</span>:<span class="kw1">include</span>, <span class="re2">Opscode::OpenSSL::Password</span><span class="br0">&#41;</span>
+        <span class="co1">#In non-Chef Ruby, the syntax is include (without the : prefix), but without the : prefix the chef-client will try to find a provider named</span>
+        <span class="co1">#include. Using the : prefix tells the chef-client to look for the specified class that follows.</span>
+    <span class="co1">#Include a Parameter</span>
+        <span class="co1">#The include? method can be used to ensure that a specific parameter is included before an action is taken. For example,</span>
+            <span class="co1">#using the include? method to find a specific parameter:</span>
+            <span class="kw1">if</span> <span class="br0">&#91;</span><span class="st0">&quot;debian&quot;</span>, <span class="st0">&quot;ubuntu&quot;</span><span class="br0">&#93;</span>.<span class="kw1">include</span>?<span class="br0">&#40;</span>node<span class="br0">&#91;</span><span class="st0">&quot;platform&quot;</span><span class="br0">&#93;</span><span class="br0">&#41;</span>
+              <span class="co1"># do debian/ubuntu things</span>
+            <span class="kw1">end</span>
+            <span class="co1">#or:</span>
+            <span class="kw1">if</span> <span class="sy0">%</span>w<span class="br0">&#123;</span>rhel<span class="br0">&#125;</span>.<span class="kw1">include</span>?<span class="br0">&#40;</span>node<span class="br0">&#91;</span><span class="st0">&quot;platform_family&quot;</span><span class="br0">&#93;</span><span class="br0">&#41;</span>
+              <span class="co1"># do RHEL things</span>
+            <span class="kw1">end</span>
+    <span class="co1">#Patterns</span>
+        https:<span class="sy0">//</span>docs.<span class="me1">chef</span>.<span class="me1">io</span><span class="sy0">/</span>just_enough_ruby_for_chef.<span class="me1">html</span>
+    <span class="co1">#Naming</span>
+        <span class="co1">#Name things uniformly for their system and component. For example:</span>
+            attributes: node<span class="br0">&#91;</span><span class="st0">'foo'</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">'bar'</span><span class="br0">&#93;</span>
+            recipe: foo::bar
+            role: foo<span class="sy0">-</span>bar
+            directories: foo<span class="sy0">/</span>bar <span class="br0">&#40;</span><span class="kw1">if</span> specific to component<span class="br0">&#41;</span>, foo <span class="br0">&#40;</span><span class="kw1">if</span> <span class="kw1">not</span><span class="br0">&#41;</span>. <span class="kw1">For</span> example: <span class="sy0">/</span>var<span class="sy0">/</span>log<span class="sy0">/</span>foo<span class="sy0">/</span>bar.
+        <span class="co1">#Name attributes after the recipe in which they are primarily used. e.g.</span>
+            node<span class="br0">&#91;</span><span class="st0">'postgresql'</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">'server'</span><span class="br0">&#93;</span>.
+    <span class="co1">#Default Recipe</span>
+        Don’t use the default recipe <span class="br0">&#40;</span>leave it blank<span class="br0">&#41;</span>. <span class="me1">Instead</span>, create recipes called server <span class="kw1">or</span> client <span class="br0">&#40;</span><span class="kw1">or</span> other<span class="br0">&#41;</span>.
+    <span class="co1">#Log Entries</span>
+        <span class="co1">#Chef::Log extends Mixlib::Log and will print log entries to the default logger that is configured for the machine</span>
+            <span class="co1">#on which the chef-client is running.</span>
+        <span class="co1">#Example</span>
+            <span class="kw1">begin</span>
+              aws = <span class="re2">Chef::DataBagItem</span>.<span class="kw3">load</span><span class="br0">&#40;</span><span class="re3">:aws</span>, <span class="re3">:main</span><span class="br0">&#41;</span>
+              <span class="re2">Chef::Log</span>.<span class="me1">info</span><span class="br0">&#40;</span><span class="st0">&quot;Loaded AWS information from DataBagItem aws[#{aws['id']}]&quot;</span><span class="br0">&#41;</span>
+            <span class="kw1">rescue</span>
+              <span class="re2">Chef::Log</span>.<span class="me1">fatal</span><span class="br0">&#40;</span><span class="st0">&quot;Could not find the 'main' item in the 'aws' data bag&quot;</span><span class="br0">&#41;</span>
+              <span class="kw3">raise</span>
+            <span class="kw1">end</span>
+<span class="co1">#Parameter Order</span>
+    <span class="co1">#Follow this order for information in each resource declaration:</span>
+        <span class="co1">#Source</span>
+        <span class="co1">#Cookbook</span>
+        <span class="co1">#Resource ownership</span>
+        <span class="co1">#Permissions</span>
+        <span class="co1">#Notifications</span>
+        <span class="co1">#Action</span>
+    <span class="co1">#For example:</span>
+        template <span class="st0">'/tmp/foobar.txt'</span> <span class="kw1">do</span>
+            source <span class="st0">'foobar.txt.erb'</span>
+            owner  <span class="st0">'someuser'</span>
+            group  <span class="st0">'somegroup'</span>
+            mode   00644
+            variables<span class="br0">&#40;</span>
+                <span class="re3">:foo</span> <span class="sy0">=&gt;</span> <span class="st0">'bar'</span>
+            <span class="br0">&#41;</span>
+            notifies <span class="re3">:reload</span>, <span class="st0">'service[whatever]'</span>
+            action <span class="re3">:create</span>
+        <span class="kw1">end</span>
+<span class="co1">#File Modes</span>
+    <span class="co1">#Always specify all five digits of the file mode, and not as a string.</span>
+    <span class="co1">#Right:</span>
+        mode 00644
+    <span class="co1">#Wrong:</span>
+        mode <span class="st0">&quot;644&quot;</span>
+<span class="co1">#Always Specify Action</span>
+    <span class="co1">#A resource declaration SHOULD specify the action to be taken.</span>
+    <span class="co1">#Right:</span>
+        package <span class="st0">'monit'</span> <span class="kw1">do</span>
+            action <span class="re3">:install</span>
+        <span class="kw1">end</span>
+    <span class="co1">#Wrong:</span>
+        <span class="co1">#package 'monit'</span>
+<span class="co1">#Symbols_or_strings</span>
+    <span class="co1">#Right:</span>
+        default<span class="br0">&#91;</span><span class="st0">'foo'</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">'bar'</span><span class="br0">&#93;</span> = <span class="st0">'baz'</span>
+    <span class="co1">#Wrong:</span>
+        default<span class="br0">&#91;</span><span class="re3">:foo</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="re3">:bar</span><span class="br0">&#93;</span> = <span class="st0">'baz'</span>
+<span class="co1">#Shelling out</span>
+    <span class="co1">#Always use mixlib-shellout to shell out. Never use backticks, Process.spawn, popen4, or anything else!</span>
+        mixlib<span class="sy0">-</span>shellout
+<span class="co1">#Constructs to Avoid</span>
+    node.<span class="me1">set</span> <span class="sy0">/</span> normal_attributes
+    node.<span class="me1">set_unless</span>
+    <span class="kw1">if</span> node.<span class="me1">run_list</span>.<span class="kw1">include</span>?<span class="br0">&#40;</span><span class="st0">'foo'</span><span class="br0">&#41;</span>
+    node<span class="br0">&#91;</span><span class="st0">'foo'</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">'bar'</span><span class="br0">&#93;</span>
+    node.<span class="me1">set</span><span class="br0">&#91;</span><span class="st0">'foo'</span><span class="br0">&#93;</span><span class="br0">&#91;</span><span class="st0">'bar'</span><span class="br0">&#93;</span></pre>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'chef_ruby.html';
+var disqus_title   = '';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="chef_ruby.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="chef_ruby.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>doc/chef_ruby.txt</bdi> · Last modified: 2015/03/15 18:26 by <bdi>orl</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer4e4f.gif?id=doc%3Achef_ruby&amp;1428742747" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/doc/chef_ruby by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:05:57 GMT -->
+</html>

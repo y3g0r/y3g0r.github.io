@@ -1,0 +1,391 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/llthw/ex19 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:43 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>llthw:ex19 - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="llthw,ex19"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="ex19decf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedc71d.php?mode=list&amp;ns=llthw"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/llthw/ex19.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/llthw/ex19.txt"/>
+<link rel="canonical" href="ex19.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='llthw';var JSINFO = {"id":"llthw:ex19","namespace":"llthw"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="exercise_19_filesystemsmounting_mountetcfstab">Exercise 19. Filesystems: mounting, mount, /etc/fstab</h1>
+<div class="level1">
+<p>
+I hope you are familiar with concept of partitions. In case if you are not I will introduce you briefly to it. First, quote from <a href="http://en.wikipedia.org/wiki/Disk_partitioning" class="urlextern" title="http://en.wikipedia.org/wiki/Disk_partitioning" rel="nofollow">Wikipedia</a>:
+</p>
+<blockquote><div class="no">
+Disk partitioning is the act of dividing a hard disk drive into multiple logical storage units referred to as partitions, to treat one physical disk drive as if it were multiple disks. </div></blockquote>
+<p>
+Take a look:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> parted <span class="sy0">/</span>dev<span class="sy0">/</span>vda
+GNU Parted <span class="nu0">2.3</span>
+Using <span class="sy0">/</span>dev<span class="sy0">/</span>vda
+Welcome to GNU Parted<span class="sy0">!</span> Type <span class="st_h">'help'</span> to view a list of commands.
+<span class="br0">&#40;</span>parted<span class="br0">&#41;</span> unit GB
+<span class="br0">&#40;</span>parted<span class="br0">&#41;</span> p
+Model: Virtio Block Device <span class="br0">&#40;</span>virtblk<span class="br0">&#41;</span>
+Disk <span class="sy0">/</span>dev<span class="sy0">/</span>vda: 17.2GB
+Sector <span class="kw2">size</span> <span class="br0">&#40;</span>logical<span class="sy0">/</span>physical<span class="br0">&#41;</span>: 512B<span class="sy0">/</span>512B
+Partition Table: msdos
+&nbsp;
+Number  Start   End     Size    Type      File system     Flags
+ <span class="nu0">1</span>      0.00GB  13.3GB  13.3GB  extended
+ <span class="nu0">5</span>      0.00GB  1.02GB  1.02GB  logical   ext3            boot
+ <span class="nu0">6</span>      1.03GB  2.05GB  1.02GB  logical   linux-swap<span class="br0">&#40;</span>v1<span class="br0">&#41;</span>
+ <span class="nu0">7</span>      2.05GB  3.07GB  1.02GB  logical   ext3
+ <span class="nu0">8</span>      3.07GB  5.12GB  2.05GB  logical   ext3
+ <span class="nu0">9</span>      5.12GB  9.22GB  4.09GB  logical   ext3
+<span class="nu0">10</span>      9.22GB  13.3GB  4.09GB  logical   ext3
+&nbsp;
+<span class="br0">&#40;</span>parted<span class="br0">&#41;</span></pre>
+<p>
+This is one physical hard disk which is divided in 7 different partitions. The reasons to do do are numerous, but best understood as an application of “divide and conquer” principle. When divided in such a way one rogue program can not bring whole sever down by consuming all disk space, this program will be limited to its partition. I will not talk about <em>partitioning</em> disks just just yet, but I will continue taking about file systems, by quoting <a href="http://en.wikipedia.org/wiki/File_system" class="urlextern" title="http://en.wikipedia.org/wiki/File_system" rel="nofollow">Wikipedia</a> again:
+</p>
+<blockquote><div class="no">
+A file system (or filesystem) is a means to organize data expected to be retained after a program terminates by providing procedures to store, retrieve and update data, as well as manage the available space on the device(s) which contain it. A file system organizes data in an efficient manner and is tuned to the specific characteristics of the device. A tight coupling usually exists between the operating system and the file system. Some file systems provide mechanisms to control access to the data and metadata. Ensuring reliability is a major responsibility of a file system. Some file systems allow multiple programs to update the same file at nearly the same time.</div></blockquote>
+<blockquote><div class="no">
+Unix-like operating systems create a virtual file system, which makes all the files on all the devices appear to exist in a single hierarchy. This means, in those systems, there is one root directory, and every file existing on the system is located under it somewhere. Unix-like systems can use a RAM disk or network shared resource as its root directory.</div></blockquote>
+<p>
+What this means is that all file systems are integrated in one big tree. For those familiar with Microsoft Windows this means that instead <strong>C:</strong>, <strong>D:</strong>, and so on naming scheme there is a single root, <strong>/</strong>, to which all other partitions connect. The process of connecting a file system to existing directory is called <em>mounting</em>. A directory to which a file system is connected is called a <em>mount point</em>. Again, take a look:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">mount</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>vda5 on <span class="sy0">/</span> <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw,<span class="re2">errors</span>=remount-ro<span class="br0">&#41;</span>
+tmpfs on <span class="sy0">/</span>lib<span class="sy0">/</span>init<span class="sy0">/</span>rw <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,nosuid,<span class="re2">mode</span>=0755<span class="br0">&#41;</span>
+proc on <span class="sy0">/</span>proc <span class="kw3">type</span> proc <span class="br0">&#40;</span>rw,noexec,nosuid,nodev<span class="br0">&#41;</span>
+sysfs on <span class="sy0">/</span>sys <span class="kw3">type</span> sysfs <span class="br0">&#40;</span>rw,noexec,nosuid,nodev<span class="br0">&#41;</span>
+udev on <span class="sy0">/</span>dev <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,<span class="re2">mode</span>=0755<span class="br0">&#41;</span>
+tmpfs on <span class="sy0">/</span>dev<span class="sy0">/</span>shm <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,nosuid,nodev<span class="br0">&#41;</span>
+devpts on <span class="sy0">/</span>dev<span class="sy0">/</span>pts <span class="kw3">type</span> devpts <span class="br0">&#40;</span>rw,noexec,nosuid,<span class="re2">gid</span>=<span class="nu0">5</span>,<span class="re2">mode</span>=<span class="nu0">620</span><span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>vda10 on <span class="sy0">/</span>home <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>vda7 on <span class="sy0">/</span>tmp <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>vda9 on <span class="sy0">/</span>usr <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>vda8 on <span class="sy0">/</span>var <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span></pre>
+<p>
+This are the same partitions I showed you earlier in this list you their mount points. Ones which <em>do not</em> start with <strong>/dev/vda</strong> are virtual file systems, which allow to access different system facilities, but they are not relevant for this exercise. Now let us take a look at <strong>/etc/fstab</strong> file:
+</p>
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">cat</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="co0"># /etc/fstab: static file system information.</span>
+<span class="co0">#</span>
+<span class="co0"># Use 'blkid' to print the universally unique identifier for a</span>
+<span class="co0"># device; this may be used with UUID= as a more robust way to name devices</span>
+<span class="co0"># that works even if disks are added and removed. See fstab(5).</span>
+<span class="co0">#</span>
+<span class="co0"># &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;</span>
+proc            <span class="sy0">/</span>proc           proc    defaults    <span class="nu0">0</span>       <span class="nu0">0</span>
+<span class="co0"># / was on /dev/vda5 during installation</span>
+<span class="re2">UUID</span>=128559db-a2e0-<span class="nu0">4983</span>-91ad-d4f43f27da49 <span class="sy0">/</span>         ext3    <span class="re2">errors</span>=remount-ro <span class="nu0">0</span>       <span class="nu0">1</span>
+<span class="co0"># /home was on /dev/vda10 during installation</span>
+<span class="re2">UUID</span>=32852d29-ddee-4a8d-9b1e-f46569a6b897 <span class="sy0">/</span>home     ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># /tmp was on /dev/vda7 during installation</span>
+<span class="re2">UUID</span>=869db6b4-aea0-4a25-8bd2-f0b53dd7a88e <span class="sy0">/</span>tmp      ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># /usr was on /dev/vda9 during installation</span>
+<span class="re2">UUID</span>=0221be16-496b-<span class="nu0">4277</span>-b131-2371ce097b44 <span class="sy0">/</span>usr      ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># /var was on /dev/vda8 during installation</span>
+<span class="re2">UUID</span>=2db00f94-<span class="nu0">3605</span>-<span class="nu0">4229</span>-<span class="nu0">8813</span>-0ee23ad8634e <span class="sy0">/</span>var      ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># swap was on /dev/vda6 during installation</span>
+<span class="re2">UUID</span>=3a936af2-2c04-466d-b98d-09eacc5d104c none      swap    sw              <span class="nu0">0</span>       <span class="nu0">0</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>scd0       <span class="sy0">/</span>media<span class="sy0">/</span>cdrom0   udf,iso9660 user,noauto     <span class="nu0">0</span>       <span class="nu0">0</span></pre>
+<p>
+Looks scary, but let us take one line:
+</p>
+<pre class="bash code bash"><span class="co0"># &lt;file system&gt;                             &lt;mount point&gt;  &lt;type&gt;  &lt;options&gt;         &lt;dump&gt;  &lt;pass&gt;</span>
+<span class="re2">UUID</span>=128559db-a2e0-<span class="nu0">4983</span>-91ad-d4f43f27da49   <span class="sy0">/</span>              ext3    <span class="re2">errors</span>=remount-ro <span class="nu0">0</span>       <span class="nu0">1</span></pre>
+<p>
+And take it apart field by field:
+</p>
+<pre class="bash code bash"><span class="re2">UUID</span>=128559db-a2e0-<span class="nu0">4983</span>-91ad-d4f43f27da49 <span class="co0"># Filesystem to mount. This UUID is synonim for /dev/vda5</span>
+<span class="sy0">/</span>                    <span class="co0"># This is root filesystem, mount it to /</span>
+ext3                 <span class="co0"># This is ext3 filesystem. There are many different filesystems out there</span>
+<span class="re2">errors</span>=remount-ro    <span class="co0"># If any errors encountered during mounting filesystem should be remounted read-only</span>
+<span class="nu0">0</span>                    <span class="co0"># This filesystem should not be backed up by dump utility</span>
+<span class="nu0">1</span>                    <span class="co0"># This filesystem should be checked first by fsck utility</span></pre>
+<p>
+As always, this information is available to you via <strong>man fstab</strong>. Now I will show you several commands for working with existing file systems:
+</p>
+<ol>
+<li class="level1"><div class="li"> <strong>mount</strong> — print out all mounted filesystems.</div>
+</li>
+<li class="level1"><div class="li"> <strong>mount -a</strong> — mount all filesystem described in <strong>/etc/fstab</strong>.</div>
+</li>
+<li class="level1"><div class="li"> <strong>mount /dev/sda&lt;N&gt; /&lt;mount point&gt;</strong> — mount a partition.</div>
+</li>
+<li class="level1"><div class="li"> <strong>umount /dev/sda&lt;N&gt; /&lt;mount point&gt;</strong> — mount a partition.</div>
+</li>
+<li class="level1"><div class="li"> <strong>mount -h</strong> — print out short help about using mount.</div>
+</li>
+<li class="level1"><div class="li"> <strong>fsck</strong> — check partition for errors.</div>
+</li>
+<li class="level1"><div class="li"> <strong>blkid</strong> — print out unique partition identifiers. </div>
+</li>
+</ol>
+<p>
+Now you will learn how to list mounted partitions, mount and unmount them.
+</p>
+</div>
+<h2 class="sectionedit2" id="do_this">Do this</h2>
+<div class="level2">
+<pre class="bash code bash"><span class="lno">1:</span> <span class="kw2">cat</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="lno">2:</span> <span class="kw2">mount</span>
+<span class="lno">3:</span> <span class="kw2">sudo</span> blkid
+<span class="lno">4:</span> <span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="sy0">/</span>tmp
+<span class="lno">5:</span> <span class="kw2">mount</span>
+<span class="lno">6:</span> <span class="kw2">sudo</span> fsck <span class="sy0">/</span>tmp
+<span class="lno">7:</span> <span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="re5">-a</span>
+<span class="lno">8:</span> <span class="kw2">mount</span>
+</pre>
+</div>
+<h1 class="sectionedit3" id="what_you_should_see">What you should see</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co4">user1@vm1:~$ </span><span class="kw2">cat</span> <span class="sy0">/</span>etc<span class="sy0">/</span>fstab
+<span class="co0"># /etc/fstab: static file system information.</span>
+<span class="co0">#</span>
+<span class="co0"># Use 'blkid' to print the universally unique identifier for a</span>
+<span class="co0"># device; this may be used with UUID= as a more robust way to name devices</span>
+<span class="co0"># that works even if disks are added and removed. See fstab(5).</span>
+<span class="co0">#</span>
+<span class="co0"># &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;</span>
+proc            <span class="sy0">/</span>proc           proc    defaults        <span class="nu0">0</span>       <span class="nu0">0</span>
+<span class="co0"># / was on /dev/sda1 during installation</span>
+<span class="re2">UUID</span>=05d469bb-dbfe-4d5a-9bb2-9c0fe9fa8577 <span class="sy0">/</span>               ext3    <span class="re2">errors</span>=remount-ro <span class="nu0">0</span>       <span class="nu0">1</span>
+<span class="co0"># /home was on /dev/sda9 during installation</span>
+<span class="re2">UUID</span>=a1b936a0-df38-4bf5-b095-6220ffdfc63c <span class="sy0">/</span>home           ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># /tmp was on /dev/sda8 during installation</span>
+<span class="re2">UUID</span>=d0a86453-0dbb-4f33-a023-6c09fe9fa202 <span class="sy0">/</span>tmp ext3 defaults <span class="nu0">0</span> <span class="nu0">2</span>
+<span class="co0"># /usr was on /dev/sda5 during installation</span>
+<span class="re2">UUID</span>=b9544cbb-cdb6-4f3b-89e7-a339f52bfac7 <span class="sy0">/</span>usr            ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># /var was on /dev/sda6 during installation</span>
+<span class="re2">UUID</span>=e15e713b-<span class="nu0">5850</span>-4bc3-b99e-ab6f1d037caa <span class="sy0">/</span>var            ext3    defaults        <span class="nu0">0</span>       <span class="nu0">2</span>
+<span class="co0"># swap was on /dev/sda7 during installation</span>
+<span class="re2">UUID</span>=4d516f09-80ff-<span class="nu0">4956</span>-8a75-e9757697f6b1 none            swap    sw              <span class="nu0">0</span>       <span class="nu0">0</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>scd0       <span class="sy0">/</span>media<span class="sy0">/</span>cdrom0   udf,iso9660 user,noauto     <span class="nu0">0</span>       <span class="nu0">0</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">mount</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda1 on <span class="sy0">/</span> <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw,<span class="re2">errors</span>=remount-ro<span class="br0">&#41;</span>
+tmpfs on <span class="sy0">/</span>lib<span class="sy0">/</span>init<span class="sy0">/</span>rw <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,nosuid,<span class="re2">mode</span>=0755<span class="br0">&#41;</span>
+proc on <span class="sy0">/</span>proc <span class="kw3">type</span> proc <span class="br0">&#40;</span>rw,noexec,nosuid,nodev<span class="br0">&#41;</span>
+sysfs on <span class="sy0">/</span>sys <span class="kw3">type</span> sysfs <span class="br0">&#40;</span>rw,noexec,nosuid,nodev<span class="br0">&#41;</span>
+udev on <span class="sy0">/</span>dev <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,<span class="re2">mode</span>=0755<span class="br0">&#41;</span>
+tmpfs on <span class="sy0">/</span>dev<span class="sy0">/</span>shm <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,nosuid,nodev<span class="br0">&#41;</span>
+devpts on <span class="sy0">/</span>dev<span class="sy0">/</span>pts <span class="kw3">type</span> devpts <span class="br0">&#40;</span>rw,noexec,nosuid,<span class="re2">gid</span>=<span class="nu0">5</span>,<span class="re2">mode</span>=<span class="nu0">620</span><span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda9 on <span class="sy0">/</span>home <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda5 on <span class="sy0">/</span>usr <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda6 on <span class="sy0">/</span>var <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda8 on <span class="sy0">/</span>tmp <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda8 on <span class="sy0">/</span>tmp <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> blkid
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda1: <span class="re2">UUID</span>=<span class="st0">&quot;05d469bb-dbfe-4d5a-9bb2-9c0fe9fa8577&quot;</span> <span class="re2">TYPE</span>=<span class="st0">&quot;ext3&quot;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda5: <span class="re2">UUID</span>=<span class="st0">&quot;b9544cbb-cdb6-4f3b-89e7-a339f52bfac7&quot;</span> <span class="re2">TYPE</span>=<span class="st0">&quot;ext3&quot;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda6: <span class="re2">UUID</span>=<span class="st0">&quot;e15e713b-5850-4bc3-b99e-ab6f1d037caa&quot;</span> <span class="re2">TYPE</span>=<span class="st0">&quot;ext3&quot;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda7: <span class="re2">UUID</span>=<span class="st0">&quot;4d516f09-80ff-4956-8a75-e9757697f6b1&quot;</span> <span class="re2">TYPE</span>=<span class="st0">&quot;swap&quot;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda8: <span class="re2">UUID</span>=<span class="st0">&quot;d0a86453-0dbb-4f33-a023-6c09fe9fa202&quot;</span> <span class="re2">TYPE</span>=<span class="st0">&quot;ext3&quot;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda9: <span class="re2">UUID</span>=<span class="st0">&quot;a1b936a0-df38-4bf5-b095-6220ffdfc63c&quot;</span> <span class="re2">TYPE</span>=<span class="st0">&quot;ext3&quot;</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">umount</span> <span class="sy0">/</span>tmp
+<span class="co4">user1@vm1:~$ </span><span class="kw2">mount</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda1 on <span class="sy0">/</span> <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw,<span class="re2">errors</span>=remount-ro<span class="br0">&#41;</span>
+tmpfs on <span class="sy0">/</span>lib<span class="sy0">/</span>init<span class="sy0">/</span>rw <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,nosuid,<span class="re2">mode</span>=0755<span class="br0">&#41;</span>
+proc on <span class="sy0">/</span>proc <span class="kw3">type</span> proc <span class="br0">&#40;</span>rw,noexec,nosuid,nodev<span class="br0">&#41;</span>
+sysfs on <span class="sy0">/</span>sys <span class="kw3">type</span> sysfs <span class="br0">&#40;</span>rw,noexec,nosuid,nodev<span class="br0">&#41;</span>
+udev on <span class="sy0">/</span>dev <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,<span class="re2">mode</span>=0755<span class="br0">&#41;</span>
+tmpfs on <span class="sy0">/</span>dev<span class="sy0">/</span>shm <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,nosuid,nodev<span class="br0">&#41;</span>
+devpts on <span class="sy0">/</span>dev<span class="sy0">/</span>pts <span class="kw3">type</span> devpts <span class="br0">&#40;</span>rw,noexec,nosuid,<span class="re2">gid</span>=<span class="nu0">5</span>,<span class="re2">mode</span>=<span class="nu0">620</span><span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda9 on <span class="sy0">/</span>home <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda5 on <span class="sy0">/</span>usr <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda6 on <span class="sy0">/</span>var <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> fsck <span class="sy0">/</span>tmp
+fsck from util-linux-ng 2.17.2
+e2fsck 1.41.12 <span class="br0">&#40;</span><span class="nu0">17</span>-May-<span class="nu0">2010</span><span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda8: clean, <span class="nu0">11</span><span class="sy0">/</span><span class="nu0">61752</span> files, <span class="nu0">13973</span><span class="sy0">/</span><span class="nu0">246784</span> blocks
+<span class="co4">user1@vm1:~$ </span><span class="kw2">sudo</span> <span class="kw2">mount</span> <span class="re5">-a</span>
+<span class="co4">user1@vm1:~$ </span><span class="kw2">mount</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda1 on <span class="sy0">/</span> <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw,<span class="re2">errors</span>=remount-ro<span class="br0">&#41;</span>
+tmpfs on <span class="sy0">/</span>lib<span class="sy0">/</span>init<span class="sy0">/</span>rw <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,nosuid,<span class="re2">mode</span>=0755<span class="br0">&#41;</span>
+proc on <span class="sy0">/</span>proc <span class="kw3">type</span> proc <span class="br0">&#40;</span>rw,noexec,nosuid,nodev<span class="br0">&#41;</span>
+sysfs on <span class="sy0">/</span>sys <span class="kw3">type</span> sysfs <span class="br0">&#40;</span>rw,noexec,nosuid,nodev<span class="br0">&#41;</span>
+udev on <span class="sy0">/</span>dev <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,<span class="re2">mode</span>=0755<span class="br0">&#41;</span>
+tmpfs on <span class="sy0">/</span>dev<span class="sy0">/</span>shm <span class="kw3">type</span> tmpfs <span class="br0">&#40;</span>rw,nosuid,nodev<span class="br0">&#41;</span>
+devpts on <span class="sy0">/</span>dev<span class="sy0">/</span>pts <span class="kw3">type</span> devpts <span class="br0">&#40;</span>rw,noexec,nosuid,<span class="re2">gid</span>=<span class="nu0">5</span>,<span class="re2">mode</span>=<span class="nu0">620</span><span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda9 on <span class="sy0">/</span>home <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda5 on <span class="sy0">/</span>usr <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda6 on <span class="sy0">/</span>var <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="sy0">/</span>dev<span class="sy0">/</span>sda8 on <span class="sy0">/</span>tmp <span class="kw3">type</span> ext3 <span class="br0">&#40;</span>rw<span class="br0">&#41;</span>
+<span class="co4">user1@vm1:~$</span></pre>
+</div>
+<h2 class="sectionedit4" id="explanation">Explanation</h2>
+<div class="level2">
+<ol>
+<li class="level1"><div class="li"> Prints out contents of your <strong>/etc/fstab</strong> file which contains information about your partitions and where to mount them.</div>
+</li>
+<li class="level1"><div class="li"> Prints out currently mounted partitions.</div>
+</li>
+<li class="level1"><div class="li"> Prints out UUIDs of all partitions in your system.</div>
+</li>
+<li class="level1"><div class="li"> Unmounts <strong>/tmp</strong> partition so you will be able to check it.</div>
+</li>
+<li class="level1"><div class="li"> Prints out currently mounted partitions once again. <strong>/tmp</strong> is now absent from this list.</div>
+</li>
+<li class="level1"><div class="li"> Check <strong>/tmp</strong> partition for errors. <strong>fsck</strong> knows which partition to check by reading corresponding <strong>/etc/fstab</strong> entry.</div>
+</li>
+<li class="level1"><div class="li"> Mounts all partitions described in <strong>/etc/fstab</strong>. </div>
+</li>
+<li class="level1"><div class="li"> Prints out currently mounted partitions yet another time. <strong>/tmp</strong> has returned to this list.</div>
+</li>
+</ol>
+</div>
+<h1 class="sectionedit5" id="extra_credit">Extra credit</h1>
+<div class="level1">
+<ol>
+<li class="level1"><div class="li"> Read <strong>man fstab</strong>, <strong>man mount</strong>.</div>
+</li>
+<li class="level1"><div class="li"> Read <a href="http://tldp.org/LDP/sag/html/filesystems.html" class="urlextern" title="http://tldp.org/LDP/sag/html/filesystems.html" rel="nofollow">http://tldp.org/LDP/sag/html/filesystems.html</a></div>
+</li>
+</ol>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'ex19.html';
+var disqus_title   = 'Exercise 19. Filesystems: mounting, mount, /etc/fstab';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="ex19.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="ex19.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>llthw/ex19.txt</bdi> · Last modified: 2012/07/27 09:58 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer1f00.gif?id=llthw%3Aex19&amp;1428742723" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/llthw/ex19 by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:04:46 GMT -->
+</html>

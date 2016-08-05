@@ -1,0 +1,58 @@
+====== Cheat-sheet for debian package manager aptitude ======
+
+Aptitude is a package manager for Debian and Debian-based systems.
+
+===== Cheatsheet =====
+<code bash>
+# dpkg
+    aptitude
+    dpkg-deb
+# dpkg
+    dpkg --list
+    dpkg --status packagename
+    dpkg --listfiles foo
+    dpkg --search filename
+    dpkg-divert --divert /bin/login.debian /bin/login
+    dpkg-scanpackages BIN_DIR OVERRIDE_FILE [PATHPREFIX] > my_Packages
+    dlocate -S filename
+    apt-file search foo
+# apt-proxy
+# search
+    aptitude search '?narrow(?installed, !?archive(stable))'
+    aptitude search '?narrow(?installed, ?archive(testing) !?archive(stable))'
+# apt-get
+    apt-get source foo
+    apt-get build-dep foo
+# apt-cache
+    apt-cache showsrc mypackagename
+    apt-get source mypackagename
+# internals of apt package
+    bash$ apt-cache policy hello
+    bash$ ar -t /usr/lib/libvorbis.a
+    bash$ tar -xzvf control.tar.gz
+    control.tar.gz
+        # dependency info 
+        <http://www.debian.org/doc/debian-policy/ch-controlfields.html#s-binarycontrolfiles>
+    data.tar.gz
+        # to make
+        <http://radagast.bglug.ca/linux/anatomy_of_a_deb_file.html>
+# extract package
+    cd /var/cache/apt/archives
+    mkdir /tmp/libapache2
+    mv libapache2-mod-perl2_2.0.4-7_amd64.deb /tmp/libapache2
+    cd /tmp/libapache2
+    ar -vx libapache2-mod-perl2_2.0.4-7_amd64.deb
+    tar -zxf data.tar.gz
+# alternatives
+    update-alternatives --config x-window-manager
+# important directories
+    /lib/dpkg/info/
+    /var/cache/apt/archives
+</code>
+
+===== Fun info from wiki page =====
+Aptitude states that, unlike Advanced Packaging Tool, it "does not have Super Cow Powers". In apt-get "super cow powers" can be found by issuing the command apt-get moo. However, in aptitude issuing moo will give the user a prompt saying there are no Easter eggs.
+
+However, by issuing aptitude -v moo, then aptitude -vv moo, and so on the user will see a series of statements telling them to go away, some ending with a picture (a reference to Antoine de Saint-Exupéry's The Little Prince) not unlike the original apt-get Easter egg. Different versions of the program have different sequences.
+
+In addition, the package description states that "aptitude is also Y2K-compliant, non-fattening, naturally cleansing, and housebroken."

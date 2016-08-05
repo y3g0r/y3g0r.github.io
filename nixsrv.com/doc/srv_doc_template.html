@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+
+<!-- Mirrored from nixsrv.com/doc/srv_doc_template by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:07:07 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+<meta name="google-site-verification" content="EhMbcVlAzv46CX6sFCupv3Ad2OXXRoIWIorX0KVy9sY"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<title>doc:srv_doc_template - *nix spellbook</title>
+<meta name="generator" content="DokuWiki"/>
+<meta name="robots" content="index,follow"/>
+<meta name="keywords" content="doc,srv_doc_template"/>
+<link rel="search" type="application/opensearchdescription+xml" href="../lib/exe/opensearch.php" title="*nix spellbook"/>
+<link rel="start" href="../index.html"/>
+<link rel="contents" href="srv_doc_templatedecf.html?do=index" title="Sitemap"/>
+<link rel="alternate" type="application/rss+xml" title="Recent changes" href="../feed.php"/>
+<link rel="alternate" type="application/rss+xml" title="Current namespace" href="../feedafd0.php?mode=list&amp;ns=doc"/>
+<link rel="alternate" type="text/html" title="Plain HTML" href="../_export/xhtml/doc/srv_doc_template.html"/>
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="../_export/raw/doc/srv_doc_template.txt"/>
+<link rel="canonical" href="srv_doc_template.html"/>
+<link rel="stylesheet" type="text/css" href="../lib/exe/css0130.css?t=vector&amp;tseed=2daf37b429a7c4d4acd474cff747868a"/>
+<script type="text/javascript">/*<![CDATA[*/var NS='doc';var JSINFO = {"id":"doc:srv_doc_template","namespace":"doc"};
+/*!]]>*/</script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js15ee.php?tseed=2daf37b429a7c4d4acd474cff747868a"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="shortcut icon" href="../lib/tpl/vector/static/3rd/dokuwiki/favicon.ico"/>
+<link rel="apple-touch-icon" href="../lib/tpl/vector/static/3rd/dokuwiki/apple-touch-icon.png"/>
+<script type="text/javascript" charset="utf-8" src="../lib/tpl/vector/user/user.js"></script>
+<!--[if lt IE 7]><style type="text/css">body{behavior:url("/lib/tpl/vector/static/3rd/vector/csshover.htc")}</style><![endif]-->
+</head>
+<body class="skin-vector">
+<div id="page-container">
+<div id="page-base" class="noprint"></div>
+<div id="head-base" class="noprint"></div>
+ 
+<div id="content">
+<a name="top" id="top"></a>
+<a name="dokuwiki__top" id="dokuwiki__top"></a>
+ 
+<div id="siteNotice" class="noprint">
+<div class="dokuwiki">
+<p>
+<span style="color:while;font-size:0%;">Thanks for all your error reports, I didn't forget it. I'll cleanup my guide soon. Thanks again!</span>
+</p>
+</div>
+</div>
+ 
+<div id="bodyContent" class="dokuwiki">
+ 
+<h1 class="sectionedit1" id="documentation_example">Documentation example</h1>
+<div class="level1">
+<pre class="bash code bash"><span class="co0">#General configuration description</span>
+    <span class="co0">#running services</span>
+        tcp 0.0.0.0:<span class="nu0">22</span>          <span class="nu0">1672</span><span class="sy0">/</span>sshd                   <span class="co0"># ssh server, server access and file transfer</span>
+        tcp 127.0.0.1:<span class="nu0">25</span>        <span class="nu0">8965</span><span class="sy0">/</span>master                 <span class="co0"># postfix mail server, sends mail from Google Apps</span>
+        tcp 0.0.0.0:<span class="nu0">80</span>          <span class="nu0">17314</span><span class="sy0">/</span>nginx: master         <span class="co0"># nginx http, redirects everything to https</span>
+        tcp 0.0.0.0:<span class="nu0">443</span>         <span class="nu0">17314</span><span class="sy0">/</span>nginx: master         <span class="co0"># nginx webserver and cache, https</span>
+        tcp 127.0.0.1:<span class="nu0">3306</span>      <span class="nu0">2134</span><span class="sy0">/</span>mysqld                 <span class="co0"># mysql database</span>
+        tcp 127.0.0.1:<span class="nu0">8080</span>      <span class="nu0">1341</span><span class="sy0">/</span>httpd                  <span class="co0"># apache webserver, serving actual content</span>
+        tcp 127.0.0.1:<span class="nu0">10050</span>     <span class="nu0">11489</span><span class="sy0">/</span>zabbix_agentd         <span class="co0"># zabbix monitoring agent, performs system checks</span>
+        tcp 127.0.0.1:<span class="nu0">10051</span>     <span class="nu0">1453</span><span class="sy0">/</span>zabbix_server          <span class="co0"># zabbix server, stores and acts on system checks</span>
+        udp 0.0.0.0:<span class="nu0">123</span>         <span class="nu0">18716</span><span class="sy0">/</span>ntpd                  <span class="co0"># ntp, synchronises system time</span>
+    <span class="co0">#webserver configuration</span>
+        <span class="co0"># all incoming requests are first processed by cloudflare</span>
+            <span class="co0"># some information like static images is cached by cloudflare</span>
+            <span class="co0"># and is not requested from server on each page view</span>
+        <span class="co0"># then requests are forwarded to nginx</span>
+            <span class="co0"># which will is used for additional caching, so some some data will be just served from memory</span>
+            <span class="co0"># also, it's very fast and is good at serving lots of connection</span>
+        <span class="co0"># then requests are forwarded to apache</span>
+            <span class="co0"># which loads actual php engine, executes expression engine scripts and returns data</span>
+        <span class="co0"># this is the scheme in the nutshell:</span>
+        <span class="re5">------------</span>     <span class="re5">---------------------</span>     <span class="re5">----------------</span>     <span class="re5">---------------</span>
+        <span class="sy0">|</span> INTERNET <span class="sy0">|</span> ==<span class="sy0">&gt;</span> <span class="sy0">|</span> CLOUDFLARE:<span class="nu0">80</span>,<span class="nu0">443</span> <span class="sy0">|</span> ==<span class="sy0">&gt;</span> <span class="sy0">|</span> NGINX:<span class="nu0">80</span>,<span class="nu0">443</span> <span class="sy0">|</span> ==<span class="sy0">&gt;</span> <span class="sy0">|</span> APACHE:<span class="nu0">8080</span> <span class="sy0">|</span>
+        <span class="re5">------------</span>     <span class="re5">---------------------</span>     <span class="re5">----------------</span>     <span class="re5">---------------</span>
+    <span class="co0">#backups</span>
+        <span class="co0"># backups are performed nighly automatically</span>
+        <span class="co0"># zabbix checks backups status and sends email in case of any error</span>
+        <span class="co0"># file, like images, are stored in /media</span>
+        <span class="co0"># mysql database is dumped, encrypted and backed up as well</span>
+        <span class="co0"># backups are performed using deduplication, so only changed files are using space</span>
+        <span class="co0"># backups are uploaded to your-backup.de using enrypted ftp protool</span>
+        <span class="co0"># this is the scheme of backup directory:</span>
+        <span class="sy0">/</span>bak
+            daily.0 <span class="co0"># copy of /media from today</span>
+            daily.1 <span class="co0"># copy of /media from yesterday</span>
+            daily.2 <span class="co0"># ...</span>
+            daily.3
+            daily.4
+            daily.5
+            daily.6
+            daily.7
+            daily.8
+            daily.9 <span class="co0"># last directory is automatically deleted and replaced with newer one</span>
+            mysql   <span class="co0"># mysql backups, they are mysql dumps compressed and encrypted</span>
+        <span class="co0"># the same directory is on web01 and on backup site-backup.com</span>
+        <span class="co0"># on web01 this directory is deduplicated and takes about the same space as on the same data on server</span>
+        <span class="co0"># on your-backup.de this directory is not deduplicated, and taked basically 10x data as on the server</span>
+            <span class="co0"># as it is, it's not possible to make simple deduplication happen on site-backup.com</span>
+    <span class="co0">#server hardedning</span>
+        <span class="co0"># iptables firewall is set up, and allow incoming traffic ONLY on ports 22, 80 and 443</span>
+        <span class="co0"># fail2ban in installed, which automatically bans ssh users on several failed attempts</span>
+    <span class="co0">#email</span>
+        <span class="co0"># all email from the server is being sent using postfix</span>
+    <span class="co0">#monitoring</span>
+        <span class="co0"># server load checks and server health checks are being performed</span>
+        <span class="co0"># email is being sent in case of a problem</span>
+        <span class="co0"># also we have lots of performance data</span></pre>
+</div>
+<h2>Discussion</h2><script charset="utf-8" type="text/javascript">
+                    <!--//--><![CDATA[//><!--
+var disqus_url     = 'srv_doc_template.html';
+var disqus_title   = 'Documentation example';
+var disqus_message = '';
+var disqus_container_id = 'disqus__thread';
+                    //--><!]]>
+                    </script><div id="disqus__thread"></div><script type="text/javascript" src="https://disqus.com/forums/nixsrv/embed.js"></script><noscript><a href="http://nixsrv.disqus.com/?url=ref">View the discussion thread.</a></noscript>  
+<div class="clearer"></div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="head" class="noprint">
+<div id="p-personal">
+<ul>
+</ul>
+</div>
+ 
+<div id="left-navigation">
+<div id="p-namespaces" class="vectorTabs">
+<ul>
+<li id="ca-nstab-main" class="selected"><a href="srv_doc_template.html"><span>Article</span></a></li>
+</ul>
+</div>
+</div>
+ 
+ 
+<div id="right-navigation">
+<div id="p-views" class="vectorTabs">
+<ul>
+<li id="ca-view" class="selected"><a href="srv_doc_template.html"><span>Read</span></a></li>
+</ul>
+</div>
+<div id="p-search">
+<h5>
+<label for="qsearch__in">Search</label>
+</h5>
+<form action="https://nixsrv.com/start" accept-charset="utf-8" id="dw__search" name="dw__search">
+<input type="hidden" name="do" value="search"/>
+<div id="simpleSearch">
+<input id="qsearch__in" name="id" type="text" accesskey="f" value=""/>
+<button id="searchButton" type="submit" name="button" title="Search for this text">&nbsp;</button>
+</div>
+<div id="qsearch__out" class="ajax_qsearch JSpopup"></div>
+</form>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="panel" class="noprint">
+ 
+<div id="p-logo">
+<a href="../start.html" style="background-image:url(../lib/tpl/vector/static/3rd/dokuwiki/logo.png);" accesskey="h" title="[ALT+H]"></a>
+</div>
+ 
+<div id="p-navigation" class="portal">
+<h5>Navigation</h5>
+<div class="body">
+<div class="dokuwiki">
+<p>
+<strong>Learn Linux The Hard Way</strong>
+</p>
+<ul>
+<li class="level1"><div class="li"> <span class="curid"><a href="../llthw.html" class="wikilink1" title="llthw">Introduction</a></span></div>
+</li>
+</ul>
+<p>
+<br>
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</p>
+</div>
+</div>
+</div>
+</div>
+ 
+</div>
+ 
+ 
+<div id="footer">
+<ul id="footer-info">
+<li id="footer-info-lastmod">
+<bdi>doc/srv_doc_template.txt</bdi> · Last modified: 2014/11/03 19:19 by <bdi>sistemshik</bdi><br/>
+</li>
+<li id="footer-info-copyright">
+<div class="dokuwiki"><div class="license">Except where otherwise noted, content on this wiki is licensed under the following license: <bdi><a href="http://creativecommons.org/licenses/by-sa/3.0/" rel="license" class="urlextern">CC Attribution-Share Alike 3.0 Unported</a></bdi></div></div>
+</li>
+</ul>
+<ul id="footer-places" class="noprint">
+<li> </li>
+</ul>
+<div style="clearer"></div>
+</div>
+ 
+<img src="../lib/exe/indexer171f.gif?id=doc%3Asrv_doc_template&amp;1428742768" width="2" height="1" alt=""/>
+</body>
+
+<!-- Mirrored from nixsrv.com/doc/srv_doc_template by HTTrack Website Copier/3.x [XR&CO'2013], Sat, 11 Apr 2015 09:07:09 GMT -->
+</html>

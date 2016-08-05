@@ -1,0 +1,66 @@
+====== Exercise 2. Text Viewer, The: less is More ======
+
+Now you can edit text files, that is nice. But what if you want just to view a text file? Of course, you could use vim for that, but very often it is overkill. And two more thing to consider:
+  * If you want to view really large file, you will want to view it in a program which is as fast as possible.
+  * Often you would not want to accidentally change something in a file.
+
+So I introduce you to the mighty **less**, which is more. "More than what?" you might ask. Well... Once upon a time there was a viewer which was called **more**. It was pretty simple, and just showed you the text file you asked it to show. It was so simple that it could show you text files in only one direction, which is forward. This was found unsatisfactory by Mark Nudelman, who wrote **less** it in 1983-85, and since then it received many advanced features. Because it was more advanced than more, a saying was born: "Less is more, and more is less".
+
+Well, let us try it.
+
+Type this:
+<code bash>
+less .bashrc
+</code>
+
+You should see this:
+<code bash>
+user1@vm1:~$ less .bashrc
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# don't overwrite GNU Midnight Commander's setting of `ignorespace'.
+HISTCONTROL=$HISTCONTROL${HISTCONTROL+:}ignoredups
+.bashrc
+</code>
+
+If you don't have wide enough terminal, text will look like a mess because whole lines will not fit in it. To fix it, type **- -ch<ENTER><ENTER>**. Yes, dash-dash-c-h-ENTER-ENTER. This will enable horizontal scrolling.
+
+To navigate text up and down use already familiar **j** and **k**. To exit press **q**.
+
+Now I will show you an advanced feature of **less**, which allows you see only those lines you want. Type **&enable<ENTER>**. You should see this:
+<code>
+# enable color support of ls and also add hand
+# enable programmable completion features (you
+# this, if it's already enabled in /etc/bash.b
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+& (END)
+</code>
+
+Behold! To discard filter, just type **&<ENTER>**.
+Again, commands to remember:
+  * **j** — move up.
+  * **k** — move down.
+  * **q** — quit **less**.
+  * **- -chop-long-lines** or **- -ch<ENTER><ENTER>** — enable horizontal scrolling.
+  * **/** — search. 
+  * **&something** — show only those line from your file which contain //something//.
+====== Extra credit =====
+  - Linux has online manuals which are called by typing **man**. By default in out system this manuals are viewed with **less**. Type **man man** and read it, then quit **less**.
+  - That is it, not more extra credit for you.

@@ -1,0 +1,46 @@
+====== Setting up gvim it's all text and russian locale ======
+<code bash>
+
+#new .givmrc
+set nocp
+syntax enable
+set expandtab
+set tabstop=4
+set shiftwidth=4
+colorscheme github
+set autoindent
+set go=
+set guifont=DejaVu\ Sans\ Mono\ 8
+set incsearch
+set guioptions+=a
+set foldlevel=1 
+set foldnestmax=1
+set foldmethod=indent
+set foldminlines=0
+set foldigonre=
+
+#windows .gvimrc
+set guifont=Monospace\ 12
+set nocp
+set nu! 
+set t_Co=256
+set langmap=ёйцукенгшщзхъфывапролджэячсмитьбюЁЙЦУКЕHГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ;`qwertyuiop[]asdfghjkl\\;'zxcvbnm\\,.~QWERTYUIOP{}ASDFGHJKL:\\"ZXCVBNM<>
+hi LineNr ctermfg=darkcyan ctermbg=black
+filetype plugin indent on
+syntax on
+set tabstop=4
+set expandtab
+set softtabstop=4
+set shiftwidth=4
+set autoindent
+set bg=dark
+filetype indent on
+syntax enable
+colorscheme gardener
+"set background=dark
+
+" Use CTRL-S for saving, also in Insert mode
+noremap <F2> :update<CR>
+vnoremap <F2> <C-C>:update<CR>
+inoremap <F2> <C-O>:update<CR>
+</code>

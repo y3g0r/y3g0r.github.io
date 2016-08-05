@@ -1,0 +1,199 @@
+====== Exercise 22. Filesystems: moving data around: tar, dd ====== 
+
+Time to see for yourself how everything in Linux is just a file. 
+
+This exercise is a big one, but its time to see what you have learned. After you will make it through look up all purposefully unexplained program parameters in the **man**, and try to explain to yourself what each command does.
+
+Now you will learn how to juggle with data.
+
+===== Do this =====
+<code bash 1>
+tar -czvf root.tgz /opt/root/
+tar -tzvf root.tgz
+cd /tmp
+tar -zxvf ~/root.tgz
+ls -al
+dd_if=$(mount | grep /tmp | cut -d ' ' -f 1) && echo $dd_if
+sudo dd if=$dd_if of=~/tmp.img bs=10M
+cd && ls -alh
+sudo losetup /dev/loop1 ~/tmp.img && sudo mount /dev/loop1 /mnt/
+ls -al /mnt
+sudo umount /mnt && sudo losetup -d /dev/loop1
+sudo umount $dd_if && sudo mkfs.ext3 $dd_if
+new_uuid=$(sudo tune2fs -l $dd_if | awk '/UUID/{print $3}') && echo $new_uuid
+grep '/tmp' /etc/fstab
+sed "s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=$new_uuid \/tmp ext3 defaults 0 2/" /etc/fstab
+</code>
+
+Now check the output using **sudo tune2fs -l** and **sudo blkid**. If replacement of UUID in **/etc/fstab** looks sane, perform the actual replacement:
+<code bash 16>
+sudo sed -i'.bak' "s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=$new_uuid \/tmp ext3 defaults 0 2/" /etc/fstab
+sudo mount -a && ls /tmp
+sudo umount /tmp && pv ~/tmp.img | sudo dd of=$dd_if bs=10M
+new_uuid=$(sudo tune2fs -l $dd_if | awk '/UUID/{print $3}') && echo $new_uuid
+sudo sed -i'.bak' "s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=$new_uuid \/tmp ext3 defaults 0 2/" /etc/fstab
+sudo mount -a
+rm -v tmp.img
+</code>
+Type in **y** and press **<ENTER>**.
+
+====== What you should see ======
+<code bash>
+user1@vm1:~$ tar -czvf root.tgz /opt/root/
+tar: Removing leading '/' from member names
+/opt/root/
+/opt/root/bin/
+/opt/root/bin/bash
+/opt/root/lib64/
+/opt/root/lib64/ld-linux-x86-64.so.2
+/opt/root/lib/
+/opt/root/lib/libdl.so.2
+/opt/root/lib/libncurses.so.5
+/opt/root/lib/libc.so.6
+user1@vm1:~$ tar -tzvf root.tgz
+drwxr-xr-x root/root         0 2012-07-05 03:14 opt/root/
+drwxr-xr-x root/root         0 2012-07-05 03:14 opt/root/bin/
+-rwxr-xr-x root/root    926536 2012-07-05 03:14 opt/root/bin/bash
+drwxr-xr-x root/root         0 2012-07-05 03:14 opt/root/lib64/
+-rwxr-xr-x root/root    128744 2012-07-05 03:14 opt/root/lib64/ld-linux-x86-64.so.2
+drwxr-xr-x root/root         0 2012-07-05 03:14 opt/root/lib/
+-rw-r--r-- root/root     14696 2012-07-05 03:14 opt/root/lib/libdl.so.2
+-rw-r--r-- root/root    286776 2012-07-05 03:14 opt/root/lib/libncurses.so.5
+-rwxr-xr-x root/root   1437064 2012-07-05 03:14 opt/root/lib/libc.so.6
+user1@vm1:~$ cd /tmp
+user1@vm1:/tmp$ tar -zxvf ~/root.tgz
+opt/root/
+opt/root/bin/
+opt/root/bin/bash
+opt/root/lib64/
+opt/root/lib64/ld-linux-x86-64.so.2
+opt/root/lib/
+opt/root/lib/libdl.so.2
+opt/root/lib/libncurses.so.5
+opt/root/lib/libc.so.6
+user1@vm1:/tmp$ ls -al
+total 19
+drwxrwxrwt  6 root  root   1024 Jul  5 04:17 .
+drwxr-xr-x 22 root  root   1024 Jul  3 08:29 ..
+drwxrwxrwt  2 root  root   1024 Jul  3 08:41 .ICE-unix
+drwx------  2 root  root  12288 Jul  3 07:47 lost+found
+drwxr-xr-x  3 user1 user1  1024 Jul  5 03:24 opt
+-rw-r--r--  1 root  root    489 Jul  3 10:14 sources.list
+-r--r-----  1 root  root    491 Jul  3 10:21 sudoers
+drwxrwxrwt  2 root  root   1024 Jul  3 08:41 .X11-unix
+user1@vm1:/tmp$ dd_if=$(mount | grep /tmp | cut -d ' ' -f 1) && echo $dd_if
+/dev/sda8
+user1@vm1:~$ cd && ls -alh
+total 243M
+drwxr-xr-x 3 user1 user1 4.0K Jul  5 04:27 .
+drwxr-xr-x 4 root  root  4.0K Jul  3 08:39 ..
+-rw------- 1 user1 user1   22 Jul  3 10:45 .bash_history
+-rw-r--r-- 1 user1 user1  220 Jul  3 08:39 .bash_logout
+-rw-r--r-- 1 user1 user1 3.2K Jul  3 08:39 .bashrc
+-rw------- 1 user1 user1   52 Jul  5 04:12 .lesshst
+drwxr-xr-x 3 user1 user1 4.0K Jul  5 03:23 opt
+-rw-r--r-- 1 user1 user1  675 Jul  3 08:39 .profile
+-rw-r--r-- 1 user1 user1 1.3M Jul  5 04:25 root.tgz
+-rw-r--r-- 1 root  root  241M Jul  5 04:36 tmp.img
+user1@vm1:~$ sudo losetup /dev/loop1 ~/tmp.img && sudo mount /dev/loop1 /mnt/
+user1@vm1:~$ ls -al /mnt
+total 19
+drwxrwxrwt  6 root  root   1024 Jul  5 04:17 .
+drwxr-xr-x 22 root  root   1024 Jul  3 08:29 ..
+drwxrwxrwt  2 root  root   1024 Jul  3 08:41 .ICE-unix
+drwx------  2 root  root  12288 Jul  3 07:47 lost+found
+drwxr-xr-x  3 user1 user1  1024 Jul  5 03:24 opt
+-rw-r--r--  1 root  root    489 Jul  3 10:14 sources.list
+-r--r-----  1 root  root    491 Jul  3 10:21 sudoers
+drwxrwxrwt  2 root  root   1024 Jul  3 08:41 .X11-unix
+user1@vm1:~$ sudo umount /mnt && sudo losetup -d /dev/loop1
+user1@vm1:~$ sudo umount $dd_if && sudo mkfs.ext3 $dd_if
+mke2fs 1.41.12 (17-May-2010)
+Filesystem label=
+OS type: Linux
+Block size=1024 (log=0)
+Fragment size=1024 (log=0)
+Stride=0 blocks, Stripe width=0 blocks
+61752 inodes, 246784 blocks
+12339 blocks (5.00%) reserved for the super user
+First data block=1
+Maximum filesystem blocks=67371008
+31 block groups
+8192 blocks per group, 8192 fragments per group
+1992 inodes per group
+Superblock backups stored on blocks:
+        8193, 24577, 40961, 57345, 73729, 204801, 221185
+
+Writing inode tables: done
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+This filesystem will be automatically checked every 27 mounts or
+180 days, whichever comes first.  Use tune2fs -c or -i to override.
+user1@vm1:~$ new_uuid=$(sudo tune2fs -l $dd_if | awk '/UUID/{print $3}') && echo $new_uuid
+f8288adc-3ef9-4a6e-aab2-92624276b8ba
+user1@vm1:~$ grep '/tmp' /etc/fstab
+# /tmp was on /dev/sda8 during installation
+UUID=011b4530-e4a9-4d13-926b-48d9e33b64bf /tmp ext3 defaults 0 2
+user1@vm1:~$ sed "s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=$new_uuid \/tmp ext3 defaults 0 2/" /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc            /proc           proc    defaults        0       0
+# / was on /dev/sda1 during installation
+UUID=91aacf33-0b35-474c-9c61-311e04b0bed1 /               ext3    errors=remount-ro 0       1
+# /home was on /dev/sda9 during installation
+UUID=e27b0efb-8cf0-439c-9ebe-d59c927dd590 /home           ext3    defaults        0       2
+# /tmp was on /dev/sda8 during installation
+UUID=f8288adc-3ef9-4a6e-aab2-92624276b8ba /tmp ext3 defaults 0 2
+# /usr was on /dev/sda5 during installation
+UUID=9f49821b-7f94-4915-b9a9-ed9f12bb6847 /usr            ext3    defaults        0       2
+# /var was on /dev/sda6 during installation
+UUID=b7e908a1-a1cd-4d5c-bc79-c3a99d003e7c /var            ext3    defaults        0       2
+# swap was on /dev/sda7 during installation
+UUID=292981d7-5a17-488f-8d9a-176b65f45d46 none            swap    sw              0       0
+/dev/scd0       /media/cdrom0   udf,iso9660 user,noauto     0       0
+sudo sed -i'.bak' "s/^UUID=.*\/tmp\s\+ext3\s\+defaults\s\+[0-9]\s\+[0-9]\s\?/UUID=$new_uuid \/tmp ext3 defaults 0 2/" /etc/fstab
+sudo mount -a && ls /tmp
+user1@vm1:~$ sudo umount /tmp && pv ~/tmp.img | sudo dd of=$dd_if bs=10M
+ 241MB 0:00:04 [54.2MB/s] [===============================================================================================================>] 100%
+0+1928 records in
+0+1928 records out
+252706816 bytes (253 MB) copied, 5.52494 s, 45.7 MB/s
+user1@vm1:~$ rm -v tmp.img
+rm: remove write-protected regular file `tmp.img'? y
+removed `tmp.img'
+user1@vm1:~$
+</code>
+
+===== Explanation =====
+  - Creates in archive or **/opt/root/** in your home directory. Archive file has extension **.tgz** because this archive actually consists of two parts, like a matryoshka doll. First part is designated by letter **t** and is one big file in which all archived files are merged by program **tar**. Second part is designated by letters **gz** and means that **tar** called **gzip** program for you to compress it.
+  - Tests this archive.
+  - Changes directory to **/tmp**.
+  - Extracts your archive.
+  - Prints out directory contents.
+  - Extracts name of a partition which is mounted on **/tmp**, stores it in **dd_if** variable, and if extraction was successful prints out **dd_if** value. **if** stands for //input file//.
+  - Copies whole partition to **tmp.img** in your home directory. **dd** is called as superuser because you are accessing file **/dev/sda8** representing your partition which is not accessible for normal users.
+  - Changes directory to your home directory and prints out its content. 
+  - Tells Linux to use **tmp.img** file as a physical partition (sort of) and mounts it.
+  - Prints out content of **tmp.img**. You are able to see that it really is exact copy of **/tmp**.
+  - Unmounts **tmp.img** and tells Linux to stop treating is as partition.
+  - Unmounts **/tmp** and creates new filesystem there, deleting everything which was there in the process.
+  - Extracts UUID of your new **/tmp** filesystem, stores it in **new_uuid** and prints it out.
+  - Prints out a line describing old **/tmp** partition from **/etc/fstab**.
+  - Shows you how modified **/etc/fstab** will look. It is done by using regular expression, which work as a mask which define this line: <code>UUID=f8288adc-3ef9-4a6e-aab2-92624276b8ba /tmp ext3 defaults 0 2</code> After you finish this book I will give you a link which will allow you to learn how to create such regular expressions.
+  - Makes actual replacement of **/tmp** old UUID with new UUID.
+  - Mounts all filesystems described in **/etc/fstab** and lists contents of your new **/tmp** 
+  - Unmounts new **/tmp** and restores old **/tmp** from **tmp.img**.
+  - Gets old **/tmp** UUID, which is actually the same as it was before you created a new filesystem, because **tmp.img** is perfect copy of your old **/tmp**.
+  - Replaces new UUID with old UUID in your **/etc/fstab**.
+  - Mounts all filesystems from **/etc/fstab**. If this command does not result in error, chances are you did everything right. Congratulations.
+  - Removes **tmp.img** from your home directory.
+
+====== Extra credit ======
+  - Try to explain in detail what each command does. Take a list of paper and write it all out. Look up all not well understood commands and parameters in the **man**.
+  - It is a bit early for this, but why you were able to remove **tmp.img** from your home directory issuing removal command as **user1**, considering that **tmp.img** was created as **root**?

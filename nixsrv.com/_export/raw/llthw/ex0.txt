@@ -1,0 +1,60 @@
+====== Exercise 0. The Setup ======
+
+===== Windows, Manual Installation =====
+  - [[llthw/ex0/manual|A Very Long Guide]]
+
+===== Windows, VirtualBox virtual appliance (preconfigured image in .ova format) =====
+
+==== What you will need ====
+  - **VitualBox**, a virtual machine player.
+  - **putty**, terminal emulator.
+  - Preconfigured VirtualBox image with Debian. 
+
+==== Do this ====
+
+**1.** Download and install [[http://download.virtualbox.org/virtualbox/4.1.18/VirtualBox-4.1.18-78361-Win.exe|VirtualBox]]
+
+**2.** Download and install [[http://the.earth.li/~sgtatham/putty/latest/x86/putty-0.62-installer.exe|Putty]].
+
+**3.** Download this file: https://docs.google.com/open?id=0Bw1iG1X4Li39ZlhkQmgtM1BhV2s
+
+Another link: http://thepiratebay.se/search/vm1.ova/0/99/0
+
+Or yet another link: [[http://fileconvoy.com/dfl.php?id=gf78117efb38017f19991890063f232bd5cd39165a]]
+
+  md5: 7ac8a6059460f7f3e39aee7c4ee2c230 
+  sha256: 18d8f31d0894c89865d5306b0cb3284d8889e15d155c7435fc7888f3dbafa3ec
+
+**4.** Open this file.
+
+{{:llthw:setup1.png}}
+
+**5.** Click **Import**.
+
+{{:llthw:setup2.png}}
+
+**6.** Select **vm1** and click **Start**.
+
+{{:llthw:setup3.png}}
+
+**7.** Wait for **vm1** to boot.
+
+{{:llthw:setup4.png}}
+
+**8.** Launch **putty**, enter **localhost** into **Host Name (or IP address)** field and click **Open**.
+
+{{:llthw:setup5.png}}
+
+**9.** Type in **user1**, **<ENTER>**, **123qwe**, **<ENTER>**.
+
+{{:llthw:setup6.png}}
+
+10. Congratulations, you are now logged into vm1!
+
+{{:llthw:setup7.png}}
+
+===== Linux =====
+  - You already use Linux, what else do you want? Joking, you may follow windows guide fairly closely or just experiment on your live system, but with discretion. 
+  
+===== MacOS =====
+  - I will add steps here someday too.

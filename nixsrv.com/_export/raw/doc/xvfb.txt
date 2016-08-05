@@ -1,0 +1,14 @@
+====== Run gui program and connect to a headless server using VNC ======
+<code bash>
+# install
+    aptitude install x11vnc xvfb icewm
+# start
+    export DISPLAY=:0
+    Xvfb :0 -screen 0 1024x768x16 -nolisten tcp &
+    x11vnc -display :0 -bg -nopw -listen localhost -xkb -forever &
+    icewm &
+# connect
+    # on a Windows host connect to the server using putty and forward a port
+        putty L5900    localhost:5900
+    # now connect to 127.0.0.1 using a VNC client
+</code>

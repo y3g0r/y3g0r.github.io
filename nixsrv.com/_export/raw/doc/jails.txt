@@ -1,0 +1,52 @@
+====== Jails ======
+
+OS-level virtualization in FreeBSD.
+
+===== Cheatsheet =====
+<code bash>
+# Create a jail
+    setenv D /here/is/the/jail
+    mkdir -p $D
+    cd /usr/src
+    make buildworld
+    make installworld DESTDIR=$D
+    make distribution DESTDIR=$D
+    mount -t devfs devfs $D/dev
+
+# Start jails on boot, /etc/rc.conf
+    jail_enable="YES"   # Set to NO to disable starting of any jails
+    jail_list="www"     # Space separated list of names of jails
+# Jails configuration, /etc/rc.conf
+    jail_www_rootdir="/usr/jail/www"     # jail's root directory
+    jail_www_hostname="www.example.org"  # jail's hostname
+    jail_www_ip="192.168.0.10"           # jail's IP address
+    jail_www_devfs_enable="YES"          # mount devfs in the jail
+    jail_www_devfs_ruleset="www_ruleset" # devfs ruleset to apply to 
+        
+# Configuration file inside of jail
+    /etc/rc
+# For service jails
+    jail_jailname_exec_start
+
+# Jails control commands
+    # Start
+        /etc/rc.d/jail start www
+    # Stop
+        /etc/rc.d/jail stop www
+    # Shutdown, run from inside of a jail or using jexec
+        sh /etc/rc.shutdown
+
+# Sysctl paramers for jail management
+    security.jail.set_hostname_allowed: 1
+    security.jail.socket_unixiproute_only: 1
+    security.jail.sysvipc_allowed: 0
+    security.jail.enforce_statfs: 2
+    security.jail.allow_raw_sockets: 0
+    security.jail.chflags_allowed: 0
+    security.jail.jailed: 0
+
+# Relevant commands
+    jls(8)
+    jexec(8)
+    jail(8)
+</code>

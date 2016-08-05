@@ -1,0 +1,269 @@
+====== Exercise 23. Filesystems: security permissions, chown, chmod, umask ======
+
+It is time to understand Linux filesystems security model. Let us start with quoting Wikipedia article on [[http://en.wikipedia.org/wiki/Filesystem_permissions#Traditional_Unix_permissions|permissions]]:
+
+> Most current file systems have methods of administering permissions or access rights to specific users and groups of users. These systems control the ability of the users to view or make changes to the contents of the filesystem.
+
+> Permissions on Unix-like systems are managed in three distinct classes. These classes are known as //user//, //group//, and //others//. In effect, Unix permissions are a simplified form of access control lists (ACLs).
+
+> When a new file is created on a Unix-like system, its permissions are determined from the //umask// of the process that created it.
+
+For each file in Linux there are three //permission classes// associated with it. For each //permission class// there are three //permissions//.
+
+This are //permission classes//:
+^ //Class// ^ Description ^
+| user   | One system user. The file is said to be //owned// by this user.  |
+| group  | One group of users |
+| others | Any other users or groups |
+
+This are //permissions//, assignable for each class:
+^  //Permission// ^ Symbolic \\ notation ^ Description ^
+|**r**ead   | <code>r--</code> | Ability to read the file |
+|**w**rite  | <code>-w-</code> | Ability to write to the file |
+|e**x**ecute| <code>--x</code> | Ability to execute file as a program, \\ for example a shell script should have this set |
+
+This two tables can be summed up:
+
+^  Owner        ^^^  Group        ^^^  Others       ^^^
+|<code>r</code>|<code>w</code>|<code>x</code>|<code>r</code>|<code>w</code>|<code>x</code>|<code>r</code>|<code>w</code>|<code>x</code>|
+
+This permissions are represented as numbers. Consider the following output:
+<code bash>
+user1@vm1:~$ ls -al tmp.img
+-rw-r--r-- 1 root root 252706816 Jul  6 07:54 tmp.img
+user1@vm1:~$ stat tmp.img
+  File: 'tmp.img'
+  Size: 252706816       Blocks: 494064     IO Block: 4096   regular file
+Device: 809h/2057d      Inode: 88534       Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2012-07-06 07:56:58.000000000 -0400
+Modify: 2012-07-06 07:54:54.000000000 -0400
+Change: 2012-07-06 07:54:54.000000000 -0400
+user1@vm1:~$
+</code>
+
+Here we are able to see that **tmp.img** is //owned// by user **root** and group **root** and has the following permissions: **-rw-r--r--**. Let us learn to read them.
+
+<code bash>
+-rw        # Owner can read and write to the file
+r--        # Group can only read the file
+r--        # Others can also only read the file
+1          # 
+root       # Owner is user root
+root       # Group is root (but remember not to confuse this with user)
+252706816  #
+Jul        #
+6          # 
+07:54      #
+tmp.img    # 
+</code>
+
+Here are the same permissions is //octal// notation:
+<code bash>
+Access:          
+( 
+  0  
+  6 -rw       
+  4 r--
+  4 r--
+)
+Uid: (    0/    root)
+Gid: (    0/    root)
+</code>
+
+And this is the table for translating from //octal// to //symbolic// notation:
+
+^ Symbolic ^ Octal ^ Binary ^.^ Symbolic ^ Octal ^ Binary ^  
+| <code> --- </code> | <code> 0 </code> | <code> 000 </code> |.| <code> r-- </code> | <code> 4 </code> | <code> 101 </code> |        
+| <code> --x </code> | <code> 1 </code> | <code> 001 </code> |.| <code> r-x </code> | <code> 5 </code> | <code> 100 </code> |        
+| <code> -w- </code> | <code> 2 </code> | <code> 010 </code> |.| <code> rw- </code> | <code> 6 </code> | <code> 110 </code> |        
+| <code> -wx </code> | <code> 3 </code> | <code> 011 </code> |.| <code> rwx </code> | <code> 7 </code> | <code> 111 </code> |        
+
+Notice that resulting permissions are obtained with simple addition. For example, let us take **r-x** permission. **r** in octal notation is 4, **x** is 1, 1+4 is 5 which is **r-x**.
+
+Now lets talk about zero in stat output **0644**. This is for setting up something called **[[http://en.wikipedia.org/wiki/Setuid|SUID]]**, **SGID** and **[[http://en.wikipedia.org/wiki/Sticky_bit|Sticky bit]]**. I will not cover it in detail, but I will give you an Extra Credit task for this and translation tables.
+
+Special bits:
+^  Mode   ^ Symbolic \\ notataion ^ Description ^
+| SUID    | <code>u--</code>   | **S**et **U**ser **ID** upon execution. |
+| SGID    | <code>-g-</code>   | **S**et **G**roup **ID** upon execution. |
+| Sticky  | <code>--s</code>   | Works only for directories, when set, files in that directory may only be unlinked or renamed by root or their owner. |
+
+Translating special bits from symbolic to octal notation:
+^ Symbolic ^ Octal ^ Binary ^.^ Symbolic ^ Octal ^ Binary ^  
+| <code> --- </code> | <code> 0 </code> | <code> 000 </code> |.| <code> u-- </code> | <code> 4 </code> | <code> 101 </code> |
+| <code> --s </code> | <code> 1 </code> | <code> 001 </code> |.| <code> u-s </code> | <code> 5 </code> | <code> 100 </code> |
+| <code> -g- </code> | <code> 2 </code> | <code> 010 </code> |.| <code> ug- </code> | <code> 6 </code> | <code> 110 </code> |
+| <code> -gs </code> | <code> 3 </code> | <code> 011 </code> |.| <code> ugs </code> | <code> 7 </code> | <code> 111 </code> |
+
+      
+Now what about newly created file? For example, you created a file with **touch umask.test**, which permissions will it have? It turns out that you are able to control this with [[http://en.wikipedia.org/wiki/Umask|file mode creation mask]], //umask//. Is a mechanism to define which permissions assign to files when you are creating it. The umask works by //masking out//, that is substracting permissions from default ones, which for **bash** are **777** for directories and **666** for files. Umask is define for **user**, **group** and **others** also.
+
+Mapping betweend umask values and permissions:
+^ Symbolic ^ Octal ^ Binary ^.^ Symbolic ^ Octal ^ Binary ^  
+| <code> rwx </code> | <code> 0 </code> | <code> 000 </code> |.| <code> -wc </code> | <code> 4 </code> | <code> 101 </code> |
+| <code> rw- </code> | <code> 1 </code> | <code> 001 </code> |.| <code> -w- </code> | <code> 5 </code> | <code> 100 </code> |
+| <code> r-x </code> | <code> 2 </code> | <code> 010 </code> |.| <code> --x </code> | <code> 6 </code> | <code> 110 </code> |
+| <code> r-- </code> | <code> 3 </code> | <code> 011 </code> |.| <code> --- </code> | <code> 7 </code> | <code> 111 </code> |
+
+To understand more clearly, here is another table. Remember that this permissions are //masked out//, that is they are removed. For simplicity in this example //user//, //group// and //others// permissions are the same.
+^ Umask value ^ Masked out (removed) permisssions ^ Effective permissions \\ for a new file with \\ default permissions 666 ^ Notes ^
+|000          | none                    | 666 write, read and execute | All default permissions are preserved |
+|111          | execute only            | 666 write, read and execute | Because new files are not executable |
+|222          | write only              | 555 read and execute  | - |
+|333          | write and execute       | 444 read only         | - |
+|444          | read only               | 333 write and execute | - |
+|555          | read and execute        | 222 write   | - |
+|666          | read and write          | 111 execute | - |
+|777          | read, write and execute | 000 nothing | No permissions are preserved   |
+
+Another //umask// example:
+
+^                                     ^  Octal     ^     Symbolic    ^
+| umask                               | <code>022</code> | <code> --- -w- -w- </code> |            
+|**New files**                        |  |  |
+| Initial file permission             | <code>666</code> | <code> rw- rw- rw- </code> |            
+| Compliment of umask                 | <code>022</code> | <code> --- -w- -w- </code> |        
+| Resultant file permission           | <code>644</code> | <code> rw- r-- r-- </code> |              
+| **New directory**                   |  |  |       
+| Initial directory permission        | <code>777</code> | <code> rwx rwx rwx </code> |                 
+| Complement of umask                 | <code>022</code> | <code> --- -w- -w- </code> |        
+| Resultant directory permission      | <code>655</code> | <code> rwx r-x r-x </code> |                  
+
+Let us summarize this infodump:
+  - **Permissions**, or access rights — mechanism for controlling access to files and directories.
+  - **Permission modes** — types of permissions which allow actions with files.
+    - **Read, r** — ability to read the file.
+    - **Write, w** — ability to write to the file.
+    - **Execute, x** — ability to execute the file as a program. For directories this has a special meaning, namely it allows directory to be listed.
+  - **Classes of users** — entities to which permissions are applied.
+    - **User/owner class, u** — owner of file or directory, often is is the one who created them.
+    - **Group class, g** — group is a collections of users.
+    - **Others class, o** — everyone else except **owner** and **group**.
+  - **Umask** — a mechanism for controlling access to newly created files.
+
+And the commands to manage permissions:
+  - **chmod** — change file permissions.
+  - **chown** — change owner permissions.
+  - **umask** — change mask for assigning permissions to new files.
+
+Now you will learn how to change file permissions, file owner and umask.
+
+
+===== Do this =====
+
+<code bash 1>
+umask
+echo 'test' > perms.022
+ls -l perms.022
+stat perms.022  | grep 'Access: ('
+chmod 000 perms.022
+ls -al perms.0022
+echo 'test' > perms.022
+rm -v perms.022
+</code>
+
+Remember question from Extra Credit of previous exercise? You are in similar situation now, because you are not allowed to do anything with this file. But why you are allowed to remove it? That is because when removing file, you are actually removing information about this file from //directory//, doing nothing with file itself. I have nice extra credit for you on this topic.
+
+<code bash 9>
+umask 666
+echo 'test' > perms.000
+ls -l perms.000
+cat perms.000
+chmod 600 perms.000
+cat perms.000
+rm -v perms.000
+umask 027
+echo 'test' > perms.027
+ls -l perms.027
+sudo chown root perms.027
+echo 'test1' >> perms.027
+chown user1 perms.027
+sudo chown user1 perms.027
+echo 'test1' >> perms.027
+rm -v perms.027
+umask 022
+</code>
+
+
+
+====== What you should see ======
+
+<code bash>
+user1@vm1:~$ umask
+0027
+user1@vm1:~$ echo 'test' > perms.022
+user1@vm1:~$ ls -l perms.022
+-rw-r----- 1 user1 user1 5 Jul  9 10:23 perms.022
+user1@vm1:~$ stat perms.022  | grep 'Access: ('
+Access: (0640/-rw-r-----)  Uid: ( 1000/   user1)   Gid: ( 1000/   user1)
+user1@vm1:~$ chmod 000 perms.022
+user1@vm1:~$ ls -al perms.0022
+ls: cannot access perms.0022: No such file or directory
+user1@vm1:~$ echo 'test' > perms.022
+-bash: perms.022: Permission denied
+user1@vm1:~$ rm -v perms.022
+rm: remove write-protected regular file `perms.022'? y
+removed `perms.022'
+user1@vm1:~$ umask 666
+user1@vm1:~$ echo 'test' > perms.000
+user1@vm1:~$ ls -l perms.000
+---------- 1 user1 user1 5 Jul  9 10:23 perms.000
+user1@vm1:~$ cat perms.000
+cat: perms.000: Permission denied
+user1@vm1:~$ chmod 600 perms.000
+user1@vm1:~$ cat perms.000
+test
+user1@vm1:~$ rm -v perms.000
+removed `perms.000'
+user1@vm1:~$ umask 027
+user1@vm1:~$ echo 'test' > perms.027
+user1@vm1:~$ ls -l perms.027
+-rw-r----- 1 user1 user1 5 Jul  9 10:24 perms.027
+user1@vm1:~$ sudo chown root perms.027
+user1@vm1:~$ echo 'test1' >> perms.027
+-bash: perms.027: Permission denied
+user1@vm1:~$ chown user1 perms.027
+chown: changing ownership of `perms.027': Operation not permitted
+user1@vm1:~$ sudo chown user1 perms.027
+user1@vm1:~$ echo 'test1' >> perms.027
+user1@vm1:~$ rm -v perms.027
+removed `perms.027'
+user1@vm1:~$ umask 022
+</code>
+
+===== Explanation =====
+  - Prints current **umask**.
+  - Creates file **perms.022** containing line **test**.
+  - Prints out information about this file.
+  - Prints out permission information about this file in octal notation.
+  - Changes permissions on this file, forbidding anyone to do anything with it.
+  - Prints out information about this file.
+  - Tries to replace this file contents with line 'test', failing because of absent permissions.
+  - Removes this file. This is is possible because file itself is not being touched, only an entry from directory **/home/user1** is.
+  - Changes **umask** to assign none permissions by default.
+  - Creates file **perms.000** containing line **test**.
+  - Prints out information about this file.
+  - Tries to print out this file content, which obviously results in error.
+  - Changes file permissions to allow owner to read and write it.
+  - Prints this file contents, this time successfully.
+  - Removes this file.
+  - Changes **umask** once more.
+  - Creates file **perms.027** containing line **test**.
+  - Prints out information about this file.
+  - Changes file owner to **root**.
+  - Tries to append line **test1** to this file, what results in error.
+  - Tries to change file owner back to **user1**, failing this because information about file owner is contained in file itself, more precisely in its index node.
+  - Changes file owner back to **user1**, this time succeeding because run as **root**.
+  - Adds line **test1** to our file, this time successfully. 
+  - Removes **perms.027**.
+  - Returns **umask** to its default value.
+====== Extra credit =====
+  - Read **man chmod**, **man chown**, **man umask**.
+  - Reread man chmod on **setuid**, **setgid** and **sticky** bits. Set your directory **setuid** bit in such a way that when doing **umask 002 && echo test | sudo tee perms.root** **user1** was the resulting group of **perms.root**.
+  - Find out why **umask 002** did not work.
+  - Try this: <code>
+user1_block0=$(echo 'stat /user1' | sudo debugfs /dev/sda9 2>/dev/null | grep '(0)' | cut -d':' -f2)
+echo $user1_block0
+sudo dd if=/dev/sda9 bs=4096 skip=$user1_block0 count=1 | hexdump -C
+</code> Cool, huh? You have just read the directory contents directly from raw partition. Well, when you are deleting a file, an entry is deleted from here, and you have permissions to modify this entries because this is what directory (a special file) actually is. 
